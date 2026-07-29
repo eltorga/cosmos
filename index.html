@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    
+    <!-- Importando Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        /* Variables de color estilo Notion */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #37352f;
+            --text-muted: #787774;
+            --hover-bg: #f1f1ef;
+            --border-color: #e9e9e7;
+        }
 
+        body {
+            /* Tipografía nativa que imita el estilo de Notion */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            font-size: 24px;
+        }
+
+        /* Diseño en Bloques / Galería */
+        .notion-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .notion-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.1s ease;
+            background-color: var(--bg-color);
+        }
+
+        .notion-card:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .notion-card .notion-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .notion-card span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <h1 class="section-title">Dashboard</h1>
+
+        <div class="notion-gallery">
+            <a href="#" class="notion-card">
+                <i class="ri-plant-line notion-icon"></i>
+                <span>Flowerpedia</span>
+            </a>
+            
+            <a href="#" class="notion-card">
+                <i class="ri-brush-line notion-icon"></i>
+                <span>Art Canvas</span>
+            </a>
+            
+            <a href="#" class="notion-card">
+                <i class="ri-truck-line notion-icon"></i>
+                <span>Order Manager</span>
+            </a>
+            
+            <a href="#" class="notion-card">
+                <i class="ri-calculator-line notion-icon"></i>
+                <span>Calculo</span>
+            </a>
+            
+            <a href="#" class="notion-card">
+                <i class="ri-repeat-2-line notion-icon"></i>
+                <span>Standing Orders</span>
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>
