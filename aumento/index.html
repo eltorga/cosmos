@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comercio - Sistema de Operaciones Comerciales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #37352f; margin: 0; padding: 0; overflow: hidden; background: #fff; }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .notion-input { border: 1px solid transparent; border-radius: 4px; padding: 4px 8px; background: transparent; transition: background 0.2s, border 0.2s; outline: none; width: 100%; }
+        .notion-input:hover { background: #EFEFEF; }
+        .notion-input:focus { background: #fff; border: 1px solid #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
+        
+        .table-header { font-size: 11px; color: #787774; font-weight: 500; text-transform: uppercase; padding: 8px; border-bottom: 1px solid #e9e9e7; text-align: left; white-space: nowrap; }
+        .table-cell { padding: 4px; border-bottom: 1px solid #e9e9e7; vertical-align: middle; }
+        
+        .resize-header { resize: horizontal; overflow: hidden; display: inline-flex; align-items: center; min-width: 30px; width: 100%; max-width: 600px; padding-bottom: 2px; white-space: nowrap; }
+        .resize-header:hover { border-right: 2px solid #ccc; cursor: col-resize; }
+
+        .notion-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .btn-ghost { background: transparent; color: #787774; }
+        .btn-ghost:hover { background: #efefe6; color: #37352f; }
+        .btn-primary { background: #2383e2; color: #fff; border: 1px solid #1a73e8; }
+        .btn-primary:hover { background: #006bce; }
+        
+        .tag { display: inline-flex; align-items: center; background: #e3e2e0; color: #37352f; border: 1px solid #d3d2d0; border-radius: 4px; padding: 2px 6px; font-size: 12px; margin: 2px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+        .inv-container { background: #fff; border: 1px solid #e9e9e7; border-radius: 4px; padding: 2px 4px; transition: border 0.2s; min-height: 32px; display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; align-items: center; gap: 4px; cursor: text; scrollbar-width: none; }
+        .inv-container::-webkit-scrollbar { display: none; }
+        .inv-container:hover { border-color: #ccc; }
+        .inv-container:focus-within { border-color: #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
+
+        .autocomplete-list { position: absolute; z-index: 9999; background: white; border: 1px solid #e9e9e7; border-radius: 4px; max-height: 200px; overflow-y: auto; width: max-content; min-width: 100%; top: 100%; left: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; margin-top: 2px; }
+        .autocomplete-item { padding: 6px 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+        .autocomplete-item:hover, .autocomplete-item.active-item { background: #f0f0f0; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; }
+        .tab-btn { padding: 8px 16px; border-bottom: 2px solid transparent; font-weight: 500; color: #787774; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .tab-btn.active { border-bottom-color: #37352f; color: #37352f; }
+        
+        textarea.notion-input { line-height: 1.4; vertical-align: middle; padding-top: 6px; padding-bottom: 6px; }
+
+        .custom-select-wrap { position: relative; width: 100%; }
+        .custom-select-box { display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: transparent; padding: 4px 8px; border-radius: 4px; white-space: nowrap; }
+        .custom-select-box:hover { background: #EFEFEF; }
+        .custom-select-options { position: absolute; top: 100%; left: 0; width: max-content; min-width: 100%; background: white; border: 1px solid #e9e9e7; border-radius: 4px; max-height: 250px; overflow-y: auto; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .opt-item { padding: 6px 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+        .opt-item:hover { background: #f0f0f0; }
+        .opt-group { padding: 4px 10px; font-weight: bold; font-size: 11px; color: #787774; background: #fafafa; text-transform: uppercase; }
+        
+        input[type=checkbox] { cursor: pointer; accent-color: #1a73e8; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col m-0 p-0">
+
+    <!-- Login Screen -->
+    <div id="login-overlay" class="fixed inset-0 bg-white z-[99999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <i class="ri-store-2-line text-5xl text-gray-400 mb-4"></i>
+        <h2 class="text-xl font-bold text-gray-800">Sistema de Operaciones Comerciales</h2>
+        <p class="text-sm text-gray-500 mt-2 mb-6">To view, please enter the password.</p>
+        <div class="relative w-64">
+            <input type="password" id="sys-pwd" class="w-full border border-gray-300 rounded-md py-2 px-3 outline-none focus:border-blue-500 pr-10" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkLogin()">
+            <i class="ri-arrow-right-line absolute right-3 top-2.5 text-gray-400 cursor-pointer hover:text-blue-500" onclick="checkLogin()"></i>
+        </div>
+        <p id="pwd-error" class="text-red-500 text-xs mt-2 hidden">Clave incorrecta</p>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="flex justify-between items-center border-b border-gray-200 px-6 pt-3 pb-0 shrink-0 w-full bg-white z-10 shadow-sm">
+        <div class="flex items-center gap-8 h-full">
+            <div class="font-bold text-xl cursor-pointer flex items-center gap-2 mb-2 hover:opacity-80 transition" onclick="switchTab('Aumento', document.getElementById('tab-aumento'))">
+                <i class="ri-store-2-line text-blue-600"></i> Comercio
+            </div>
+            <div class="flex h-full items-end">
+                <div id="tab-aumento" class="tab-btn active" onclick="switchTab('Aumento', this)">Aumento</div>
+                <div class="tab-btn" onclick="switchTab('Calculo', this)">Calculo</div>
+                <div class="tab-btn" onclick="switchTab('Cajas', this)">Cajas</div>
+                <div class="tab-btn" onclick="switchTab('Guias', this)">Guias</div>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1 border border-gray-200 rounded-md mb-2 shadow-sm">
+            <i class="ri-lock-line text-gray-500 text-sm"></i>
+            <input type="number" id="global-base-vol" value="2" class="w-8 bg-transparent outline-none font-bold text-gray-800 text-center" oninput="updateBaseVol(); interactiveCalcAllRows();">
+            <span class="text-gray-500 text-sm font-bold">cm</span>
+        </div>
+    </header>
+
+    <!-- Contenido: Tab Aumento -->
+    <div id="Aumento" class="tab-content active flex-col flex-grow min-h-0 w-full relative">
+        <div class="flex-grow overflow-auto px-6 pb-10 w-full">
+            <table class="w-full text-sm border-collapse" id="orders-table" style="table-layout: auto;">
+                <thead>
+                    <tr>
+                        <th class="table-header"><div class="resize-header w-[150px]">Finca</div></th>
+                        <th class="table-header"><div class="resize-header w-[40px]">Qty</div></th>
+                        <th class="table-header"><div class="resize-header w-[110px]">Box Type</div></th>
+                        <th class="table-header"><div class="resize-header w-[60px]">Stems</div></th>
+                        <th class="table-header"><div class="resize-header w-[120px]">Variety</div></th>
+                        <th class="table-header"><div class="resize-header w-[220px]">Descripcion</div></th>
+                        <th class="table-header"><div class="resize-header w-[110px]">Delivery</div></th>
+                        <th class="table-header"><div class="resize-header w-[70px] text-center">Arrival</div></th>
+                        <th class="table-header"><div class="resize-header w-[80px]">Cost</div></th>
+                        <th class="table-header"><div class="resize-header w-[80px]">Markup</div></th>
+                        <th class="table-header"><div class="resize-header w-[80px]">Price</div></th>
+                        <th class="table-header"><div class="resize-header w-[160px]">Inventory</div></th>
+                        <th class="table-header"><div class="resize-header w-[50px] text-center">Send</div></th>
+                        <th class="table-header w-[30px]"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Filas -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="px-6 py-4 border-t bg-gray-50 flex justify-between items-center shrink-0 w-full shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+            <button onclick="addRow()" class="notion-btn btn-ghost"><i class="ri-add-line"></i> New Row</button>
+            <button onclick="exportExcel()" class="notion-btn btn-primary shadow-sm"><i class="ri-file-excel-2-line"></i> Export to Excel</button>
+        </div>
+    </div>
+
+    <!-- Contenido: Tab Calculo -->
+    <div id="Calculo" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6 items-center">
+        
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px] mb-8">
+            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-calculator-line text-blue-500"></i> Tabla de Cálculo</h3>
+            <table class="w-full text-sm border-collapse" id="calc-table">
+                <thead>
+                    <tr>
+                        <th class="table-header w-[120px]">Box Type</th>
+                        <th class="table-header w-[80px]">Stems</th>
+                        <th class="table-header w-[100px]">Cost</th>
+                        <th class="table-header w-[100px]">Markup</th>
+                        <th class="table-header w-[100px]">Price</th>
+                        <th class="table-header w-[40px]"></th>
+                    </tr>
+                </thead>
+                <tbody id="calc-table-body">
+                    <!-- Fila -->
+                </tbody>
+            </table>
+            <button onclick="addCalcTableRow()" class="notion-btn btn-ghost mt-2"><i class="ri-add-line"></i> Agregar Fila</button>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px]">
+            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Desglose de Caja</h3>
+            <table class="w-full text-sm text-left mb-2">
+                <thead>
+                    <tr class="text-gray-500 text-xs border-b">
+                        <th class="pb-2 w-[40%]">Nombre Variedad</th>
+                        <th class="pb-2 w-[30%] text-center">Cantidad Tallos</th>
+                        <th class="pb-2 w-[30%]">Precio x Tallo</th>
+                    </tr>
+                </thead>
+                <tbody id="calc-breakdown-body">
+                    <!-- Filas init -->
+                </tbody>
+            </table>
+            <button class="notion-btn btn-ghost text-xs mb-6" onclick="addBreakdownRow()"><i class="ri-add-line"></i> Más Filas</button>
+            
+            <div class="border-t pt-4 grid grid-cols-10 gap-4 font-bold text-gray-700 items-center">
+                <div class="col-span-4 text-right">TOTALES:</div>
+                <div class="col-span-3 text-center" id="calc-tot-stems">0</div>
+                <div class="col-span-3 flex items-center gap-3">
+                    <span class="text-lg">$<span id="calc-tot-price">0.00</span></span>
+                    <input type="checkbox" id="chk-tot-price" class="w-4 h-4 cursor-pointer" onchange="syncCalcCheck('total')">
+                </div>
+            </div>
+            <div class="grid grid-cols-10 gap-4 mt-2 font-bold text-blue-700 items-center">
+                <div class="col-span-4 text-right">PRECIO PROMEDIO:</div>
+                <div class="col-span-3"></div>
+                <div class="col-span-3 flex items-center gap-3">
+                    <span class="text-lg">$<span id="calc-avg-price">0.00</span></span>
+                    <input type="checkbox" id="chk-avg-price" class="w-4 h-4 cursor-pointer" onchange="syncCalcCheck('avg')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido: Tab Cajas (Sheet1) -->
+    <div id="Cajas" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6">
+        <div id="boxes-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div>
+    </div>
+
+    <!-- Contenido: Tab Guias -->
+    <div id="Guias" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6 items-center">
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm w-full max-w-[1000px]">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Fecha</th>
+                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Día Vuelo</th>
+                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Ecuador</th>
+                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Colombia</th>
+                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs text-center">Llegada Cliente</th>
+                    </tr>
+                </thead>
+                <tbody id="vuelos-body" class="divide-y divide-gray-100"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Check Login
+        if(localStorage.getItem('auth') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+        }
+        function checkLogin() {
+            let pwd = document.getElementById('sys-pwd').value;
+            if(pwd === '1980') {
+                localStorage.setItem('auth', 'true');
+                document.getElementById('login-overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('login-overlay').style.display = 'none', 300);
+            } else {
+                document.getElementById('pwd-error').classList.remove('hidden');
+            }
+        }
+
+        // --- Datos Base Actualizados ---
+        const fincasList = [
+            "Florana", "Ceres", "Bellarosa", "Agroprim", "Holex", "Plazoleta", "Rose Conection", "Lupita Flowers", "Petaloz", "Calla Flowers",
+            "Florecot", "Sande Flowers", "US Greens", "Hanna Gardens", "Welyflor", "Bloomhaus", "Floraroma", "Hoja Verde", "Valleflor", "Magic Flowers",
+            "Flowers Party", "Nelpo", "Flor Eterna", "Neumann", "ECUADORUNIQUE", "Olimpo Flowers", "Bloomlink", "Merinoroses", "Florequisa", "Mystic Flowers",
+            "Hydra Farms", "Feel Flowers", "Florecal", "GalaxyTrade Corp", "Flower Village", "Loma Linda", "FLORSEL", "Co-op Farms", "Agroflora", "Stampsybox",
+            "Flormare", "Kiara Preserved", "Agrinag", "Agrocoex", "Ecoador Floral", "Betel", "Joysgarden", "Agrirose", "Benitflor", "La Toscana Farms",
+            "Montebello Roses", "Finca la Abuela", "Florisol", "Vabagro", "Aj Flowers", "Tumbabiro", "Christopher Flowers", "Clarivel", "Jardin Piaveri", "Sunrite Farms",
+            "Florsani", "Alinatura", "Angosacha Flowers", "Lavender World", "Latina Farms", "Flowers and Co", "Flores Verdes", "Summer Bouquet S.A.S", "Flodecol", "Campos de Aroma",
+            "Star Roses", "Agrogana", "Ikebana", "St Monica", "Anthonela", "High Garden", "Optimum Flowers", "San Luis", "Rosas del Corazón", "Treasure Flowers",
+            "HydranFlowers", "Alexandra Farms", "Coordinación", "Circasia S.A.S.", "Vuelven S.A.S.", "Matina", "Naranjo", "Cultivos del Norte", "Casageo", "La Conchita",
+            "Megaflor", "Agrivaldani", "Dummen Orange", "Luxus"
+        ];
+
+        const llegadaMap = {
+            "Agrivaldani": "y", "Ceres": "n", "Hoja Verde": "n", "Latina Farms": "n", 
+            "Lulu": "", "Luxus": "n", "Naranjo": "n", "Florisol": "-", "Florecal": "n", 
+            "Flores Verdes": "y", "Florecot": "n", "Florsani": "y", "Flower Village": "", 
+            "High Garden": "-", "Ikebana": "y", "Star Roses": "n", "Tumbabiro": "y", 
+            "Plazoleta": "y", "Flowers Party": "y", "HydranFlowers": "y", "Alexandra Farms": "", 
+            "Circasia S.A.S.": "", "Vuelven S.A.S.": "", "La Conchita": "-", "Bellarosa": "", 
+            "Agroprim": "n", "Holex": "", "Petaloz": "", "Bloomhaus": "", "Agrinag": "", 
+            "Anthonela": "n", "Agrogana": "y", "Alinatura": "", "Betel": "n", "Casageo": "n", 
+            "Cultivos del Norte": "y", "Dummen Orange": "n", "San Luis": "n"
+        };
+        
+        const vendorsData = {
+            "Ana": "amiranda", "Andres": "abaquero", "Ben": "baspiazu", "Cesar": "caguilar",
+            "Daniel": "dvalencia", "Daniela": "dcordova", "Estefany": "eorces", "Fausto": "fparamo",
+            "John": "jochoa", "Joss": "cmera", "Kevin": "kruiz", "Majo": "mcabrera",
+            "Paul": "pbodley", "Ralph": "rbaquero", "Roberto": "ralvarez"
+        };
+        const vendorNames = Object.keys(vendorsData);
+        
+        const vuelosData = [
+            { fecha: '2026-07-15', diaStr: 'Mie. 15 de julio de 2026', vueloDay: '***Error de Fecha***', ecuador: '16803', colombia: '16805', llegada: 'Mon/Tue' },
+            { fecha: '2026-07-16', diaStr: 'Jue. 16 de julio de 2026', vueloDay: 'Sabado', ecuador: '16802', colombia: '16806', llegada: 'Tue/Wed' },
+            { fecha: '2026-07-17', diaStr: 'Vie. 17 de julio de 2026', vueloDay: 'Domingo', ecuador: '16804', colombia: '16807', llegada: 'Wed/Thu' },
+            { fecha: '2026-07-18', diaStr: 'Sab. 18 de julio de 2026', vueloDay: 'Domingo', ecuador: '16804', colombia: '16807', llegada: 'Wed/Thu' },
+            { fecha: '2026-07-20', diaStr: 'Lun. 20 de julio de 2026', vueloDay: 'Martes', ecuador: '16808', colombia: '16809', llegada: 'Thu/Fri' },
+            { fecha: '2026-07-21', diaStr: 'Mar. 21 de julio de 2026', vueloDay: 'Miercoles', ecuador: '16810', colombia: '-', llegada: 'Fri' } 
+        ];
+
+        const boxesData = [
+            { name: "QB", l: 99, w: 35, h: 16, f: "Estandar" },
+            { name: "EB", l: 105, w: 17, h: 17, f: "Estandar" },
+            { name: "HB", l: 105, w: 35, h: 33, f: "Estandar" },
+            { name: "QB2", l: 85, w: 30, h: 28, f: "Estandar" },
+            { name: "EB2", l: 39, w: 30, h: 30, f: "Estandar" },
+            { name: "SB", l: 90, w: 15, h: 10, f: "Estandar" },
+            
+            { name: "Anthonela EB 5K", l: 90, w: 26, h: 12.5, f: "Anthonela" },
+            { name: "Anthonela EB 9K", l: 90, w: 26, h: 15, f: "Anthonela" },
+            { name: "Anthonela QB 13K", l: 104.4, w: 25, h: 15, f: "Anthonela" },
+            { name: "Anthonela QB 15K", l: 103, w: 30, h: 20, f: "Anthonela" },
+            { name: "Anthonela HB 24K", l: 103.6, w: 35, h: 25, f: "Anthonela" },
+
+            { name: "Agrivaldani HB F1", l: 120, w: 35, h: 35, f: "Agrivaldani" },
+            { name: "Agrivaldani HB F2", l: 105, w: 35, h: 35, f: "Agrivaldani" },
+            { name: "Agrivaldani HB F3", l: 105, w: 30, h: 30, f: "Agrivaldani" },
+            { name: "Agrivaldani QB F4", l: 106, w: 31, h: 15, f: "Agrivaldani" },
+            { name: "Agrivaldani QB F5", l: 70, w: 31, h: 16, f: "Agrivaldani" },
+            { name: "Agrivaldani QB C1", l: 105, w: 34, h: 16, f: "Agrivaldani" },
+            { name: "Agrivaldani HB C2", l: 140, w: 35, h: 35, f: "Agrivaldani" },
+
+            { name: "Alinatura Roses + Stem", l: 39, w: 59, h: 31, f: "Alinatura" },
+            
+            { name: "Betel QB", l: 104, w: 18, h: 14, f: "Betel" },
+            { name: "Casageo EB", l: 104, w: 12.5, h: 12, f: "Casageo" },
+            { name: "Casageo QB", l: 104, w: 25, h: 15, f: "Casageo" },
+            { name: "Casageo HB", l: 104, w: 35, h: 35, f: "Casageo" },
+            { name: "Casageo HB Grande", l: 120, w: 35, h: 35, f: "Casageo" },
+
+            { name: "Ceres EB", l: 75, w: 18, h: 15, f: "Ceres" },
+            { name: "Ceres QB Pequeño", l: 82.5, w: 32.5, h: 18, f: "Ceres" },
+            { name: "Ceres Jumbo", l: 100, w: 32, h: 30.8, f: "Ceres" },
+            { name: "Ceres Extra Jumbo", l: 108, w: 32, h: 30.8, f: "Ceres" },
+            { name: "Ceres Super Jumbo", l: 120, w: 35, h: 35, f: "Ceres" },
+            { name: "Ceres Mega Jumbo", l: 150, w: 40, h: 35, f: "Ceres" },
+            
+            { name: "Hoja Verde EB", l: 80, w: 18, h: 20, f: "Hoja Verde" },
+            { name: "Hoja Verde QB96", l: 96, w: 32, h: 20, f: "Hoja Verde" },
+            { name: "Hoja Verde QB104", l: 104, w: 30, h: 15, f: "Hoja Verde" },
+            { name: "Hoja Verde QB120", l: 120, w: 32, h: 30, f: "Hoja Verde" },
+            { name: "Hoja Verde HB25", l: 104, w: 25, h: 25, f: "Hoja Verde" },
+            { name: "Hoja Verde HB30", l: 104, w: 30, h: 30, f: "Hoja Verde" },
+            { name: "Hoja Verde HB35", l: 120, w: 35, h: 35, f: "Hoja Verde" },
+            { name: "Hoja Verde HB40", l: 120, w: 40, h: 40, f: "Hoja Verde" },
+            { name: "Hoja Verde HB120", l: 120, w: 30, h: 30, f: "Hoja Verde" },
+
+            { name: "Latina Farms QB", l: 101, w: 30, h: 20, f: "Latina Farms" },
+            { name: "Latina Farms HB 100", l: 100, w: 35, h: 35, f: "Latina Farms" },
+            { name: "Latina Farms HB 110", l: 110, w: 25, h: 25, f: "Latina Farms" },
+            { name: "Latina Farms HB 120", l: 120, w: 35, h: 35, f: "Latina Farms" },
+            { name: "Latina Farms HB 130", l: 130, w: 35, h: 35, f: "Latina Farms" },
+            
+            { name: "Cultivos del Norte QB", l: 102, w: 16, h: 30, f: "Cultivos del Norte" },
+            { name: "Cultivos del Norte HB", l: 101, w: 29, h: 33, f: "Cultivos del Norte" },
+            { name: "Dummen Orange QB", l: 104.5, w: 24, h: 15, f: "Dummen Orange" },
+            { name: "La Conchita QB Alto", l: 104, w: 24, h: 16, f: "La Conchita" },
+            { name: "La Conchita QB Normal", l: 104, w: 24, h: 12, f: "La Conchita" },
+            
+            { name: "Florisol EB", l: 86, w: 14.5, h: 12.5, f: "Florisol" },
+            { name: "Florisol EB Grande", l: 90, w: 15, h: 15, f: "Florisol" },
+            { name: "Florisol QB", l: 105, w: 29, h: 15, f: "Florisol" },
+            { name: "Florisol HB", l: 104.6, w: 25.1, h: 25.4, f: "Florisol" },
+            { name: "Florisol HB2", l: 105, w: 30, h: 30, f: "Florisol" },
+
+            { name: "Florecal EB", l: 86.8, w: 16.5, h: 13, f: "Florecal" },
+            { name: "Florecal QB", l: 88, w: 29.2, h: 17.7, f: "Florecal" },
+            { name: "Florecal HB", l: 99, w: 31.3, h: 35.5, f: "Florecal" },
+            { name: "Florecal Jumbo", l: 121, w: 36, h: 36.5, f: "Florecal" },
+            
+            { name: "Flores Verdes EB", l: 86, w: 14.5, h: 12.5, f: "Flores Verdes" },
+            { name: "Flores Verdes QB Corta", l: 87, w: 27.5, h: 17, f: "Flores Verdes" },
+            { name: "Flores Verdes QB Larga", l: 104.2, w: 27.4, h: 14.7, f: "Flores Verdes" },
+            { name: "Flores Verdes HB", l: 98, w: 29.5, h: 25.8, f: "Flores Verdes" },
+            { name: "Flores Verdes Jumbo", l: 120, w: 34, h: 34, f: "Flores Verdes" },
+            
+            { name: "Florsani EB", l: 88, w: 18, h: 14, f: "Florsani" },
+            { name: "Florsani QB", l: 105, w: 27, h: 13, f: "Florsani" },
+            { name: "Florsani QBJ", l: 105, w: 26, h: 15, f: "Florsani" },
+            { name: "Florsani HB", l: 105, w: 27, h: 21, f: "Florsani" },
+            { name: "Florsani HE", l: 105, w: 27, h: 28, f: "Florsani" },
+            { name: "Florsani HJ", l: 120, w: 30, h: 30, f: "Florsani" },
+
+            { name: "Luxus QB 104", l: 104, w: 30, h: 17, f: "Luxus" },
+            { name: "Luxus QB 105", l: 105, w: 26, h: 25, f: "Luxus" },
+            { name: "Luxus HB USA 112", l: 112, w: 30, h: 28, f: "Luxus" },
+            { name: "Luxus HB Jumbo 120", l: 120, w: 33, h: 32, f: "Luxus" },
+            { name: "Luxus HB Super Jumbo 130", l: 130, w: 36, h: 36, f: "Luxus" },
+
+            { name: "Naranjo EB", l: 15, w: 25, h: 91, f: "Naranjo" },
+            { name: "Naranjo QB Pequeño", l: 18, w: 30, h: 85, f: "Naranjo" },
+            { name: "Naranjo QB Grande", l: 18, w: 30, h: 100, f: "Naranjo" },
+            { name: "Naranjo HB Extra Grande", l: 40, w: 40, h: 120, f: "Naranjo" },
+
+            { name: "San Luis EB Pequeño", l: 78, w: 17, h: 19, f: "San Luis" },
+            { name: "San Luis EB Grande", l: 79, w: 24, h: 21, f: "San Luis" },
+            { name: "San Luis QB Pequeño", l: 90, w: 18, h: 30, f: "San Luis" },
+            { name: "San Luis QB Grande", l: 90, w: 22, h: 30, f: "San Luis" },
+            { name: "San Luis HB1", l: 110, w: 30, h: 30, f: "San Luis" },
+            { name: "San Luis HB2", l: 120, w: 35, h: 35, f: "San Luis" },
+            { name: "San Luis HB3", l: 130, w: 40, h: 40, f: "San Luis" },
+            
+            { name: "Star Roses EB", l: 95, w: 17, h: 18, f: "Star Roses" },
+            { name: "Star Roses QB Kraft", l: 95, w: 28, h: 17, f: "Star Roses" },
+            { name: "Star Roses QB Grande", l: 95, w: 40, h: 20, f: "Star Roses" },
+            { name: "Star Roses HB USA", l: 95, w: 33, h: 30, f: "Star Roses" },
+            { name: "Star Roses HB Rusa Corta", l: 105, w: 35, h: 35, f: "Star Roses" },
+
+            { name: "Tumbabiro EB", l: 105, w: 15, h: 12.5, f: "Tumbabiro" },
+            { name: "Tumbabiro QB", l: 105, w: 27, h: 12.5, f: "Tumbabiro" }
+        ];
+
+        let rowCount = 0;
+        let calcRowCount = 0;
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(element) element.classList.add('active');
+        }
+
+        // --- Render Cajas (Sheet1) ---
+        function renderSheet1() {
+            const container = document.getElementById('boxes-container');
+            container.innerHTML = '';
+            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 0;
+
+            let estandarHtml = `<div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                <div class="px-4 py-3 border-b border-gray-200/60 bg-gray-50 flex justify-between items-center shrink-0">
+                    <h3 class="text-[15px] font-bold text-gray-800 m-0 flex items-center gap-2"><i class="ri-box-3-fill text-gray-500"></i> Estandar</h3>
+                </div>
+                <div class="p-4 flex-grow overflow-auto"><table class="w-full text-xs text-left">
+                    <thead><tr class="text-gray-400"><th class="pb-2 font-medium">Nombre</th><th class="pb-2 font-medium">L</th><th class="pb-2 font-medium">W</th><th class="pb-2 font-medium">H</th><th class="pb-2 font-medium">Peso</th></tr></thead>
+                    <tbody class="divide-y divide-gray-50/50">`;
+            boxesData.filter(b => b.f === "Estandar").forEach(box => {
+                let weight = (box.l * box.w * box.h) / 6000;
+                estandarHtml += `<tr><td class="py-1.5 font-bold text-gray-700">${box.name}</td><td class="text-gray-500">${box.l}</td><td class="text-gray-500">${box.w}</td><td class="text-gray-500">${box.h}</td><td class="font-bold text-gray-800">${weight.toFixed(2)}</td></tr>`;
+            });
+            estandarHtml += `</tbody></table></div></div>`;
+            container.innerHTML += estandarHtml;
+
+            const grouped = {};
+            boxesData.filter(b => b.f !== "Estandar").forEach(b => {
+                if(!grouped[b.f]) grouped[b.f] = [];
+                grouped[b.f].push(b);
+            });
+
+            Object.keys(grouped).sort().forEach(finca => {
+                let flag = llegadaMap[finca] || "";
+                let bgClass = "bg-white";
+                let titleColor = "text-gray-800";
+                let iconHtml = `<i class="ri-truck-line text-gray-500"></i>`; 
+
+                if(flag === "y") {
+                    bgClass = "bg-green-50";
+                    titleColor = "text-green-800";
+                    iconHtml = `<i class="ri-checkbox-circle-fill text-green-600" title="Llega temprano"></i>`;
+                } else if(flag === "n") {
+                    bgClass = "bg-red-50";
+                    titleColor = "text-red-800";
+                    iconHtml = `<i class="ri-close-circle-fill text-red-500" title="No llega temprano"></i>`;
+                } else if(flag === "-") {
+                    bgClass = "bg-orange-50";
+                    titleColor = "text-orange-800";
+                    iconHtml = `<i class="ri-error-warning-fill text-orange-500" title="Puede variar"></i>`;
+                }
+
+                let html = `<div class="${bgClass} border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-4 py-3 border-b border-gray-200/60 bg-white/50 backdrop-blur-sm flex justify-between items-center shrink-0">
+                        <h3 class="text-[15px] font-bold ${titleColor} m-0 flex items-center gap-2">${iconHtml} ${finca}</h3>
+                    </div>
+                    <div class="p-4 flex-grow overflow-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead><tr class="text-gray-400"><th class="pb-2 font-medium">Nombre</th><th class="pb-2 font-medium">L</th><th class="pb-2 font-medium">W</th><th class="pb-2 font-medium">H</th><th class="pb-2 font-medium">Peso</th></tr></thead>
+                            <tbody class="divide-y divide-gray-50/50">`;
+                
+                grouped[finca].forEach(box => {
+                    let weight = ((box.l + baseVol) * (box.w + baseVol) * (box.h + baseVol)) / 6000;
+                    html += `<tr><td class="py-1.5 font-medium text-gray-700">${box.name}</td><td class="text-gray-500">${box.l}</td><td class="text-gray-500">${box.w}</td><td class="text-gray-500">${box.h}</td><td class="font-bold text-gray-800">${weight.toFixed(2)}</td></tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function updateBaseVol() { renderSheet1(); }
+
+        // --- Render Guias ---
+        function renderGuias() {
+            const body = document.getElementById('vuelos-body');
+            let html = '';
+            vuelosData.forEach(v => {
+                let vDayDisplay = v.vueloDay;
+                if(vDayDisplay === '***Error de Fecha***') {
+                    vDayDisplay = `<span class="text-[#800020] font-bold">Guia Cerrada</span>`;
+                }
+                html += `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="p-4 font-medium text-gray-800">${v.diaStr}</td>
+                        <td class="p-4 font-bold text-gray-600">${vDayDisplay}</td>
+                        <td class="p-4 text-gray-600">${v.ecuador}</td>
+                        <td class="p-4 text-gray-600">${v.colombia}</td>
+                        <td class="p-4 font-bold text-gray-700 text-center">${v.llegada}</td>
+                    </tr>
+                `;
+            });
+            body.innerHTML = html;
+        }
+
+        // --- Highlight Helper para Menus con Flechas ---
+        function highlight(items, index) {
+            for(let i=0; i<items.length; i++) {
+                items[i].classList.remove('active-item', 'bg-gray-100');
+                if(i === index) items[i].classList.add('active-item', 'bg-gray-100');
+            }
+        }
+
+        // --- Autocompletado Fincas con Flechas ---
+        function createAutocompleteFinca(input, list) {
+            let div = document.createElement('div');
+            div.className = 'autocomplete-list';
+            input.parentElement.appendChild(div);
+            let activeIdx = -1;
+
+            input.addEventListener('input', function() {
+                let val = this.value;
+                div.innerHTML = '';
+                activeIdx = -1;
+                if (!val) { div.style.display = 'none'; return; }
+                
+                let matches = list.filter(item => item.toLowerCase().includes(val.toLowerCase()));
+                if (matches.length > 0) {
+                    div.style.display = 'block';
+                    matches.forEach((match, index) => {
+                        let divItem = document.createElement('div');
+                        divItem.className = 'autocomplete-item';
+                        divItem.innerHTML = match;
+                        divItem.dataset.index = index;
+                        divItem.onmousedown = function(e) {
+                            e.preventDefault(); 
+                            input.value = match;
+                            div.style.display = 'none';
+                        };
+                        div.appendChild(divItem);
+                    });
+                } else { div.style.display = 'none'; }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                let items = div.getElementsByClassName('autocomplete-item');
+                if(!items.length) return;
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeIdx++;
+                    if(activeIdx >= items.length) activeIdx = 0;
+                    highlight(items, activeIdx);
+                    items[activeIdx].scrollIntoView({ block: "nearest" });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeIdx--;
+                    if(activeIdx < 0) activeIdx = items.length - 1;
+                    highlight(items, activeIdx);
+                    items[activeIdx].scrollIntoView({ block: "nearest" });
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if(activeIdx > -1) {
+                        input.value = items[activeIdx].innerText;
+                        div.style.display = 'none';
+                    }
+                }
+            });
+
+            input.addEventListener('blur', function() { div.style.display = 'none'; });
+            input.addEventListener('focus', function() { if(this.value && div.children.length > 0) div.style.display = 'block'; });
+        }
+
+        // --- Custom Dropdown "Box Type" ---
+        function toggleBoxDropdown(elem) {
+            let list = elem.nextElementSibling;
+            document.querySelectorAll('.custom-select-options').forEach(el => { if(el !== list) el.style.display = 'none'; });
+            list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectBoxItem(item, val) {
+            let wrap = item.closest('.custom-select-wrap');
+            wrap.querySelector('.sel-value').innerText = val;
+            wrap.querySelector('.inp-boxtype').value = val;
+            wrap.querySelector('.custom-select-options').style.display = 'none';
+            interactiveCalc(wrap.closest('tr'), 'cost');
+        }
+
+        function expandBoxList(btn, e) {
+            e.stopPropagation();
+            let listDiv = btn.parentElement;
+            let existingOptionsHtml = "";
+            let grouped = {};
+            boxesData.forEach(b => {
+                if(b.f !== "Estandar") {
+                    if(!grouped[b.f]) grouped[b.f] = [];
+                    grouped[b.f].push(b);
+                }
+            });
+            Object.keys(grouped).forEach(finca => {
+                existingOptionsHtml += `<div class="opt-group">${finca}</div>`;
+                grouped[finca].forEach(box => {
+                    existingOptionsHtml += `<div class="opt-item" onmousedown="selectBoxItem(this, '${box.name}')">${box.name}</div>`;
+                });
+            });
+            btn.outerHTML = existingOptionsHtml;
+        }
+
+        // --- Delivery Date Selection Custom ---
+        function toggleDateDropdown(elem) {
+            let list = elem.nextElementSibling;
+            document.querySelectorAll('.custom-select-options').forEach(el => { if(el !== list) el.style.display = 'none'; });
+            list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        }
+        function selectDateItem(item, fecha, diaStr, llegada) {
+            let wrap = item.closest('.custom-select-wrap');
+            wrap.querySelector('.sel-value').innerText = fecha; // Visual 2026-07-15
+            wrap.querySelector('.inp-date-hidden').value = fecha; // Export 2026-07-15
+            wrap.querySelector('.custom-select-options').style.display = 'none';
+            wrap.closest('tr').querySelector('.arr-span').innerText = llegada;
+        }
+
+        // --- Cálculos Matemáticos ---
+        function interactiveCalc(row, source) {
+            const costInp = row.querySelector('.inp-cost');
+            const priceInp = row.querySelector('.inp-price');
+            const markupInp = row.querySelector('.inp-markup');
+            
+            const cost = parseFloat(costInp.value) || 0;
+            const type = row.querySelector('.inp-boxtype') ? row.querySelector('.inp-boxtype').value : row.querySelector('select').value;
+            const stems = parseFloat(row.querySelector('.inp-stems').value) || 1;
+            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 2;
+            
+            let dims = boxesData.find(b => b.name === type) || {l:100, w:30, h:20}; 
+            let vol = 0;
+            if (['QB','EB','HB','QB2','EB2','SB'].includes(type)) {
+                vol = (dims.l * dims.w * dims.h) / 6000;
+            } else {
+                vol = ((dims.l+baseVol)*(dims.w+baseVol)*(dims.h+baseVol))/6000;
+            }
+            
+            const duties = cost * 0.1586;
+            const transp2 = (vol * 5.25) * 1.36;
+            const transp = stems > 0 ? transp2 / stems : 0;
+            const totalBase = cost + duties + transp;
+
+            if(source === 'cost' && row.closest('#calc-table-body')) {
+                let totChk = document.getElementById('chk-tot-price');
+                let avgChk = document.getElementById('chk-avg-price');
+                if(totChk) totChk.checked = false;
+                if(avgChk) avgChk.checked = false;
+            }
+
+            if (source === 'cost' || source === 'auto-cost' || source === 'price') {
+                const p = parseFloat(priceInp.value);
+                if (p && p > 0) {
+                    let m = 1 - (totalBase / (p * 0.96));
+                    markupInp.value = (m * 100).toFixed(2);
+                }
+            }
+            if (source === 'markup') {
+                let mVal = markupInp.value;
+                let m = parseFloat(mVal) / 100;
+                if (!isNaN(m)) {
+                    let p = totalBase / ((1 - m) * 0.96);
+                    priceInp.value = p.toFixed(2);
+                }
+            }
+        }
+        function interactiveCalcAllRows() {
+            document.querySelectorAll('#table-body tr, #calc-table-body tr').forEach(tr => interactiveCalc(tr, 'cost'));
+        }
+
+        // --- Inventario (Un solo nivel con Flechas) ---
+        function setupInventoryAutocomplete(input) {
+            let div = input.nextElementSibling;
+            let activeIdx = -1;
+
+            input.addEventListener('input', function() {
+                let val = this.value;
+                div.innerHTML = '';
+                activeIdx = -1;
+                
+                if (!val.trim()) { div.style.display = 'none'; return; }
+
+                let matchRegex = val.match(/^(\d+)\s*(.*)$/);
+                if (matchRegex) {
+                    let num = matchRegex[1];
+                    let text = matchRegex[2].toLowerCase();
+                    let matches = vendorNames.filter(v => v.toLowerCase().includes(text));
+                    
+                    if (matches.length > 0) {
+                        div.style.display = 'block';
+                        matches.forEach((m, index) => {
+                            let divItem = document.createElement('div');
+                            divItem.className = 'autocomplete-item';
+                            divItem.innerHTML = num + ' ' + m;
+                            divItem.dataset.index = index;
+                            divItem.onmousedown = function(e) {
+                                e.preventDefault(); 
+                                processInventorySelection(input, num, m);
+                            };
+                            div.appendChild(divItem);
+                        });
+                    } else { div.style.display = 'none'; }
+                } else { div.style.display = 'none'; }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                let items = div.getElementsByClassName('autocomplete-item');
+                if(div.style.display === 'block' && items.length > 0) {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        activeIdx++;
+                        if(activeIdx >= items.length) activeIdx = 0;
+                        highlight(items, activeIdx);
+                        items[activeIdx].scrollIntoView({ block: "nearest" });
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        activeIdx--;
+                        if(activeIdx < 0) activeIdx = items.length - 1;
+                        highlight(items, activeIdx);
+                        items[activeIdx].scrollIntoView({ block: "nearest" });
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if(activeIdx > -1) {
+                            let selectedText = items[activeIdx].innerText;
+                            let match = selectedText.match(/^(\d+)\s+(.+)$/);
+                            if (match) processInventorySelection(input, match[1], match[2]);
+                        } else if (items.length === 1) {
+                            let selectedText = items[0].innerText;
+                            let match = selectedText.match(/^(\d+)\s+(.+)$/);
+                            if (match) processInventorySelection(input, match[1], match[2]);
+                        }
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener('blur', function() { div.style.display = 'none'; activeIdx = -1; });
+            input.addEventListener('focus', function() { 
+                let event = new Event('input');
+                input.dispatchEvent(event);
+            });
+        }
+
+        function processInventorySelection(input, qStr, vStr) {
+            let q = parseFloat(qStr);
+            let v = vendorNames.find(name => name.toLowerCase() === vStr.toLowerCase());
+            if(!v) return;
+
+            let row = input.closest('tr');
+            let mainQty = parseFloat(row.querySelector('.inp-main-qty').value) || 0;
+            let container = input.closest('.inv-container');
+            
+            let currentSum = 0;
+            container.querySelectorAll('.tag').forEach(t => currentSum += parseFloat(t.dataset.qty));
+
+            if (currentSum + q > mainQty) {
+                alert(`¡Error! El inventario (${currentSum + q}) no puede superar QTY (${mainQty}).`);
+                return;
+            }
+            
+            let tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.innerHTML = `${q} ${v} <i class="ri-close-line ml-1 cursor-pointer font-bold hover:text-gray-500" onclick="this.parentElement.remove(); updateInventoryData(this.closest('.inv-container'));"></i>`;
+            tag.dataset.val = `${q} ${v}`;
+            tag.dataset.qty = q;
+            
+            container.insertBefore(tag, input.parentElement);
+            input.value = '';
+            input.nextElementSibling.style.display = 'none';
+            updateInventoryData(container);
+            
+            setTimeout(() => input.focus(), 0);
+        }
+
+        function updateInventoryData(container) {
+            let tags = container.querySelectorAll('.tag');
+            let data = [];
+            tags.forEach(t => data.push(t.dataset.val));
+            container.querySelector('.hidden-inventory-data').value = data.join(';');
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
+        // --- Generar Filas Aumento ---
+        function addRow() {
+            rowCount++;
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-gray-50 group border-b border-gray-100 transition-colors";
+            tr.id = 'row-' + rowCount;
+
+            let dateOptsHtml = '';
+            vuelosData.forEach(v => {
+                dateOptsHtml += `<div class="opt-item border-b border-gray-50 last:border-0" onmousedown="selectDateItem(this, '${v.fecha}', '${v.diaStr}', '${v.llegada}')">${v.diaStr}</div>`;
+            });
+
+            tr.innerHTML = `
+                <td class="table-cell align-top">
+                    <div class="relative w-full h-full">
+                        <input type="text" class="notion-input font-medium" placeholder="Finca">
+                    </div>
+                </td>
+                <td class="table-cell align-top"><input type="number" class="notion-input inp-main-qty font-bold text-center" placeholder="0"></td>
+                <td class="table-cell align-top">
+                    <div class="custom-select-wrap" tabindex="0" onblur="this.querySelector('.custom-select-options').style.display='none'">
+                        <div class="notion-input custom-select-box bg-gray-50" onclick="toggleBoxDropdown(this)">
+                            <span class="sel-value font-bold text-xs text-gray-700">EB</span><i class="ri-arrow-down-s-line text-gray-400"></i>
+                        </div>
+                        <div class="custom-select-options">
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'EB')">EB</div>
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'QB')">QB</div>
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'HB')">HB</div>
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'EB2')">EB2</div>
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'QB2')">QB2</div>
+                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'SB')">SB</div>
+                            <div class="p-1 text-blue-600 font-bold text-xs cursor-pointer text-center hover:bg-gray-100" onmousedown="expandBoxList(this, event)">Ver más...</div>
+                        </div>
+                        <input type="hidden" class="inp-boxtype" value="EB">
+                    </div>
+                </td>
+                <td class="table-cell align-top"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
+                <td class="table-cell align-top"><input type="text" class="notion-input" placeholder="Variety"></td>
+                <td class="table-cell align-top">
+                    <textarea class="notion-input resize-none overflow-hidden w-full min-h-[30px]" rows="1" placeholder="Descripción..." oninput="autoResizeTextarea(this)"></textarea>
+                </td>
+                <td class="table-cell align-top pt-[6px]">
+                    <div class="custom-select-wrap text-xs" tabindex="0" onblur="this.querySelector('.custom-select-options').style.display='none'">
+                        <div class="notion-input custom-select-box bg-gray-50 text-gray-700" onclick="toggleDateDropdown(this)">
+                            <span class="sel-value font-medium text-gray-500">Fecha</span><i class="ri-arrow-down-s-line text-gray-400"></i>
+                        </div>
+                        <div class="custom-select-options">${dateOptsHtml}</div>
+                        <input type="hidden" class="inp-date-hidden" value="">
+                    </div>
+                </td>
+                <td class="table-cell align-top text-center text-xs font-bold text-gray-700 pt-[12px]"><span class="arr-span"></span></td>
+                <td class="table-cell align-top">
+                    <div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')"></div>
+                </td>
+                <td class="table-cell align-top">
+                    <div class="flex items-center gap-1"><input type="number" step="0.1" class="notion-input inp-markup font-medium" placeholder="0.0" oninput="interactiveCalc(this.closest('tr'), 'markup')"><span class="text-gray-400 text-xs">%</span></div>
+                </td>
+                <td class="table-cell align-top">
+                    <div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-price font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')"></div>
+                </td>
+                <td class="table-cell align-top">
+                    <div class="inv-container" onclick="this.querySelector('.inv-input-field').focus()">
+                        <input type="hidden" class="hidden-inventory-data" value="">
+                        <div class="relative flex-grow min-w-[50px] shrink-0">
+                            <input type="text" class="w-full outline-none text-xs bg-transparent font-medium text-gray-700 inv-input-field" placeholder="Ej: 1 Ben">
+                            <div class="autocomplete-list"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="table-cell align-top text-center pt-[12px]"><input type="checkbox" checked class="w-4 h-4 cursor-pointer"></td>
+                <td class="table-cell align-top text-center pt-[12px]">
+                    <button class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button>
+                </td>
+            `;
+            document.getElementById('table-body').appendChild(tr);
+            createAutocompleteFinca(tr.querySelector('td:nth-child(1) input[type=text]'), fincasList);
+            setupInventoryAutocomplete(tr.querySelector('.inv-input-field'));
+        }
+
+        // --- Generar Fila Cálculo ---
+        function addCalcTableRow() {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-gray-100";
+            tr.innerHTML = `
+                <td class="table-cell">
+                    <select class="notion-input inp-boxtype text-xs bg-gray-50" onchange="interactiveCalc(this.closest('tr'), 'cost')">
+                        <option value="EB">EB</option><option value="QB">QB</option><option value="HB">HB</option>
+                        <option value="EB2">EB2</option><option value="QB2">QB2</option><option value="SB">SB</option>
+                    </select>
+                </td>
+                <td class="table-cell"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
+                <td class="table-cell"><div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')"></div></td>
+                <td class="table-cell"><div class="flex items-center gap-1"><input type="number" step="0.1" class="notion-input inp-markup font-medium" placeholder="0.0" oninput="interactiveCalc(this.closest('tr'), 'markup')"><span class="text-gray-400 text-xs">%</span></div></td>
+                <td class="table-cell"><div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-price font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')"></div></td>
+                <td class="table-cell text-center"><button class="text-gray-300 hover:text-red-500" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button></td>
+            `;
+            document.getElementById('calc-table-body').appendChild(tr);
+        }
+
+        // --- Calculadora Lógica ---
+        function addBreakdownRow() {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-gray-50";
+            tr.innerHTML = `
+                <td class="py-1"><input type="text" class="notion-input w-full text-xs font-medium text-gray-500 placeholder:font-normal" placeholder="Variedad..."></td>
+                <td class="py-1"><input type="number" class="notion-input w-full text-center text-xs font-medium text-gray-500" placeholder="0" oninput="calcBreakdown()"></td>
+                <td class="py-1">
+                    <div class="flex items-center gap-1 text-gray-400 focus-within:text-blue-500 transition-colors">
+                        <span class="text-xs">$</span>
+                        <input type="number" step="0.01" class="notion-input w-full bg-transparent text-xs outline-none font-medium text-gray-500" placeholder="0.00" oninput="calcBreakdown()">
+                    </div>
+                </td>
+            `;
+            document.getElementById('calc-breakdown-body').appendChild(tr);
+        }
+
+        function calcBreakdown() {
+            let sumStems = 0;
+            let sumPrice = 0;
+            document.querySelectorAll('#calc-breakdown-body tr').forEach(row => {
+                let s = parseFloat(row.querySelectorAll('input[type=number]')[0].value) || 0;
+                let p = parseFloat(row.querySelectorAll('input[type=number]')[1].value) || 0;
+                sumStems += s;
+                sumPrice += (s * p);
+            });
+            let avg = sumStems > 0 ? sumPrice / sumStems : 0;
+
+            document.getElementById('calc-tot-stems').innerText = sumStems;
+            document.getElementById('calc-tot-price').innerText = sumPrice.toFixed(2);
+            document.getElementById('calc-avg-price').innerText = avg.toFixed(2);
+
+            if(document.getElementById('chk-tot-price').checked) { applyCostToCalcTable(sumPrice.toFixed(2)); }
+            if(document.getElementById('chk-avg-price').checked) { applyCostToCalcTable(avg.toFixed(2)); }
+        }
+
+        function syncCalcCheck(source) {
+            let totChk = document.getElementById('chk-tot-price');
+            let avgChk = document.getElementById('chk-avg-price');
+            if(source === 'total' && totChk.checked) {
+                avgChk.checked = false;
+                applyCostToCalcTable(document.getElementById('calc-tot-price').innerText);
+            } else if (source === 'avg' && avgChk.checked) {
+                totChk.checked = false;
+                applyCostToCalcTable(document.getElementById('calc-avg-price').innerText);
+            }
+        }
+
+        function applyCostToCalcTable(val) {
+            document.querySelectorAll('#calc-table-body .inp-cost').forEach(inp => {
+                inp.value = val;
+                interactiveCalc(inp.closest('tr'), 'auto-cost');
+            });
+        }
+
+        // --- Exportación Plana Estricta ---
+        function exportExcel() {
+            const wb = XLSX.utils.book_new();
+            const rows = document.querySelectorAll('#table-body tr');
+            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 2;
+            
+            const ws_data = [
+                ["Finca", "Qty", "Type of Box", "Cantidad_Min", "Cantidad_QB", "Variedad", "Nombre", "Color", "Cost", "Markup", "Precio", "Guia", "FechaEntrega", "Duties", "Origen", "Box", "img", "Transport", "Largo2", "Ancho", "Alto", "Volumen", "Transport2", "Import Duties", "Total", "FincaID", "Inventarios", "SendEmail", "Comments", "Standing Orders"]
+            ];
+
+            rows.forEach((tr) => {
+                const cells = tr.querySelectorAll('td');
+                const Finca = cells[0].querySelector('input[type=text]').value;
+                const Qty = parseFloat(cells[1].querySelector('input').value) || 0;
+                const Type = cells[2].querySelector('.inp-boxtype').value;
+                const Stems = parseFloat(cells[3].querySelector('input').value) || 0;
+                const Variety = cells[4].querySelector('input').value;
+                const Name = cells[5].querySelector('textarea').value;
+                const DateVal = cells[6].querySelector('.inp-date-hidden').value; // Puro YYYY-MM-DD
+                const Cost = parseFloat(cells[8].querySelector('input').value) || 0;
+                const Price = parseFloat(cells[10].querySelector('input').value) || 0;
+                const Standings = cells[11].querySelector('.hidden-inventory-data').value;
+                const Send = cells[12].querySelector('input').checked ? 'Y' : 'N';
+
+                let vData = vuelosData.find(v => v.fecha === DateVal);
+                let GuiaStr = "ERROR F";
+                if(vData) {
+                    if (['QB2','EB2'].includes(Type)) { GuiaStr = vData.colombia; } 
+                    else { GuiaStr = vData.ecuador; }
+                }
+
+                let dims = boxesData.find(b => b.name === Type) || {l:100, w:30, h:20, f:"Estandar"}; 
+                let Vol = 0;
+                if (['QB','EB','HB','QB2','EB2','SB'].includes(Type)) { Vol = (dims.l * dims.w * dims.h) / 6000; } 
+                else { Vol = ((dims.l+baseVol)*(dims.w+baseVol)*(dims.h+baseVol))/6000; }
+                
+                let Duties = Math.ceil((Cost * 0.1586) * 100) / 100;
+                let Transport2 = Math.ceil(((Vol * 5.25) * 1.36) * 100) / 100;
+                let Transport = Stems > 0 ? Math.ceil((Transport2 / Stems) * 100) / 100 : 0;
+                let Total = Stems * Price * Qty;
+                
+                let FincaIDStr = (fincasList.indexOf(Finca) + 1).toString();
+                if(FincaIDStr === "0") FincaIDStr = ""; 
+
+                let MarkupVal = 0;
+                if (Price > 0) { MarkupVal = 1 - ((Cost + Duties + Transport) / (Price * 0.96)); }
+                let MarkupOut = (MarkupVal * 100).toFixed(2) + "%";
+                if (MarkupVal < 0) MarkupOut = "BAJO";
+                if (MarkupVal > 1) MarkupOut = "ALTO";
+
+                let InventariosStr = "";
+                if(Standings) {
+                    let stArray = Standings.split(';');
+                    stArray.forEach(t => {
+                        let matchRegex = t.trim().match(/^(\d+)\s+(.+)$/);
+                        if(matchRegex) {
+                            let invQty = parseInt(matchRegex[1]);
+                            let invName = matchRegex[2];
+                            let mappedID = vendorsData[invName];
+                            if(mappedID && !isNaN(invQty)) {
+                                InventariosStr += (mappedID + ",").repeat(invQty);
+                            }
+                        }
+                    });
+                }
+
+                ws_data.push([
+                    Finca, Qty, Type, Stems, Stems, Variety, Name, "", Cost, MarkupOut, Price, GuiaStr, DateVal, 
+                    Duties, 0, 1, 0, Transport, dims.l, dims.w, dims.h, Vol, Transport2, 0.1586, Total, 
+                    FincaIDStr, InventariosStr, Send, "", Standings.replace(/;/g, "; ")
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "test");
+            XLSX.writeFile(wb, "ECF_Aumento.xlsx");
+        }
+
+        window.onload = function() {
+            renderSheet1();
+            renderGuias();
+            addRow();
+            addCalcTableRow();
+            for(let i=0; i<5; i++) addBreakdownRow();
+        };
+    </script>
+</body>
+</html>
