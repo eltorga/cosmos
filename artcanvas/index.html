@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Art Creator</title>
+    <!-- PapaParse for CSV reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- SortableJS for drag & drop -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <!-- html2canvas for downloading the canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        /* Base Notion-style elegant monochrome */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #202020;
+            --border-color: #e2e2e2;
+            --hover-bg: #f9f9f9;
+            --pill-bg: #ffffff;
+            --shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 2px 4px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f5;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            z-index: 100;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 420px;
+            background: var(--bg-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            gap: 24px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #777;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .setting-row label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            color: #555;
+        }
+
+        select, input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1;
+        }
+        select:focus, input[type="text"]:focus { border-color: #999; }
+
+        /* Search Results */
+        .search-wrapper { position: relative; }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .search-item {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background: var(--hover-bg); }
+        
+        /* Highlight para navegación por teclado */
+        .search-item.active-item { 
+            background: var(--hover-bg); 
+            border-left: 3px solid var(--text-color);
+        }
+        
+        .search-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+        }
+        .search-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .search-item-name { font-weight: 500; font-size: 0.9rem; }
+        .search-item-meta { font-size: 0.75rem; color: #777; }
+
+        /* Selected List */
+        .selected-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selected-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: grab;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .selected-item:active { cursor: grabbing; }
+        .selected-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .selected-item img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .remove-btn {
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .remove-btn:hover { color: #d32f2f; }
+
+        /* Custom Text Controls */
+        .text-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--hover-bg);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .font-btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: var(--hover-bg); }
+        .btn-primary { background: var(--text-color); color: white; border-color: var(--text-color); }
+        .btn-primary:hover { background: #333; }
+        .btn-danger { color: #d32f2f; }
+        .btn-danger:hover { background: #fce4ec; border-color: #fce4ec; }
+
+        /* Canvas Area Container */
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background-color: #e5e5e5;
+            background-image: radial-gradient(#d5d5d5 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow-y: auto;
+        }
+
+        /* STRICT SQUARE CANVAS */
+        .canvas-square {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 1 / 1;
+            background-color: white;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            position: relative;
+            
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+        }
+
+        /* Internal Flex Grid for Flowers */
+        .canvas-grid {
+            flex: 1; 
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            justify-content: center;
+            gap: 15px; 
+            padding: 30px 40px 10px 40px; 
+            min-height: 0; 
+            box-sizing: border-box;
+        }
+
+        /* Footer Text Container */
+        .canvas-footer {
+            flex-shrink: 0; 
+            padding: 0 40px 30px 40px;
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            display: none; 
+            word-wrap: break-word;
+            line-height: 1.2;
+            z-index: 10;
+        }
+
+        /* Canvas Item (Dynamic Box) */
+        .canvas-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            gap: 10px; 
+            box-sizing: border-box;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        /* Envoltura virtual para evitar que html2canvas deforme la imagen */
+        .img-wrapper {
+            flex: 1; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 0;
+        }
+
+        .img-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Bloquea la relación de aspecto */
+            background: transparent; 
+            border: none; 
+            box-shadow: none; 
+        }
+
+        /* Capsule */
+        .canvas-capsule {
+            flex-shrink: 0;
+            background: var(--pill-bg);
+            border: 1px solid var(--border-color);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 95%;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-size: 1.2rem;
+            color: #555;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <i class="ri-loader-4-line ri-spin" style="font-size: 3rem; color: #202020;"></i>
+        <span>Loading catalog...</span>
+    </div>
+
+    <header>
+        <i class="ri-brush-line"></i> Flower Art Creator
+    </header>
+
+    <div class="main-container">
+        
+        <aside class="sidebar">
+            <!-- CANVAS SETTINGS -->
+            <div class="control-group" style="padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                <div class="section-title">Canvas Settings</div>
+                
+                <div class="setting-row">
+                    <label for="bgSelect">Background:</label>
+                    <select id="bgSelect" onchange="updateCanvas()">
+                         <option value="https://blogger.googleusercontent.com/img/a/AVvXsEgNgire689LPzBbFwe1f0ctMurcmIVUBekMVg79Bla2IhDbR164IkfueZ8CAwNsPkNiDJ2Z65eFavQidNCPDe57TdKF3GlToR1cCuEKFYTMFQk8OFm2EFryoTiphsZbUCkAh7A14sA_1V-PLKVycQStyTk8YNrMMc_z3avJFfLhn6ECJF6JUar1RmhkO6ND">1. Modern Meadow</option>
+                        <option value="https://blogger.googleusercontent.com/img/a/AVvXsEhunSbXBlmk5aVYx7jk8W_iCNhW8HOZq9s8cVLH_Wi2kY2L9jcLfaNpUZbi6nY5nvFPDIIPIN2U-CFK2u22PowPmldKaF26P5uftoR1SUOFBmrrJ8j9OJYHSszWYYnwbGJbSkKf9Ljtf69j1WJ62tZG7s6RwVhLKubCKaNOXjz8toxeEDf0nhrimfzlf8dv">2. Botanical Bounty</option>
+                        <option value="https://blogger.googleusercontent.com/img/a/AVvXsEiR9XDTUVYHyNRof6dXezmQY-gAHopriS1diZNSG6DYzSviRXuhVtzJa0Wngmj8I7TQ2EQgaUTEBVi8ZY4zmEmT9m5f0bvlnK7W3ffAA0dzaxiO5Dj9JeMmIlckBIkTIIMnQQsro15HA8XewUIkMhkziqEkYRn85zSJqBwojzFsRdjWppmxMwS-HN1ZY0vT">3. Floral Symphony</option>
+                        <option value="https://blogger.googleusercontent.com/img/a/AVvXsEgjg8CcU-0AfYYe4q1kNf85f7gObzqnyqGNl_ymS_0CEYOcAaxy21Ag_tK-kNF6zalQ2zIxx3CxUu_fcQRpqh4B3_t2uKYixixqOOtVZNb0Y1xqoKsnriFSVO8PGEMrULcC4pduhXYbNmF5YHi2qcZ-jXGlvyJZOOkAsElVSo9eYVXHQZ9aclgOGxa23iLy">4. Kindness in Bloom</option>
+                        <option value="https://blogger.googleusercontent.com/img/a/AVvXsEh3EuigpZyqBbB0zb3IKcd_VD1fxf0y2HcRf11oyDvOo9z0qN6-DLNv332ft2iIQoYwi6LnzHP0gBnAU7sGX53Onwl4jta49yw99wrrz5t8OoOTyK7arecw-dzzfPH4EcSBeAVT7QtX-z-MCVWZ8DS_QC-BqqbB79zHRbx_PJmYRreIuN0X2R-2Z36fHkG_">5. Verdant Touch</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <label for="labelSelect">Show:</label>
+                    <select id="labelSelect" onchange="updateCanvas()">
+                        <option value="NAME">Name (Variety)</option>
+                        <option value="COLOR">Color</option>
+                        <option value="SPECIE">Specie</option>
+                        <option value="EMPTY">Empty</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SEARCH / ADD -->
+            <div class="control-group">
+                <div class="section-title">Add Flowers (Max 12)</div>
+                <div class="search-wrapper" id="searchWrapper">
+                    <input type="text" id="searchInput" placeholder="Search by name, color, or species..." autocomplete="off">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+            </div>
+
+            <!-- DRAG & DROP LIST -->
+            <div class="control-group" style="flex: 1; overflow-y: auto;">
+                <div class="section-title" id="countDisplay">Flowers on Canvas (0/12)</div>
+                <ul id="selectedList" class="selected-list">
+                    <!-- Dynamic list items -->
+                </ul>
+            </div>
+
+            <!-- CANVAS TEXT CONTROLS -->
+            <div class="control-group" style="margin-top: auto;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
+                    <input type="checkbox" id="enableTextCb" onchange="toggleCanvasText()" style="width:16px; height:16px; margin:0;">
+                    Enable Canvas Custom Text
+                </label>
+                
+                <div id="textControlsDiv" class="text-controls" style="display: none;">
+                    <textarea id="canvasTextInput" rows="2" placeholder="Write your custom text here..." oninput="updateCanvasText()" style="width: 100%; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; font-family: inherit; resize: none;"></textarea>
+                    
+                    <div class="font-btn-group">
+                        <button class="btn" onclick="adjustFontSize(-2)" title="Decrease Size">Aa -</button>
+                        <button class="btn" onclick="adjustFontSize(2)" title="Increase Size">Aa +</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="btn-group">
+                <button class="btn btn-danger" onclick="clearCanvas()">
+                    <i class="ri-delete-bin-line"></i> Clear
+                </button>
+                <button class="btn btn-primary" onclick="downloadArt()">
+                    <i class="ri-download-2-line"></i> Download
+                </button>
+            </div>
+        </aside>
+
+        <!-- CANVAS -->
+        <main class="canvas-container">
+            <div id="artCanvas" class="canvas-square">
+                <!-- FLEX GRID FOR FLOWERS -->
+                <div id="canvasGrid" class="canvas-grid"></div>
+                <!-- OPTIONAL FOOTER TEXT -->
+                <div id="canvasFooter" class="canvas-footer"></div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        const baseCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQGm1iCf2PxQ0AbyIE8zgoIQcrAHmrSTggWIxhiChz1iOz_hg68pYyRuxPdoNmW3CFRKP7HsR4H41Kx/pub?gid=0&single=true&output=csv';
+        const fallbackImg = 'https://blogger.googleusercontent.com/img/a/AVvXsEgf4r0cd6cRsoR4p_6WdmSxaGrLW4eNl50WIOZnbUfshTbpUxXQ6_9wZLyJawr2JAkXc146Znf-LCwC3RLmZg4aESc8Pj39shd1Wm4irFmLRv5NxbRON-TXr9ipOcDZKx8cDSNXG0oGNwxslRCPcbi9Qj-sLQ_LbIgCXeLIf70j8Lj-SqkH1TB63itZ8Bm3=w600-h600';
+
+        let allFlowers = [];
+        let selectedItems = []; 
+        let footerFontSize = 24; 
+        let currentFocus = -1; // Para navegación de teclado en la búsqueda
+
+        function getCorsUrl(url) {
+            if (!url) return getCorsUrl(fallbackImg);
+            return 'https://wsrv.nl/?url=' + encodeURIComponent(url.trim());
+        }
+
+        const listEl = document.getElementById('selectedList');
+        Sortable.create(listEl, {
+            animation: 150,
+            ghostClass: 'hover-bg',
+            onEnd: function (evt) {
+                const itemMoved = selectedItems.splice(evt.oldIndex, 1)[0];
+                selectedItems.splice(evt.newIndex, 0, itemMoved);
+                updateCanvas();
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const busterUrl = baseCsvUrl + '&t=' + new Date().getTime();
+            Papa.parse(busterUrl, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    allFlowers = results.data.filter(f => f.NAME);
+                    document.getElementById('loader').style.display = 'none';
+                    updateCanvas();
+                    document.getElementById('canvasFooter').style.fontSize = footerFontSize + 'px';
+                },
+                error: function(err) {
+                    alert("Error loading the database.");
+                }
+            });
+        });
+
+        // Text Controls
+        function toggleCanvasText() {
+            const isEnabled = document.getElementById('enableTextCb').checked;
+            document.getElementById('textControlsDiv').style.display = isEnabled ? 'flex' : 'none';
+            document.getElementById('canvasFooter').style.display = isEnabled ? 'block' : 'none';
+            updateCanvasText(); 
+        }
+
+        function updateCanvasText() {
+            const text = document.getElementById('canvasTextInput').value;
+            document.getElementById('canvasFooter').innerHTML = text.replace(/\n/g, '<br>');
+        }
+
+        function adjustFontSize(step) {
+            footerFontSize += step;
+            if (footerFontSize < 12) footerFontSize = 12; 
+            if (footerFontSize > 80) footerFontSize = 80; 
+            document.getElementById('canvasFooter').style.fontSize = footerFontSize + 'px';
+        }
+
+        // Search & Keyboard Logic
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+            currentFocus = -1; // Reinicia el foco al escribir
+            const term = e.target.value.toLowerCase().trim();
+            searchResults.innerHTML = '';
+            
+            if (term.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allFlowers.filter(row => 
+                `${row.NAME} ${row.SPECIE} ${row.COLOR}`.toLowerCase().includes(term)
+            ).slice(0, 15);
+
+            if (matches.length > 0) {
+                matches.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    const listImgUrl = getCorsUrl(item.IMG);
+                    
+                    div.innerHTML = `
+                        <img src="${listImgUrl}" crossorigin="anonymous" onerror="this.onerror=null; this.src='${getCorsUrl(fallbackImg)}'">
+                        <div class="search-item-info">
+                            <span class="search-item-name">${item.NAME}</span>
+                            <span class="search-item-meta">${item.SPECIE || '-'} • ${item.COLOR || '-'}</span>
+                        </div>
+                    `;
+                    div.onclick = () => addFlowerToCanvas(item);
+                    searchResults.appendChild(div);
+                });
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Controles de teclado en el buscador
+        searchInput.addEventListener('keydown', function(e) {
+            let items = searchResults.getElementsByClassName('search-item');
+            if (e.key === 'ArrowDown') {
+                currentFocus++;
+                addActive(items);
+                e.preventDefault(); // Evita que el cursor se mueva
+            } else if (e.key === 'ArrowUp') {
+                currentFocus--;
+                addActive(items);
+                e.preventDefault(); 
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (items) items[currentFocus].click();
+                } else if (items.length > 0) {
+                    items[0].click(); // Si no hay nada seleccionado, agrega el primero
+                }
+            }
+        });
+
+        function addActive(items) {
+            if (!items) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (items.length - 1);
+            items[currentFocus].classList.add('active-item');
+            items[currentFocus].scrollIntoView({ block: 'nearest' });
+        }
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove('active-item');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-wrapper')) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        function addFlowerToCanvas(item) {
+            if (selectedItems.length >= 12) {
+                alert("You have reached the limit of 12 flowers on the canvas!");
+                return;
+            }
+
+            selectedItems.push(JSON.parse(JSON.stringify(item)));
+            
+            // Limpia la búsqueda y oculta resultados
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            currentFocus = -1;
+            
+            updateSidebarList();
+            updateCanvas();
+
+            // Mantiene el cursor en la caja de texto para seguir escribiendo rápidamente
+            setTimeout(() => searchInput.focus(), 10);
+        }
+
+        function removeFlower(index) {
+            selectedItems.splice(index, 1);
+            updateSidebarList();
+            updateCanvas();
+        }
+
+        function clearCanvas() {
+            selectedItems = [];
+            updateSidebarList();
+            updateCanvas();
+        }
+
+        function updateSidebarList() {
+            listEl.innerHTML = '';
+            document.getElementById('countDisplay').innerText = `Flowers on Canvas (${selectedItems.length}/12)`;
+
+            selectedItems.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'selected-item';
+                
+                const sideImg = getCorsUrl(item.IMG);
+                
+                li.innerHTML = `
+                    <div class="selected-item-left">
+                        <i class="ri-draggable" style="color: #ccc; cursor: grab;"></i>
+                        <img src="${sideImg}" crossorigin="anonymous">
+                        <span style="font-size: 0.9rem; font-weight: 500;">${item.NAME}</span>
+                    </div>
+                    <i class="ri-close-line remove-btn" onclick="removeFlower(${index})"></i>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function updateCanvas() {
+            const canvasSquare = document.getElementById('artCanvas');
+            const gridEl = document.getElementById('canvasGrid');
+            const bgUrl = getCorsUrl(document.getElementById('bgSelect').value);
+            const labelKey = document.getElementById('labelSelect').value;
+
+            canvasSquare.style.backgroundImage = `url('${bgUrl}')`;
+            gridEl.innerHTML = '';
+
+            const count = selectedItems.length;
+            if (count === 0) return;
+
+            let itemWidth = '100%';
+            let itemHeight = '100%';
+
+            if (count === 1) { itemWidth = '70%'; itemHeight = '70%'; }
+            else if (count === 2) { itemWidth = '45%'; itemHeight = '60%'; }
+            else if (count === 3 || count === 4) { itemWidth = '45%'; itemHeight = '42%'; }
+            else if (count === 5 || count === 6) { itemWidth = '30%'; itemHeight = '42%'; }
+            else if (count >= 7 && count <= 9) { itemWidth = '30%'; itemHeight = '26%'; }
+            else if (count >= 10 && count <= 12) { itemWidth = '22%'; itemHeight = '26%'; }
+
+            selectedItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'canvas-item';
+                div.style.width = itemWidth;
+                div.style.height = itemHeight;
+                
+                const finalImgUrl = getCorsUrl(item.IMG);
+                let capsuleHtml = '';
+
+                if (labelKey !== 'EMPTY') {
+                    const textCapsule = item[labelKey] ? item[labelKey] : 'Unknown';
+                    capsuleHtml = `<div class="canvas-capsule">${textCapsule}</div>`;
+                }
+
+                // El wrapper soluciona el estiramiento de html2canvas al encapsular la imagen
+                div.innerHTML = `
+                    <div class="img-wrapper">
+                        <img src="${finalImgUrl}" crossorigin="anonymous" alt="${item.NAME}">
+                    </div>
+                    ${capsuleHtml}
+                `;
+                
+                gridEl.appendChild(div);
+            });
+        }
+
+        function downloadArt() {
+            if (selectedItems.length === 0) {
+                alert("Add at least one flower to the canvas before downloading.");
+                return;
+            }
+
+            const canvasElement = document.getElementById('artCanvas');
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> Processing...`;
+            btn.disabled = true;
+
+            html2canvas(canvasElement, {
+                useCORS: true, 
+                allowTaint: false, 
+                backgroundColor: null, 
+                scale: 2 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `FlowerArt_${new Date().getTime()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error("Error generating image:", err);
+                alert("There was a problem exporting the image. Please try again.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
