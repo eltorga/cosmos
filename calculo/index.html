@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo - Sistema Comercial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #37352f; margin: 0; padding: 0; overflow: hidden; background: #f7f7f5; }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .notion-input { border: 1px solid transparent; border-radius: 4px; padding: 4px 8px; background: transparent; transition: background 0.2s, border 0.2s; outline: none; width: 100%; }
+        .notion-input:hover { background: #EFEFEF; }
+        .notion-input:focus { background: #fff; border: 1px solid #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
+        
+        .table-header { font-size: 11px; color: #787774; font-weight: 500; text-transform: uppercase; padding: 8px; border-bottom: 1px solid #e9e9e7; text-align: left; white-space: nowrap; }
+        .table-cell { padding: 4px; border-bottom: 1px solid #e9e9e7; vertical-align: middle; }
+
+        .notion-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .btn-ghost { background: transparent; color: #787774; }
+        .btn-ghost:hover { background: #efefe6; color: #37352f; }
+        .btn-primary { background: #2383e2; color: #fff; border: 1px solid #1a73e8; }
+        .btn-primary:hover { background: #006bce; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col m-0 p-0">
+
+    <!-- Login Screen -->
+    <div id="login-overlay" class="fixed inset-0 bg-white z-[99999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <i class="ri-calculator-line text-5xl text-gray-400 mb-4"></i>
+        <h2 class="text-xl font-bold text-gray-800">Sistema de Operaciones Comerciales</h2>
+        <p class="text-sm text-gray-500 mt-2 mb-6">Para ver, por favor ingresa la clave.</p>
+        <div class="relative w-64">
+            <input type="password" id="sys-pwd" class="w-full border border-gray-300 rounded-md py-2 px-3 outline-none focus:border-blue-500 pr-10" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkLogin()">
+            <i class="ri-arrow-right-line absolute right-3 top-2.5 text-gray-400 cursor-pointer hover:text-blue-500" onclick="checkLogin()"></i>
+        </div>
+        <p id="pwd-error" class="text-red-500 text-xs mt-2 hidden">Clave incorrecta</p>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="flex justify-between items-center border-b border-gray-200 px-6 py-4 shrink-0 w-full bg-white z-10 shadow-sm">
+        <div class="font-bold text-xl flex items-center gap-2">
+            <i class="ri-calculator-fill text-blue-600"></i> Calculo de Cajas
+        </div>
+    </header>
+
+    <!-- Contenido: Calculo -->
+    <div class="flex-col flex-grow min-h-0 w-full overflow-auto px-6 py-8 flex items-center">
+        
+        <!-- Tabla de Cálculo -->
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px] mb-8">
+            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-calculator-line text-blue-500 mr-2"></i> Tabla de Cálculo</h3>
+            <table class="w-full text-sm border-collapse" id="calc-table">
+                <thead>
+                    <tr>
+                        <th class="table-header w-[120px]">Box Type</th>
+                        <th class="table-header w-[80px]">Stems</th>
+                        <th class="table-header w-[100px]">Cost</th>
+                        <th class="table-header w-[100px]">Markup</th>
+                        <th class="table-header w-[100px]">Price</th>
+                        <th class="table-header w-[40px]"></th>
+                    </tr>
+                </thead>
+                <tbody id="calc-table-body">
+                    <!-- Filas Dinámicas -->
+                </tbody>
+            </table>
+            <button onclick="addCalcTableRow()" class="notion-btn btn-ghost mt-2"><i class="ri-add-line"></i> Agregar Fila</button>
+        </div>
+
+        <!-- Desglose de Caja -->
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px]">
+            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-box-3-line text-blue-500 mr-2"></i> Desglose de Caja</h3>
+            <table class="w-full text-sm text-left mb-2">
+                <thead>
+                    <tr class="text-gray-500 text-xs border-b">
+                        <th class="pb-2 w-[40%]">Nombre Variedad</th>
+                        <th class="pb-2 w-[25%] text-center">Cantidad Tallos</th>
+                        <th class="pb-2 w-[25%] text-center">Precio x Tallo</th>
+                        <th class="pb-2 w-[10%]"></th>
+                    </tr>
+                </thead>
+                <tbody id="calc-breakdown-body">
+                    <!-- Filas init -->
+                </tbody>
+            </table>
+            <button class="notion-btn btn-ghost text-xs mb-6" onclick="addBreakdownRow()"><i class="ri-add-line"></i> Más Filas</button>
+            
+            <!-- Totales -->
+            <div class="border-t pt-4 grid grid-cols-10 gap-4 font-bold text-gray-700 items-center">
+                <div class="col-span-4 text-right">TOTALES:</div>
+                <div class="col-span-3 text-center" id="calc-tot-stems">0</div>
+                <div class="col-span-3">
+                    <span class="text-lg text-gray-800">$<span id="calc-tot-price">0,00</span></span>
+                </div>
+            </div>
+            <div class="grid grid-cols-10 gap-4 mt-2 font-bold text-blue-700 items-center">
+                <div class="col-span-4 text-right">PRECIO POR TALLO:</div>
+                <div class="col-span-3"></div>
+                <div class="col-span-3">
+                    <span class="text-lg">$<span id="calc-avg-price">0,00</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check Login
+        if(localStorage.getItem('auth') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+        }
+        function checkLogin() {
+            let pwd = document.getElementById('sys-pwd').value;
+            if(pwd === '1980') {
+                localStorage.setItem('auth', 'true');
+                document.getElementById('login-overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('login-overlay').style.display = 'none', 300);
+            } else {
+                document.getElementById('pwd-error').classList.remove('hidden');
+            }
+        }
+
+        // Datos de Cajas (Solo para dimensiones en la Tabla de Cálculo)
+        const boxesData = [
+            { name: "QB", l: 99, w: 35, h: 16 },
+            { name: "EB", l: 105, w: 17, h: 17 },
+            { name: "HB", l: 105, w: 35, h: 33 },
+            { name: "QB2", l: 85, w: 30, h: 28 },
+            { name: "EB2", l: 39, w: 30, h: 30 },
+            { name: "SB", l: 90, w: 15, h: 10 }
+        ];
+
+        // --- Navegación Estilo Excel con Flechas (Para el Desglose) ---
+        document.addEventListener('keydown', function(e) {
+            if (!e.target.classList.contains('nav-input')) return;
+            
+            const currentCell = e.target.closest('td');
+            const currentRow = e.target.closest('tr');
+            const tbody = currentRow.closest('tbody');
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const rowIndex = rows.indexOf(currentRow);
+            const cells = Array.from(currentRow.querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
+            const colIndex = cells.indexOf(currentCell);
+
+            let nextInput = null;
+
+            if (e.key === 'ArrowUp') {
+                if (rowIndex > 0) {
+                    const nextRowCells = Array.from(rows[rowIndex - 1].querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
+                    if(nextRowCells[colIndex]) nextInput = nextRowCells[colIndex].querySelector('.nav-input');
+                }
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown') {
+                if (rowIndex < rows.length - 1) {
+                    const nextRowCells = Array.from(rows[rowIndex + 1].querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
+                    if(nextRowCells[colIndex]) nextInput = nextRowCells[colIndex].querySelector('.nav-input');
+                }
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft') {
+                if (e.target.selectionStart === 0 && colIndex > 0) {
+                    nextInput = cells[colIndex - 1].querySelector('.nav-input');
+                    e.preventDefault();
+                }
+            } else if (e.key === 'ArrowRight') {
+                // Mover a la derecha si el cursor está al final del texto
+                if (e.target.selectionEnd === e.target.value.length && colIndex < cells.length - 1) {
+                    nextInput = cells[colIndex + 1].querySelector('.nav-input');
+                    e.preventDefault();
+                }
+            }
+
+            if (nextInput) {
+                nextInput.focus();
+                // Selecciona el texto para poder sobrescribir rápidamente como en Excel
+                setTimeout(() => nextInput.select(), 0);
+            }
+        });
+
+        // --- Tabla de Cálculo (Principal) ---
+        function addCalcTableRow() {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-gray-100 transition-colors hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="table-cell">
+                    <select class="notion-input inp-boxtype text-xs bg-gray-50 font-bold text-gray-700" onchange="interactiveCalc(this.closest('tr'), 'cost')">
+                        <option value="EB">EB</option><option value="QB">QB</option><option value="HB">HB</option>
+                        <option value="EB2">EB2</option><option value="QB2">QB2</option><option value="SB">SB</option>
+                    </select>
+                </td>
+                <td class="table-cell"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
+                <td class="table-cell">
+                    <div class="flex items-center gap-1 focus-within:text-blue-500 text-gray-500">
+                        <span class="text-xs">$</span>
+                        <input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')">
+                    </div>
+                </td>
+                <td class="table-cell">
+                    <input type="text" class="notion-input inp-markup font-medium" placeholder="0.0%" 
+                        onfocus="this.value = this.value.replace('%','')" 
+                        onblur="if(this.value && !this.value.includes('%')) this.value += '%';" 
+                        oninput="interactiveCalc(this.closest('tr'), 'markup')">
+                </td>
+                <td class="table-cell">
+                    <div class="flex items-center gap-1 focus-within:text-blue-500 text-gray-500">
+                        <span class="text-xs">$</span>
+                        <input type="number" step="0.01" class="notion-input inp-price font-medium text-gray-800" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')">
+                    </div>
+                </td>
+                <td class="table-cell text-center">
+                    <button class="text-gray-300 hover:text-red-500 transition-colors" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button>
+                </td>
+            `;
+            document.getElementById('calc-table-body').appendChild(tr);
+        }
+
+        // Lógica Matemática Principal
+        function interactiveCalc(row, source) {
+            const costInp = row.querySelector('.inp-cost');
+            const priceInp = row.querySelector('.inp-price');
+            const markupInp = row.querySelector('.inp-markup');
+            
+            const cost = parseFloat(costInp.value) || 0;
+            const type = row.querySelector('.inp-boxtype').value;
+            const stems = parseFloat(row.querySelector('.inp-stems').value) || 1;
+            
+            let dims = boxesData.find(b => b.name === type) || {l:100, w:30, h:20}; 
+            // Como quitamos la baseVol, el volumen se calcula de forma directa
+            let vol = (dims.l * dims.w * dims.h) / 6000; 
+            
+            const duties = cost * 0.1586;
+            const transp2 = (vol * 5.25) * 1.36;
+            const transp = stems > 0 ? transp2 / stems : 0;
+            const totalBase = cost + duties + transp;
+
+            if (source === 'cost' || source === 'auto-cost' || source === 'price') {
+                const p = parseFloat(priceInp.value);
+                if (p && p > 0) {
+                    let m = 1 - (totalBase / (p * 0.96));
+                    // Pone el % si el campo no está en foco, pero lo guarda como texto con %
+                    markupInp.value = (m * 100).toFixed(2) + "%";
+                }
+            }
+            if (source === 'markup') {
+                let mVal = markupInp.value.replace('%', '');
+                let m = parseFloat(mVal) / 100;
+                if (!isNaN(m)) {
+                    let p = totalBase / ((1 - m) * 0.96);
+                    priceInp.value = p.toFixed(2);
+                }
+            }
+        }
+
+        // --- Desglose de Caja ---
+        function addBreakdownRow() {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-gray-50 transition-colors hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="py-1 px-2"><input type="text" class="notion-input w-full text-xs font-medium text-gray-700 placeholder:font-normal nav-input" placeholder="Variedad..."></td>
+                <td class="py-1 px-2"><input type="number" class="notion-input w-full text-center text-xs font-medium text-gray-700 nav-input" placeholder="0" oninput="calcBreakdown()"></td>
+                <td class="py-1 px-2">
+                    <div class="flex items-center justify-center gap-1 text-gray-400 focus-within:text-blue-500 transition-colors">
+                        <span class="text-xs">$</span>
+                        <input type="text" class="notion-input w-[70px] bg-transparent text-xs outline-none font-medium text-gray-700 nav-input text-center" placeholder="0,00" oninput="calcBreakdown()" onblur="formatPrice(this)">
+                    </div>
+                </td>
+                <td class="py-1 px-2 text-center w-[40px]">
+                    <button class="text-gray-300 hover:text-red-500 transition-colors" onclick="this.closest('tr').remove(); calcBreakdown();"><i class="ri-delete-bin-line"></i></button>
+                </td>
+            `;
+            document.getElementById('calc-breakdown-body').appendChild(tr);
+        }
+
+        function formatPrice(input) {
+            let val = input.value.trim();
+            if (!val) return;
+            // Convierte temporalmente a punto para hacer la matemática
+            val = val.replace(',', '.');
+            let num = parseFloat(val);
+            if (!isNaN(num)) {
+                // Formatea a 2 decimales (agrega 0 iniciales si es necesario) y vuelve a poner coma
+                input.value = num.toFixed(2).replace('.', ',');
+            }
+            calcBreakdown();
+        }
+
+        function calcBreakdown() {
+            let sumStems = 0;
+            let sumPrice = 0;
+            document.querySelectorAll('#calc-breakdown-body tr').forEach(row => {
+                let inputs = row.querySelectorAll('.nav-input');
+                let s = parseFloat(inputs[1].value) || 0;
+                
+                // Extrae el precio reemplazando la coma por punto para el cálculo
+                let priceStr = inputs[2].value.replace(',', '.');
+                let p = parseFloat(priceStr) || 0;
+                
+                sumStems += s;
+                sumPrice += (s * p);
+            });
+            let avg = sumStems > 0 ? sumPrice / sumStems : 0;
+
+            document.getElementById('calc-tot-stems').innerText = sumStems;
+            // Mostrando los totales con comas
+            document.getElementById('calc-tot-price').innerText = sumPrice.toFixed(2).replace('.', ',');
+            document.getElementById('calc-avg-price').innerText = avg.toFixed(2).replace('.', ',');
+        }
+
+        window.onload = function() {
+            addCalcTableRow();
+            for(let i=0; i<5; i++) addBreakdownRow();
+        };
+    </script>
+</body>
+</html>
