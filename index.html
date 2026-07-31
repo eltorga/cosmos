@@ -3,38 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - EC Flowers</title>
     
-    <!-- Importando Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     
     <style>
-        /* Variables de color estilo Notion */
         :root {
             --bg-color: #ffffff;
             --text-color: #37352f;
             --text-muted: #787774;
             --hover-bg: #f1f1ef;
             --border-color: #e9e9e7;
+            --header-height: 54px;
         }
 
         body {
-            /* Tipografía nativa que imita el estilo de Notion */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             display: flex;
-            justify-content: center;
-            padding: 60px 20px;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
+        /* Header / Topbar */
+        .topbar {
+            width: 100%;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .brand-icon {
+            font-size: 20px;
+            margin-right: 8px;
+            color: var(--text-color);
+        }
+
+        .domain {
+            color: #d1d1cf;
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        /* Main Content */
         .container {
             width: 100%;
             max-width: 700px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            padding: 40px 20px;
+            box-sizing: border-box;
         }
 
         .section-title {
@@ -43,7 +96,6 @@
             font-size: 24px;
         }
 
-        /* Diseño en Bloques / Galería */
         .notion-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -77,42 +129,241 @@
             font-size: 14px;
             font-weight: 500;
         }
+
+        /* Utilidades */
+        .hidden {
+            display: none !important;
+        }
+
+        .private-card .notion-icon {
+            color: #0b6e99; /* Un color sutil para diferenciar las privadas */
+        }
+
+        /* Modal Login */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: #2383e2;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            background: #1d6fc0;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+        }
+
+        #loginError {
+            color: #e03e3e;
+            font-size: 12px;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Barra Superior -->
+    <header class="topbar">
+        <div class="brand-container">
+            <i class="ri-flower-line brand-icon"></i>
+            EC Flowers<span class="domain">.net</span>
+        </div>
+        <button id="authBtn" class="login-btn">Acceder</button>
+    </header>
+
+    <!-- Contenido Principal -->
     <div class="container">
-        
         <h1 class="section-title">Dashboard</h1>
 
         <div class="notion-gallery">
-            <a href="#" class="notion-card">
+            <!-- PÚBLICOS -->
+            <a href="#" class="notion-card public-card">
                 <i class="ri-plant-line notion-icon"></i>
                 <span>Flowerpedia</span>
             </a>
             
-            <a href="#" class="notion-card">
+            <a href="#" class="notion-card public-card">
                 <i class="ri-brush-line notion-icon"></i>
                 <span>Art Canvas</span>
             </a>
             
-            <a href="#" class="notion-card">
-                <i class="ri-truck-line notion-icon"></i>
-                <span>Order Manager</span>
+            <a href="#" class="notion-card public-card">
+                <i class="ri-file-list-3-line notion-icon"></i>
+                <span>Sistema de Cuadre</span>
+            </a>
+
+            <!-- PRIVADOS -->
+            <a href="#" class="notion-card private-card hidden">
+                <i class="ri-add-box-line notion-icon"></i>
+                <span>Aumentar Orden</span>
             </a>
             
-            <a href="#" class="notion-card">
+            <a href="#" class="notion-card private-card hidden">
                 <i class="ri-calculator-line notion-icon"></i>
-                <span>Calculo</span>
+                <span>Calculo de Cajas</span>
             </a>
             
-            <a href="#" class="notion-card">
+            <a href="#" class="notion-card private-card hidden">
                 <i class="ri-repeat-2-line notion-icon"></i>
-                <span>Standing Orders</span>
+                <span>Ordenes Fijas</span>
             </a>
         </div>
-
     </div>
 
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Acceso a Herramientas</h3>
+            <p id="loginError" class="hidden">Usuario o clave incorrectos</p>
+            <input type="text" id="usernameInput" class="modal-input" placeholder="Usuario">
+            <input type="password" id="passwordInput" class="modal-input" placeholder="Clave">
+            <div class="modal-actions">
+                <button id="closeModalBtn" class="btn-secondary">Cancelar</button>
+                <button id="submitLoginBtn" class="btn-primary">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de usuarios
+        const userDatabase = {
+            'caguilar': '1995',
+            'dvalencia': '6969',
+            'rbaquero': '1980'
+        };
+
+        // Elementos del DOM
+        const authBtn = document.getElementById('authBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const submitLoginBtn = document.getElementById('submitLoginBtn');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginError = document.getElementById('loginError');
+        const privateCards = document.querySelectorAll('.private-card');
+
+        // Función para actualizar la interfaz según el estado de sesión
+        function updateUI() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                authBtn.textContent = 'Salir';
+                privateCards.forEach(card => card.classList.remove('hidden'));
+            } else {
+                authBtn.textContent = 'Acceder';
+                privateCards.forEach(card => card.classList.add('hidden'));
+            }
+        }
+
+        // Evento botón principal (Header)
+        authBtn.addEventListener('click', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                // Cerrar sesión
+                localStorage.setItem('isLoggedIn', 'false');
+                updateUI();
+            } else {
+                // Abrir modal
+                loginModal.classList.remove('hidden');
+                usernameInput.value = '';
+                passwordInput.value = '';
+                loginError.classList.add('hidden');
+                usernameInput.focus();
+            }
+        });
+
+        // Evento cerrar modal
+        closeModalBtn.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+
+        // Evento intentar login
+        submitLoginBtn.addEventListener('click', () => {
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
+
+            if (userDatabase[user] && userDatabase[user] === pass) {
+                // Credenciales correctas
+                localStorage.setItem('isLoggedIn', 'true');
+                loginModal.classList.add('hidden');
+                updateUI();
+            } else {
+                // Credenciales incorrectas
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // Permitir Enter para enviar el formulario
+        passwordInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                submitLoginBtn.click();
+            }
+        });
+
+        // Inicializar interfaz al cargar la página
+        updateUI();
+    </script>
 </body>
 </html>
