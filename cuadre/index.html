@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuadre de Cajas y Órdenes</title>
+    <style>
+        /* Estética general limpia tipo Apple */
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #1d1d1f;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* Dashboard de Contadores (Superior) */
+        .counters-dashboard {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+        }
+
+        .counter-box {
+            background-color: #ffffff;
+            padding: 20px 24px;
+            border-radius: 18px;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid transparent;
+        }
+
+        .counter-box.green {
+            background-color: #f8fff9;
+            border-color: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .counter-box.red {
+            background-color: #fff8f8;
+            border-color: #ffcdd2;
+            color: #c62828;
+        }
+
+        .counter-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .counter-value {
+            font-size: 38px;
+            font-weight: 700;
+        }
+
+        /* Contenedores de texto (Inferior) */
+        .dashboard {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background-color: #ffffff;
+            flex: 1;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Áreas de texto */
+        .panel h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #1d1d1f;
+            border-bottom: 2px solid #f5f5f7;
+            padding-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 350px;
+            padding: 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            box-sizing: border-box;
+            resize: none;
+            overflow-y: auto;
+            line-height: 1.5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            white-space: pre-wrap; 
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+        }
+
+        /* Botón central */
+        .action-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        button {
+            background-color: #0071e3;
+            color: white;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 980px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        button:hover {
+            background-color: #0077ed;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Contenedor de Resultados */
+        .results-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 1000px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5ea;
+        }
+
+        th {
+            background-color: #f5f5f7;
+            font-weight: 600;
+            color: #86868b;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .row-ok {
+            background-color: #f8fff9;
+        }
+
+        .row-error {
+            background-color: #fff8f8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .status-ok {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-err {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Lista de errores inferior */
+        .errors-list {
+            background-color: #fff8f8;
+            border: 1px solid #ffcdd2;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .errors-list h3 {
+            margin-top: 0;
+            color: #c62828;
+            font-size: 18px;
+        }
+
+        .errors-list ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #721c24;
+            line-height: 1.6;
+        }
+
+        /* Responsividad */
+        @media (max-width: 900px) {
+            .counters-dashboard {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .dashboard {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="header-title">Cuadre de Cajas - Sistema vs Grupo</h1>
+
+    <div class="counters-dashboard">
+        <div class="counter-box green">
+            <div class="counter-title">Total Cajas (Sistema)</div>
+            <div class="counter-value" id="sysTotalBoxes">0</div>
+        </div>
+        <div class="counter-box green">
+            <div class="counter-title">Total Cajas (Grupo)</div>
+            <div class="counter-value" id="grpTotalBoxes">0</div>
+        </div>
+        <div class="counter-box red">
+            <div class="counter-title">Total Errores</div>
+            <div class="counter-value" id="totalErrorsCount">0</div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="panel">
+            <h2>Cuadro 1: Sistema</h2>
+            <textarea id="textSistema" placeholder="Pega aquí los datos del Sistema..."></textarea>
+        </div>
+
+        <div class="panel">
+            <h2>Cuadro 2: Grupo</h2>
+            <textarea id="textGrupo" placeholder="Pega aquí los datos del Grupo..."></textarea>
+        </div>
+    </div>
+
+    <div class="action-container">
+        <button onclick="cuadrarOrdenes()">Cuadrar Órdenes</button>
+    </div>
+
+    <div class="results-container" id="resultsContainer">
+        <h2>Detalle de Alineación por PO</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PO</th>
+                        <th style="width: 30%;">Línea Sistema</th>
+                        <th>Cajas</th>
+                        <th style="width: 30%;">Línea Grupo</th>
+                        <th>Cajas</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="errors-list" id="errorsContainer" style="display: none;">
+            <h3>⚠️ Lista de Errores Encontrados</h3>
+            <ul id="errorsListUl">
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function analizarTexto(texto) {
+            const lineas = texto.split('\n');
+            const datos = {};
+            let totalCajas = 0;
+
+            lineas.forEach(linea => {
+                linea = linea.trim();
+                
+                if (!linea || !linea.toUpperCase().includes("PO")) return;
+
+                // --- FORMATO 1: Tabla de Inventario ---
+                const regexTabla = /(PO\d+).*?(\d+\.\d{2})\s*(\d+)\s*$/i;
+                const matchTabla = linea.match(regexTabla);
+                
+                if (matchTabla) {
+                    const po = matchTabla[1].toUpperCase();
+                    const cantidad = parseInt(matchTabla[3], 10);
+                    
+                    if(!isNaN(cantidad)) {
+                        datos[po] = { lineaOriginal: linea, cantidad: cantidad };
+                        totalCajas += cantidad;
+                        return; 
+                    }
+                }
+
+                // --- FORMATO 2: Clásico / Grupo WhatsApp ---
+                // CORRECCIÓN: Busca estrictamente "PO" seguido de números en cualquier parte de la línea.
+                const poMatch = linea.match(/(PO\d+)/i);
+                
+                if (poMatch) {
+                    const poStr = poMatch[1].toUpperCase();
+
+                    const regexCajas = /(?:^|\s)(\d+)\s*(QB|EB|HB|SB|QB2|EB2)\b/i;
+                    const coincidencia = linea.match(regexCajas);
+                    
+                    let cantidad = 0;
+                    if (coincidencia) {
+                        cantidad = parseInt(coincidencia[1], 10);
+                    } else {
+                        // Fallback con seguro: solo toma el primer número si es menor a 1000 
+                        // para evitar atrapar códigos largos de inventario accidentalmente.
+                        const coincidenciaNumerica = linea.match(/^(\d+)/);
+                        if (coincidenciaNumerica) {
+                            const posibleCantidad = parseInt(coincidenciaNumerica[1], 10);
+                            if (posibleCantidad < 1000) {
+                                cantidad = posibleCantidad;
+                            }
+                        }
+                    }
+
+                    datos[poStr] = { lineaOriginal: linea, cantidad: cantidad };
+                    totalCajas += cantidad;
+                }
+            });
+
+            return { items: datos, total: totalCajas };
+        }
+
+        function cuadrarOrdenes() {
+            const txtSist = document.getElementById('textSistema').value;
+            const txtGrup = document.getElementById('textGrupo').value;
+
+            const datosSistema = analizarTexto(txtSist);
+            const datosGrupo = analizarTexto(txtGrup);
+
+            document.getElementById('sysTotalBoxes').innerText = datosSistema.total;
+            document.getElementById('grpTotalBoxes').innerText = datosGrupo.total;
+
+            const allPOs = new Set([...Object.keys(datosSistema.items), ...Object.keys(datosGrupo.items)]);
+            const tbody = document.getElementById('resultsTableBody');
+            const ulErrores = document.getElementById('errorsListUl');
+            const contenedorErrores = document.getElementById('errorsContainer');
+            
+            tbody.innerHTML = '';
+            ulErrores.innerHTML = '';
+            let contadorErrores = 0;
+
+            const sortedPOs = Array.from(allPOs).sort();
+
+            sortedPOs.forEach(po => {
+                const itemSys = datosSistema.items[po];
+                const itemGrp = datosGrupo.items[po];
+                
+                let esError = false;
+                let mensajeEstado = "";
+                let mensajeErrorLista = "";
+
+                if (itemSys && itemGrp) {
+                    if (itemSys.cantidad === itemGrp.cantidad) {
+                        mensajeEstado = `OK (${itemSys.cantidad} cajas)`;
+                    } else {
+                        esError = true;
+                        mensajeEstado = `Diferencia de cajas`;
+                        mensajeErrorLista = `Sistema tiene ${itemSys.cantidad} cajas pero Grupo tiene ${itemGrp.cantidad}.`;
+                    }
+                } else if (itemSys && !itemGrp) {
+                    esError = true;
+                    mensajeEstado = `No existe en Grupo`;
+                    mensajeErrorLista = `(Error: Código de orden no existe en Grupo)`;
+                } else if (!itemSys && itemGrp) {
+                    esError = true;
+                    mensajeEstado = `No existe en Sistema`;
+                    mensajeErrorLista = `(Error: Código de orden no existe en Sistema)`;
+                }
+
+                if (esError) {
+                    contadorErrores++;
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${po}:</strong> ${mensajeErrorLista}`;
+                    ulErrores.appendChild(li);
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = esError ? 'row-error' : 'row-ok';
+                
+                const spanEstado = `<span class="status-badge ${esError ? 'status-err' : 'status-ok'}">${mensajeEstado}</span>`;
+
+                tr.innerHTML = `
+                    <td><strong>${po}</strong></td>
+                    <td style="color: #666; font-size: 13px;">${itemSys ? itemSys.lineaOriginal : '---'}</td>
+                    <td><strong>${itemSys ? itemSys.cantidad : '-'}</strong></td>
+                    <td style="color: #666; font-size: 13px;">${itemGrp ? itemGrp.lineaOriginal : '---'}</td>
+                    <td><strong>${itemGrp ? itemGrp.cantidad : '-'}</strong></td>
+                    <td>${spanEstado}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalErrorsCount').innerText = contadorErrores;
+            
+            if (contadorErrores > 0) {
+                contenedorErrores.style.display = 'block';
+            } else {
+                contenedorErrores.style.display = 'none';
+            }
+
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
