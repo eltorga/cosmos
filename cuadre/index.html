@@ -4,303 +4,459 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuadre de Cajas y Órdenes</title>
+    
+    <!-- Google Fonts: Roboto Thin (100) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    
+    <!-- Uicons de Flaticon -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    
     <style>
-        /* Estética general limpia tipo Apple */
+        /* Paleta y tipografía estilo Notion */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #37352f;
+            --text-muted: #787774;
+            --bg-muted: #f1f1ef;
+            --border-color: #e9e9e7;
+            
+            /* Colores para filas y badges */
+            --bg-green-row: #f4fbf6; /* Verde súper claro para la fila OK */
+            --bg-red-row: #fdf4f4;   /* Rojo súper claro para la fila Error */
+            
+            --bg-green-badge: #d1e2d6; 
+            --text-green: #2b593f;
+            --bg-red-badge: #fbe4e4;
+            --text-red: #c05c5c;
+            
+            --btn-bg: #2eaadc; 
+            --btn-hover: #069cfa;
+        }
+
         body {
-            background-color: #f5f5f7;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            color: #1d1d1f;
+            padding: 40px 20px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
         .header-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 30px;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         /* Dashboard de Contadores (Superior) */
         .counters-dashboard {
             display: flex;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto 20px auto;
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .counter-box {
-            background-color: #ffffff;
-            padding: 20px 24px;
-            border-radius: 18px;
-            text-align: center;
+            padding: 16px 20px;
+            border-radius: 4px;
             flex: 1;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-            border: 1px solid transparent;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-muted);
+            display: flex;
+            flex-direction: column;
         }
 
         .counter-box.green {
-            background-color: #f8fff9;
-            border-color: #c8e6c9;
-            color: #2e7d32;
+            background-color: var(--bg-green-row);
+            border-color: #d1e2d6;
+            color: var(--text-green);
         }
 
         .counter-box.red {
-            background-color: #fff8f8;
-            border-color: #ffcdd2;
-            color: #c62828;
+            background-color: var(--bg-red-row);
+            border-color: #f4c5c5;
+            color: var(--text-red);
         }
 
         .counter-title {
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .counter-value {
-            font-size: 38px;
+            font-size: 32px;
             font-weight: 700;
         }
 
         /* Contenedores de texto (Inferior) */
         .dashboard {
             display: flex;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
+            gap: 24px;
+            margin-bottom: 32px;
         }
 
         .panel {
-            background-color: #ffffff;
             flex: 1;
-            padding: 24px;
-            border-radius: 18px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             display: flex;
             flex-direction: column;
         }
 
-        /* Áreas de texto */
         .panel h2 {
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 600;
             margin-top: 0;
-            margin-bottom: 16px;
-            color: #1d1d1f;
-            border-bottom: 2px solid #f5f5f7;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         textarea {
             width: 100%;
-            height: 350px;
+            height: 300px;
             padding: 16px;
             font-size: 14px;
             font-family: inherit;
-            border: 1px solid #d2d2d7;
-            border-radius: 12px;
+            background-color: var(--bg-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             box-sizing: border-box;
-            resize: none;
-            overflow-y: auto;
-            line-height: 1.5;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            white-space: pre-wrap; 
+            resize: vertical;
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #0071e3;
-            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+            background-color: #ffffff;
+            border-color: #999;
         }
 
         /* Botón central */
         .action-container {
-            text-align: center;
-            margin: 30px 0;
+            margin: 32px 0;
         }
 
         button {
-            background-color: #0071e3;
+            background-color: var(--btn-bg);
             color: white;
-            padding: 14px 40px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 980px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
             border: none;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            font-family: inherit;
         }
 
         button:hover {
-            background-color: #0077ed;
-            transform: scale(1.02);
+            background-color: var(--btn-hover);
         }
 
-        button:active {
-            transform: scale(0.98);
+        .btn-whatsapp {
+            background-color: #25D366;
+            margin-top: 16px;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
         }
 
         /* Contenedor de Resultados */
         .results-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 24px;
-            border-radius: 18px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             display: none;
+            margin-top: 40px;
+        }
+
+        .results-container h2 {
+            font-size: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
         }
 
         .table-responsive {
             overflow-x: auto;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            width: 100%;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
-            min-width: 1000px;
         }
 
+        /* Modificado: permitimos que el texto se adapte (wrap) por defecto */
         th, td {
             padding: 12px 16px;
             text-align: left;
-            border-bottom: 1px solid #e5e5ea;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
         }
 
         th {
-            background-color: #f5f5f7;
-            font-weight: 600;
-            color: #86868b;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 13px;
+            background-color: #fafafa;
         }
 
+        /* Clases específicas para que PO, Cajas y Resultado no se partan en varias líneas */
+        .col-nowrap {
+            white-space: nowrap;
+        }
+
+        /* Colores de fila según estado */
         .row-ok {
-            background-color: #f8fff9;
+            background-color: var(--bg-green-row);
         }
 
         .row-error {
-            background-color: #fff8f8;
+            background-color: var(--bg-red-row);
+        }
+
+        /* Utilidades para interacción */
+        .clickable {
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: inline-block;
+        }
+
+        .clickable:hover {
+            opacity: 0.6;
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 3px;
             font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap; 
         }
 
         .status-ok {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: var(--bg-green-badge);
+            color: var(--text-green);
         }
 
         .status-err {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: var(--bg-red-badge);
+            color: var(--text-red);
+            cursor: pointer;
+        }
+
+        .status-err:hover {
+            opacity: 0.8;
+        }
+
+        /* Fuente Roboto Thin (100) para los detalles de línea, permite wrap */
+        .linea-detalle {
+            color: var(--text-main);
+            font-size: 15px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 100; 
+            letter-spacing: 0.3px;
+            white-space: normal; /* Asegura que el texto se adapte al ancho */
+            word-break: break-word; /* Evita que palabras o códigos larguísimos rompan la tabla */
         }
 
         /* Lista de errores inferior */
         .errors-list {
-            background-color: #fff8f8;
-            border: 1px solid #ffcdd2;
-            border-radius: 12px;
-            padding: 20px;
+            background-color: var(--bg-red-row);
+            border-radius: 4px;
+            padding: 24px;
+            border: 1px solid #f4c5c5;
         }
 
         .errors-list h3 {
             margin-top: 0;
-            color: #c62828;
-            font-size: 18px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-red);
         }
 
         .errors-list ul {
-            margin: 0;
+            margin: 16px 0 0 0;
             padding-left: 20px;
-            color: #721c24;
-            line-height: 1.6;
+            line-height: 1.8;
+            font-size: 14px;
         }
 
-        /* Responsividad */
+        .errors-list li {
+            margin-bottom: 8px;
+        }
+
+        .txt-code {
+            font-family: monospace;
+            background-color: #e3e3e0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #444;
+            font-size: 12px;
+        }
+
+        /* Notificación Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-main);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
         @media (max-width: 900px) {
-            .counters-dashboard {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .dashboard {
-                flex-direction: column;
-            }
+            .counters-dashboard { flex-direction: column; }
+            .dashboard { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <h1 class="header-title">Cuadre de Cajas - Sistema vs Grupo</h1>
+    <div class="container">
+        <h1 class="header-title">
+            <i class="fi fi-rr-box-open"></i> Cuadre de Cajas - Sistema vs Grupo
+        </h1>
 
-    <div class="counters-dashboard">
-        <div class="counter-box green">
-            <div class="counter-title">Total Cajas (Sistema)</div>
-            <div class="counter-value" id="sysTotalBoxes">0</div>
+        <div class="counters-dashboard">
+            <div class="counter-box green">
+                <div class="counter-title"><i class="fi fi-rr-computer"></i> Total Cajas (Sistema)</div>
+                <div class="counter-value" id="sysTotalBoxes">0</div>
+            </div>
+            <div class="counter-box green">
+                <div class="counter-title"><i class="fi fi-rr-users"></i> Total Cajas (Grupo)</div>
+                <div class="counter-value" id="grpTotalBoxes">0</div>
+            </div>
+            <div class="counter-box red">
+                <div class="counter-title"><i class="fi fi-rr-triangle-warning"></i> Total Errores</div>
+                <div class="counter-value" id="totalErrorsCount">0</div>
+            </div>
         </div>
-        <div class="counter-box green">
-            <div class="counter-title">Total Cajas (Grupo)</div>
-            <div class="counter-value" id="grpTotalBoxes">0</div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <h2><i class="fi fi-rr-document"></i> Cuadro 1: Sistema</h2>
+                <textarea id="textSistema" placeholder="Pega aquí los datos del Sistema..."></textarea>
+            </div>
+
+            <div class="panel">
+                <h2><i class="fi fi-rr-messages"></i> Cuadro 2: Grupo</h2>
+                <textarea id="textGrupo" placeholder="Pega aquí los datos del Grupo..."></textarea>
+            </div>
         </div>
-        <div class="counter-box red">
-            <div class="counter-title">Total Errores</div>
-            <div class="counter-value" id="totalErrorsCount">0</div>
+
+        <div class="action-container">
+            <button onclick="cuadrarOrdenes()">
+                <i class="fi fi-rr-exchange"></i> Cuadrar Órdenes
+            </button>
+        </div>
+
+        <div class="results-container" id="resultsContainer">
+            <h2>Detalle de Alineación por PO</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-nowrap">PO</th>
+                            <th style="width: 35%;">Línea Sistema</th>
+                            <th class="col-nowrap">Cajas</th>
+                            <th style="width: 35%;">Línea Grupo</th>
+                            <th class="col-nowrap">Cajas</th>
+                            <th class="col-nowrap">Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="errors-list" id="errorsContainer" style="display: none;">
+                <h3><i class="fi fi-rr-bug"></i> Lista de Errores Encontrados</h3>
+                <ul id="errorsListUl"></ul>
+                <button class="btn-whatsapp" onclick="copiarReporteWhatsApp()">
+                    <i class="fi fi-rr-copy"></i> Copiar para WhatsApp
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="dashboard">
-        <div class="panel">
-            <h2>Cuadro 1: Sistema</h2>
-            <textarea id="textSistema" placeholder="Pega aquí los datos del Sistema..."></textarea>
-        </div>
-
-        <div class="panel">
-            <h2>Cuadro 2: Grupo</h2>
-            <textarea id="textGrupo" placeholder="Pega aquí los datos del Grupo..."></textarea>
-        </div>
-    </div>
-
-    <div class="action-container">
-        <button onclick="cuadrarOrdenes()">Cuadrar Órdenes</button>
-    </div>
-
-    <div class="results-container" id="resultsContainer">
-        <h2>Detalle de Alineación por PO</h2>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>PO</th>
-                        <th style="width: 30%;">Línea Sistema</th>
-                        <th>Cajas</th>
-                        <th style="width: 30%;">Línea Grupo</th>
-                        <th>Cajas</th>
-                        <th>Resultado</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTableBody">
-                </tbody>
-            </table>
-        </div>
-
-        <div class="errors-list" id="errorsContainer" style="display: none;">
-            <h3>⚠️ Lista de Errores Encontrados</h3>
-            <ul id="errorsListUl">
-            </ul>
-        </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fi fi-rr-check"></i> <span id="toastMsg">Copiado al portapapeles</span>
     </div>
 
     <script>
+        let globalErroresWhatsApp = [];
+        window.diccionarioErrores = {}; 
+
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = mensaje;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function copiarAlPortapapeles(texto, mensajeNotificacion) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast(mensajeNotificacion);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+        function copiarReporteWhatsApp() {
+            if (globalErroresWhatsApp.length === 0) return;
+            
+            const fecha = new Date().toLocaleDateString('es-ES');
+            let reporte = `*REPORTE DE CUADRE - ${fecha}* 🚨\n\n`;
+            reporte += globalErroresWhatsApp.join("\n\n");
+            
+            copiarAlPortapapeles(reporte, "Reporte copiado para WhatsApp");
+        }
+
         function analizarTexto(texto) {
             const lineas = texto.split('\n');
             const datos = {};
@@ -308,10 +464,8 @@
 
             lineas.forEach(linea => {
                 linea = linea.trim();
-                
                 if (!linea || !linea.toUpperCase().includes("PO")) return;
 
-                // --- FORMATO 1: Tabla de Inventario ---
                 const regexTabla = /(PO\d+).*?(\d+\.\d{2})\s*(\d+)\s*$/i;
                 const matchTabla = linea.match(regexTabla);
                 
@@ -326,13 +480,10 @@
                     }
                 }
 
-                // --- FORMATO 2: Clásico / Grupo WhatsApp ---
-                // CORRECCIÓN: Busca estrictamente "PO" seguido de números en cualquier parte de la línea.
                 const poMatch = linea.match(/(PO\d+)/i);
                 
                 if (poMatch) {
                     const poStr = poMatch[1].toUpperCase();
-
                     const regexCajas = /(?:^|\s)(\d+)\s*(QB|EB|HB|SB|QB2|EB2)\b/i;
                     const coincidencia = linea.match(regexCajas);
                     
@@ -340,14 +491,10 @@
                     if (coincidencia) {
                         cantidad = parseInt(coincidencia[1], 10);
                     } else {
-                        // Fallback con seguro: solo toma el primer número si es menor a 1000 
-                        // para evitar atrapar códigos largos de inventario accidentalmente.
                         const coincidenciaNumerica = linea.match(/^(\d+)/);
                         if (coincidenciaNumerica) {
                             const posibleCantidad = parseInt(coincidenciaNumerica[1], 10);
-                            if (posibleCantidad < 1000) {
-                                cantidad = posibleCantidad;
-                            }
+                            if (posibleCantidad < 1000) cantidad = posibleCantidad;
                         }
                     }
 
@@ -376,6 +523,8 @@
             
             tbody.innerHTML = '';
             ulErrores.innerHTML = '';
+            globalErroresWhatsApp = [];
+            window.diccionarioErrores = {}; 
             let contadorErrores = 0;
 
             const sortedPOs = Array.from(allPOs).sort();
@@ -385,57 +534,96 @@
                 const itemGrp = datosGrupo.items[po];
                 
                 let esError = false;
-                let mensajeEstado = "";
-                let mensajeErrorLista = "";
+                let msjColumna = "";
+                let msjDetalleCompleto = ""; 
+                let itemWhatsApp = ""; 
+                let msjVisualLista = ""; 
+
+                const lineaSistTexto = itemSys ? itemSys.lineaOriginal : '---';
+                const lineaGrupTexto = itemGrp ? itemGrp.lineaOriginal : '---';
 
                 if (itemSys && itemGrp) {
                     if (itemSys.cantidad === itemGrp.cantidad) {
-                        mensajeEstado = `OK (${itemSys.cantidad} cajas)`;
+                        msjColumna = `OK`;
                     } else {
                         esError = true;
-                        mensajeEstado = `Diferencia de cajas`;
-                        mensajeErrorLista = `Sistema tiene ${itemSys.cantidad} cajas pero Grupo tiene ${itemGrp.cantidad}.`;
+                        msjColumna = `Diferencia`;
+                        
+                        const dif = itemSys.cantidad - itemGrp.cantidad;
+                        const detalleFaltaSobra = dif > 0 ? `Faltan ${dif} en Grupo` : `Sobran ${Math.abs(dif)} en Grupo`;
+                        
+                        msjDetalleCompleto = `Error en [${po}]:\n- Línea Sistema: "${lineaSistTexto}" -> Hay ${itemSys.cantidad} cajas en Sistema.\n- Línea Grupo: "${lineaGrupTexto}" -> Hay ${itemGrp.cantidad} cajas en Grupo.\n👉 Diferencia: ${detalleFaltaSobra}.`;
+                        itemWhatsApp = `📦 *${po}* - Diferencia de cajas:\n• Sist: _${lineaSistTexto}_ (Hay ${itemSys.cantidad} cajas)\n• Grup: _${lineaGrupTexto}_ (Hay ${itemGrp.cantidad} cajas)\n👉 *Detalle:* ${detalleFaltaSobra}`;
+                        
+                        msjVisualLista = `Sist: <span class="txt-code">${lineaSistTexto}</span> vs Grup: <span class="txt-code">${lineaGrupTexto}</span> 👉 <strong>${detalleFaltaSobra}</strong>`;
                     }
                 } else if (itemSys && !itemGrp) {
                     esError = true;
-                    mensajeEstado = `No existe en Grupo`;
-                    mensajeErrorLista = `(Error: Código de orden no existe en Grupo)`;
+                    msjColumna = `No en Grupo`;
+                    
+                    msjDetalleCompleto = `Error en [${po}]:\n- Línea Sistema: "${lineaSistTexto}" -> Hay ${itemSys.cantidad} cajas en Sistema.\n- En Grupo: No existe.\n👉 Detalle: Falta agregar en el grupo.`;
+                    itemWhatsApp = `❌ *${po}* - No existe en Grupo:\n• Sist: _${lineaSistTexto}_ (Hay ${itemSys.cantidad} cajas)\n👉 *Detalle:* Falta agregar en el grupo.`;
+                    
+                    msjVisualLista = `Sist: <span class="txt-code">${lineaSistTexto}</span> 👉 <strong>Falta agregar en el grupo</strong>`;
                 } else if (!itemSys && itemGrp) {
                     esError = true;
-                    mensajeEstado = `No existe en Sistema`;
-                    mensajeErrorLista = `(Error: Código de orden no existe en Sistema)`;
+                    msjColumna = `No en Sistema`;
+                    
+                    msjDetalleCompleto = `Error en [${po}]:\n- Línea Grupo: "${lineaGrupTexto}" -> Hay ${itemGrp.cantidad} cajas en Grupo.\n- En Sistema: No existe.\n👉 Detalle: Sobra en el grupo o falta ingresar al sistema.`;
+                    itemWhatsApp = `❌ *${po}* - No existe en Sistema:\n• Grup: _${lineaGrupTexto}_ (Hay ${itemGrp.cantidad} cajas)\n👉 *Detalle:* Sobra en el grupo o falta ingresar al sistema.`;
+                    
+                    msjVisualLista = `Grup: <span class="txt-code">${lineaGrupTexto}</span> 👉 <strong>Sobra en el grupo o falta ingresar al sistema</strong>`;
                 }
 
                 if (esError) {
                     contadorErrores++;
+                    globalErroresWhatsApp.push(itemWhatsApp);
+                    window.diccionarioErrores[po] = msjDetalleCompleto;
+                    
                     const li = document.createElement('li');
-                    li.innerHTML = `<strong>${po}:</strong> ${mensajeErrorLista}`;
+                    li.innerHTML = `<strong>${po}</strong>: ${msjVisualLista}`;
                     ulErrores.appendChild(li);
                 }
 
                 const tr = document.createElement('tr');
+                
+                // Aplicamos la clase de color de fondo a toda la fila según el estado
                 tr.className = esError ? 'row-error' : 'row-ok';
                 
-                const spanEstado = `<span class="status-badge ${esError ? 'status-err' : 'status-ok'}">${mensajeEstado}</span>`;
+                const poHtml = `<span class="clickable" onclick="copiarAlPortapapeles('${po}', 'PO ${po} copiado')">
+                                    <strong>${po}</strong>
+                                </span>`;
+
+                let estadoHtml = "";
+                if (esError) {
+                    estadoHtml = `<span class="status-badge status-err" title="Haz clic para copiar detalle" 
+                                        onclick="copiarAlPortapapeles(window.diccionarioErrores['${po}'], 'Detalle del error copiado')">
+                                    <i class="fi fi-rr-exclamation"></i> ${msjColumna}
+                                  </span>`;
+                } else {
+                    estadoHtml = `<span class="status-badge status-ok"><i class="fi fi-rr-check-circle"></i> ${msjColumna}</span>`;
+                }
+
+                // Generación de textos para copiar con formato regex
+                let textoSistCopiar = itemSys ? itemSys.lineaOriginal.replace(/(\d+)\s+(QB|EB|HB|SB|QB2|EB2)/gi, '$1$2').replace(/'/g, "\\'") : '';
+                let textoGrupCopiar = itemGrp ? itemGrp.lineaOriginal.replace(/'/g, "\\'") : '';
+
+                const lineaSistTxt = itemSys ? `<span class="linea-detalle clickable" title="Haz clic para copiar sin espacios (Ej: 10QB)" onclick="copiarAlPortapapeles('${textoSistCopiar}', 'Línea de Sistema copiada')">${itemSys.lineaOriginal}</span>` : '<span style="color:#ccc;">---</span>';
+                const lineaGrupTxt = itemGrp ? `<span class="linea-detalle clickable" title="Haz clic para copiar línea" onclick="copiarAlPortapapeles('${textoGrupCopiar}', 'Línea de Grupo copiada')">${itemGrp.lineaOriginal}</span>` : '<span style="color:#ccc;">---</span>';
 
                 tr.innerHTML = `
-                    <td><strong>${po}</strong></td>
-                    <td style="color: #666; font-size: 13px;">${itemSys ? itemSys.lineaOriginal : '---'}</td>
-                    <td><strong>${itemSys ? itemSys.cantidad : '-'}</strong></td>
-                    <td style="color: #666; font-size: 13px;">${itemGrp ? itemGrp.lineaOriginal : '---'}</td>
-                    <td><strong>${itemGrp ? itemGrp.cantidad : '-'}</strong></td>
-                    <td>${spanEstado}</td>
+                    <td class="col-nowrap">${poHtml}</td>
+                    <td>${lineaSistTxt}</td>
+                    <td class="col-nowrap"><strong>${itemSys ? itemSys.cantidad : '-'}</strong></td>
+                    <td>${lineaGrupTxt}</td>
+                    <td class="col-nowrap"><strong>${itemGrp ? itemGrp.cantidad : '-'}</strong></td>
+                    <td class="col-nowrap">${estadoHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
             document.getElementById('totalErrorsCount').innerText = contadorErrores;
-            
-            if (contadorErrores > 0) {
-                contenedorErrores.style.display = 'block';
-            } else {
-                contenedorErrores.style.display = 'none';
-            }
+            contenedorErrores.style.display = contadorErrores > 0 ? 'block' : 'none';
 
             document.getElementById('resultsContainer').style.display = 'block';
             document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
