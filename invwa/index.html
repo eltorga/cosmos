@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Logística — Estilo Notion</title>
+    
+    <!-- Uicons de Flaticon -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+
+    <style>
+        /* =========================================
+           Estética General Notion (Limpio y Minimalista)
+           ========================================= */
+        body {
+            font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            color: #37352f;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #37352f;
+            margin: 0 0 30px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            min-width: 0; 
+        }
+
+        .panel h2 {
+            margin: 0 0 16px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #37352f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Input de texto */
+        #rawInput {
+            flex: 1;
+            resize: none;
+            padding: 16px;
+            border: 1px solid #e9e9e7;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 16px;
+            background-color: #f7f7f5;
+            color: #37352f;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #rawInput:focus {
+            background-color: #ffffff;
+            border-color: #2383e2; 
+        }
+
+        /* Tablas */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto; 
+            border: 1px solid #e9e9e7;
+            border-radius: 4px;
+            background: #ffffff;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .right-table-container {
+            display: block;
+        }
+
+        table.excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table.excel-table th, table.excel-table td {
+            border-bottom: 1px solid #e9e9e7;
+            border-right: 1px solid #e9e9e7;
+            padding: 8px 12px;
+            vertical-align: middle;
+            white-space: nowrap; 
+        }
+        table.excel-table td:last-child {
+            border-right: none;
+        }
+        table.excel-table td.col-num {
+            width: 30px;
+            text-align: center;
+            background-color: #f7f7f5;
+            color: #787774;
+            font-weight: 500;
+            user-select: none;
+        }
+        table.excel-table tr:hover td {
+            background-color: #f7f7f5;
+        }
+
+        /* Fila del Nombre de la Categoría (Solución a la alineación) */
+        .cat-row td {
+            background-color: #f1f1ef !important;
+            padding: 0 !important; /* El padding se mueve al contenedor interno */
+            border-bottom: 1px solid #e9e9e7 !important;
+            border-top: none !important;
+        }
+        
+        .cat-row-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .cat-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #37352f;
+        }
+        .cat-stats {
+            font-size: 12px;
+            color: #787774;
+            font-weight: 500;
+        }
+        .cat-stats span {
+            font-weight: 600;
+            color: #37352f;
+        }
+
+        /* Cápsulas Estilo Notion */
+        .counters {
+            display: flex;
+            gap: 12px;
+            background: transparent;
+            padding: 0;
+            margin-bottom: 16px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .counter-item {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .counter-item span { font-weight: 700; }
+        .pill-eb { background-color: #e2f6d3; color: #1f361a; } 
+        .pill-qb { background-color: #fdf3cd; color: #402c1b; } 
+        .pill-hb { background-color: #faebdd; color: #49290e; } 
+        .pill-tot { 
+            background-color: #eb5757; 
+            color: #ffffff; 
+            box-shadow: 0 2px 6px rgba(235, 87, 87, 0.3);
+        }
+        .pill-tot span { color: #ffffff; }
+
+        /* Botones */
+        .btn {
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: #2f2f2f; color: #ffffff; }
+        .btn-primary:hover { background-color: #454545; }
+        .btn-action { background-color: #2383e2; color: white; margin-top: auto; }
+        .btn-action:hover { background-color: #006adc; }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #37352f;
+            border: 1px solid #e9e9e7;
+            margin-top: 8px;
+            display: none;
+        }
+        .btn-secondary:hover { background-color: #f1f1ef; }
+
+        @media (max-width: 850px) {
+            .container { flex-direction: column; }
+            body { height: auto; padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <h1><i class="fi fi-rr-box-open"></i> Gestor de Inventario</h1>
+        
+        <div class="container">
+            <!-- PANEL IZQUIERDO -->
+            <div class="panel">
+                <h2><i class="fi fi-rr-document"></i> Entrada de Datos</h2>
+                
+                <textarea id="rawInput" placeholder="Pega el bloque de texto crudo aquí..."></textarea>
+                
+                <div id="leftVisualContainer" class="table-container">
+                    <table class="excel-table" id="leftTable">
+                        <tbody></tbody>
+                    </table>
+                </div>
+                
+                <div class="counters" id="leftCounters">
+                    <div class="counter-item pill-eb">EB: <span id="l-eb">0</span></div>
+                    <div class="counter-item pill-qb">QB: <span id="l-qb">0</span></div>
+                    <div class="counter-item pill-hb">HB: <span id="l-hb">0</span></div>
+                    <div class="counter-item pill-tot"><i class="fi fi-rr-sigma"></i> Total: <span id="l-tot">0</span></div>
+                </div>
+
+                <button class="btn btn-primary" id="formatBtn"><i class="fi fi-rr-magic-wand"></i> Procesar y Ordenar</button>
+                <button class="btn btn-secondary" id="editBtn"><i class="fi fi-rr-edit"></i> Modificar Lista Original</button>
+            </div>
+            
+            <!-- PANEL DERECHO -->
+            <div class="panel">
+                <h2><i class="fi fi-rr-list-check"></i> Vista Previa Formateada</h2>
+                
+                <div id="rightVisualContainer" class="table-container right-table-container">
+                    <div id="emptyState" style="color: #787774; text-align: center; margin-top: 60px; font-size: 14px;">
+                        Las categorías ordenadas aparecerán aquí...
+                    </div>
+                    <table class="excel-table" id="rightTable" style="display: none;">
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="counters" id="rightCounters">
+                    <div class="counter-item pill-eb">EB: <span id="r-eb">0</span></div>
+                    <div class="counter-item pill-qb">QB: <span id="r-qb">0</span></div>
+                    <div class="counter-item pill-hb">HB: <span id="r-hb">0</span></div>
+                    <div class="counter-item pill-tot"><i class="fi fi-rr-sigma"></i> Total: <span id="r-tot">0</span></div>
+                </div>
+
+                <button class="btn btn-action" id="copyBtn"><i class="fi fi-rr-copy"></i> Copiar para WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rawWhatsappText = ""; 
+
+        const FLOWER_DATABASE = [
+            {
+                category: "Fillers Assorted",
+                keywords: ["essential mix", "harmony box", "be mine box", "pure love", "hannas mix", "royal mix", "florist mix", "festival mix", "carnival mix", "special mix"]
+            },
+            {
+                category: "Garden Spray Roses",
+                keywords: ["garden spray roses"]
+            },
+            {
+                category: "Garden Spray",
+                keywords: ["garden spray"]
+            },
+            {
+                category: "Spray Roses",
+                keywords: ["spray roses", "spray"]
+            },
+            {
+                category: "Garden Roses",
+                keywords: ["garden roses", "garden victorian"]
+            },
+            {
+                category: "Tinted Flowers",
+                keywords: ["tinted", "pintada", "tint"]
+            },
+            {
+                category: "Fillers",
+                keywords: [
+                    "delphinium", "roselily", "oriental lilies", "lily", "carnation", "lisianthus", 
+                    "mum", "cremon", "ranunculus", "anemone", "gypsophilia", "gypso", "solidago", 
+                    "alstroemeria", "larkspur", "eucalyptus", "hydrangea", "hypericum", "pin cushion", 
+                    "snapdragon", "statice", "cdn", "stock", "aster", "limonium", "gerberas", "sunflower",
+                    "roselilies"
+                ]
+            },
+            {
+                category: "Roses Assorted",
+                match: function(lowerText) {
+                    const hasRosesOrMix = /roses|wedding mix/i.test(lowerText);
+                    const hasMultipleVarieties = /\d+\s+[a-z\s&'-]+\/\s*\d+/i.test(lowerText);
+                    const hasMixWord = /mix/i.test(lowerText);
+                    return hasRosesOrMix && (hasMultipleVarieties || hasMixWord);
+                }
+            },
+            {
+                category: "Roses",
+                keywords: ["roses"] 
+            }
+        ];
+
+        const DISPLAY_ORDER = [
+            "Roses", 
+            "Roses Assorted", 
+            "Garden Roses", 
+            "Garden Spray", 
+            "Garden Spray Roses", 
+            "Spray Roses", 
+            "Tinted Flowers", 
+            "Fillers Assorted", 
+            "Fillers",
+            "Otras (Sin Categoría)"
+        ];
+
+        function getBoxStats(items) {
+            let eb = 0, qb = 0, hb = 0, tot = 0;
+            items.forEach(item => {
+                let text = typeof item === 'string' ? item : item.text;
+                let match = text.match(/^(\d+)\s*(EB|QB|HB)/i);
+                if (match) {
+                    let qty = parseInt(match[1]);
+                    let type = match[2].toUpperCase();
+                    if(type === 'EB') eb += qty;
+                    if(type === 'QB') qb += qty;
+                    if(type === 'HB') hb += qty;
+                    tot += qty;
+                }
+            });
+            return { eb, qb, hb, tot };
+        }
+
+        function updateGlobalCounters(items, prefix) {
+            const stats = getBoxStats(items);
+            document.getElementById(`${prefix}-eb`).innerText = stats.eb;
+            document.getElementById(`${prefix}-qb`).innerText = stats.qb;
+            document.getElementById(`${prefix}-hb`).innerText = stats.hb;
+            document.getElementById(`${prefix}-tot`).innerText = stats.tot;
+        }
+
+        document.getElementById('formatBtn').addEventListener('click', () => {
+            const raw = document.getElementById('rawInput').value;
+            const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+
+            const mergedStrings = [];
+            for (let line of lines) {
+                if (/^\d+\s*[A-Z]{2,3}/i.test(line)) {
+                    mergedStrings.push(line);
+                } else {
+                    if (mergedStrings.length > 0) {
+                        mergedStrings[mergedStrings.length - 1] += ' ' + line;
+                    } else {
+                        mergedStrings.push(line);
+                    }
+                }
+            }
+
+            const parsedItems = mergedStrings.map((str, index) => {
+                let cleaned = str.replace(/^(\d+)\s+([A-Z]{2,3})/i, '$1$2');
+                let lower = cleaned.toLowerCase();
+                
+                const isFillersAssorted = FLOWER_DATABASE.find(db => db.category === "Fillers Assorted").keywords.some(kw => lower.includes(kw));
+                const isHydrangea = lower.includes("hydrangea");
+
+                if (isFillersAssorted || isHydrangea) {
+                    cleaned = cleaned.replace(/\s*x\s*1\s*stems?\s*/gi, ' ');
+                    cleaned = cleaned.replace(/per stem/gi, 'for the box');
+                    cleaned = cleaned.replace(/\s{2,}/g, ' '); 
+                }
+
+                if (/gypsophilia|gypso/i.test(lower) && /xlence/i.test(lower) && !isFillersAssorted) {
+                    cleaned = cleaned.replace(/(\bx\s*\d+\s*)stems?\b/gi, '$1bunches');
+                    cleaned = cleaned.replace(/per stem/gi, 'per bunch');
+                }
+
+                return { originalIndex: index + 1, originalText: str, text: cleaned, lower: lower };
+            });
+
+            updateGlobalCounters(parsedItems, 'l');
+            const leftTbody = document.querySelector('#leftTable tbody');
+            leftTbody.innerHTML = '';
+            
+            parsedItems.forEach(item => {
+                leftTbody.innerHTML += `
+                    <tr>
+                        <td class="col-num">${item.originalIndex}</td>
+                        <td>${item.text}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('rawInput').style.display = 'none';
+            document.getElementById('formatBtn').style.display = 'none';
+            document.getElementById('leftVisualContainer').style.display = 'block';
+            document.getElementById('editBtn').style.display = 'flex';
+
+            const categorizedData = {};
+            DISPLAY_ORDER.forEach(cat => categorizedData[cat] = []);
+
+            parsedItems.forEach(item => {
+                let assignedCategory = "Otras (Sin Categoría)";
+
+                for (const dbItem of FLOWER_DATABASE) {
+                    if (dbItem.match) {
+                        if (dbItem.match(item.lower)) { assignedCategory = dbItem.category; break; }
+                    } else if (dbItem.keywords) {
+                        if (dbItem.keywords.some(keyword => item.lower.includes(keyword))) { assignedCategory = dbItem.category; break; }
+                    }
+                }
+                
+                if (!categorizedData[assignedCategory]) { categorizedData[assignedCategory] = []; }
+                categorizedData[assignedCategory].push(item);
+            });
+
+            let rightTbodyHTML = "";
+            rawWhatsappText = "";
+            
+            DISPLAY_ORDER.forEach(cat => {
+                if (categorizedData[cat] && categorizedData[cat].length > 0) {
+                    
+                    // LÓGICA DE ORDENAMIENTO PERSONALIZADO
+                    categorizedData[cat].sort((a, b) => {
+                        let textA = a.text;
+                        let textB = b.text;
+
+                        const getBoxCount = (str) => {
+                            let m = str.match(/^(\d+)/);
+                            return m ? parseInt(m[1]) : 0;
+                        };
+
+                        const getCleanName = (str) => {
+                            let m = str.match(/^\d+[A-Z]{2,3}\s+(.*)/i);
+                            let name = m ? m[1] : str;
+                            return name.replace(/\.?\s*po\d+.*$/i, '').trim().toLowerCase();
+                        };
+
+                        if (cat === "Roses") {
+                            // Extrae la variedad (Ej: Explorer)
+                            const getVariety = (str) => {
+                                let m = str.match(/cm\s+([A-Za-z\s&'-]+?)(?:\s*\(|\s+x\s+)/i);
+                                return m ? m[1].trim().toLowerCase() : getCleanName(str);
+                            };
+                            // Extrae el tamaño y saca promedio si es compuesto (Ej: 50/60cm -> 55)
+                            const getLengthAvg = (str) => {
+                                let m = str.match(/(\d+)(?:\/(\d+))?\s*cm/i);
+                                if (m) {
+                                    if (m[2]) return (parseInt(m[1]) + parseInt(m[2])) / 2;
+                                    return parseInt(m[1]);
+                                }
+                                return 0;
+                            };
+
+                            let varA = getVariety(textA);
+                            let varB = getVariety(textB);
+                            
+                            // 1ro: Orden Alfabético de la Variedad
+                            if (varA < varB) return -1;
+                            if (varA > varB) return 1;
+                            
+                            // 2do: Si son la misma variedad, Ordena por CM de mayor a menor
+                            let lenA = getLengthAvg(textA);
+                            let lenB = getLengthAvg(textB);
+                            return lenB - lenA; 
+                        } 
+                        else if (cat === "Roses Assorted") {
+                            // Ordenar estrictamente por Número de Cajas descendente
+                            let countA = getBoxCount(textA);
+                            let countB = getBoxCount(textB);
+                            if (countA !== countB) return countB - countA; 
+                            
+                            // Si tienen las mismas cajas, desempata alfabéticamente
+                            let nameA = getCleanName(textA);
+                            let nameB = getCleanName(textB);
+                            if (nameA < nameB) return -1;
+                            if (nameA > nameB) return 1;
+                            return 0;
+                        } 
+                        else {
+                            // Fillers Assorted, Fillers, Garden Spray... Orden general Alfabético
+                            let nameA = getCleanName(textA);
+                            let nameB = getCleanName(textB);
+                            if (nameA < nameB) return -1;
+                            if (nameA > nameB) return 1;
+                            return 0;
+                        }
+                    });
+
+                    let catStats = getBoxStats(categorizedData[cat]);
+
+                    // Fila de título usando Flexbox interior para alineación perfecta, sin iconos
+                    rightTbodyHTML += `
+                        <tr class="cat-row">
+                            <td colspan="2">
+                                <div class="cat-row-content">
+                                    <span class="cat-title">${cat}</span>
+                                    <div class="cat-stats">
+                                        EB: <span>${catStats.eb}</span> &nbsp;|&nbsp; 
+                                        QB: <span>${catStats.qb}</span> &nbsp;|&nbsp; 
+                                        HB: <span>${catStats.hb}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    rawWhatsappText += `*${cat}*\n`;
+
+                    categorizedData[cat].forEach(item => {
+                        rightTbodyHTML += `
+                            <tr>
+                                <td class="col-num">${item.originalIndex}</td>
+                                <td>${item.text}</td>
+                            </tr>
+                        `;
+                        rawWhatsappText += item.text + '\n';
+                    });
+                    
+                    rawWhatsappText += '\n'; 
+                }
+            });
+
+            document.getElementById('emptyState').style.display = 'none';
+            const rightTable = document.getElementById('rightTable');
+            rightTable.querySelector('tbody').innerHTML = rightTbodyHTML;
+            rightTable.style.display = 'table';
+            
+            updateGlobalCounters(parsedItems, 'r');
+        });
+
+        document.getElementById('editBtn').addEventListener('click', () => {
+            document.getElementById('rawInput').style.display = 'block';
+            document.getElementById('formatBtn').style.display = 'flex';
+            document.getElementById('leftVisualContainer').style.display = 'none';
+            document.getElementById('editBtn').style.display = 'none';
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            if(!rawWhatsappText) {
+                alert("Primero debes ingresar y procesar el texto.");
+                return;
+            }
+            navigator.clipboard.writeText(rawWhatsappText.trim()).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> Copiado con éxito';
+                btn.style.backgroundColor = '#2eaadc';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fi fi-rr-copy"></i> Copiar para WhatsApp';
+                    btn.style.backgroundColor = '#2383e2';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
