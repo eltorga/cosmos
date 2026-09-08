@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizador RingCentral</title>
+    <!-- Flaticon Uicons -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <style>
+        /* Estilo Notion */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #37352f;
+            --light-gray: #f7f6f3;
+            --border-color: #e9e9e7;
+            --danger-color: #eb5757;
+            --accent-color: #2eaadc;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 5px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #787774;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab.active {
+            color: var(--text-color);
+            border-bottom: 2px solid var(--text-color);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Textarea y Botones */
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            background-color: var(--light-gray);
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: var(--light-gray);
+        }
+        .btn-primary {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+        .btn-primary:hover {
+            background-color: #5a5a5a;
+        }
+        /* Resultados Texto */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+        .item-row:hover {
+            background-color: var(--light-gray);
+        }
+        .item-text {
+            flex-grow: 1;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #787774;
+            margin-right: 15px;
+            min-width: 50px;
+            text-align: right;
+        }
+        .too-long {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+        /* Compresor Imagen */
+        .compress-box {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background: var(--light-gray);
+        }
+        #imageInfo {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        #compressedImage {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><i class="fi fi-rr-leaf"></i> Optimizador RingCentral</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('text-tab')"><i class="fi fi-rr-text"></i> Formateador de Inventario</div>
+        <div class="tab" onclick="switchTab('image-tab')"><i class="fi fi-rr-picture"></i> Compresor de Imágenes</div>
+    </div>
+
+    <!-- Pestaña 1: Textos -->
+    <div id="text-tab" class="tab-content active">
+        <p>Pega la lista de WhatsApp aquí.</p>
+        <textarea id="inputText" placeholder="*Roses*\n1QB Roses 60cm Explorer..."></textarea>
+        <button class="btn-primary" onclick="processText()"><i class="fi fi-rr-magic-wand"></i> Procesar Texto</button>
+        
+        <div id="outputArea"></div>
+    </div>
+
+    <!-- Pestaña 2: Imágenes -->
+    <div id="image-tab" class="tab-content">
+        <p>Sube una imagen para reducir su peso por debajo de 1MB para enviar por RingCentral.</p>
+        <div class="compress-box">
+            <input type="file" id="imageInput" accept="image/jpeg, image/png, image/webp" onchange="handleImage(event)">
+            <p style="color: #787774; font-size: 14px; margin-top: 10px;">Formatos soportados: JPG, PNG, WEBP</p>
+        </div>
+        <div id="imageInfo"></div>
+        <img id="compressedImage" alt="Imagen Comprimida">
+        <button id="downloadBtn" style="display:none; margin-top: 15px;" class="btn-primary"><i class="fi fi-rr-download"></i> Descargar Imagen Optimizada</button>
+    </div>
+</div>
+
+<script>
+    // Cambiar Pestañas
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Procesar Texto
+    function processText() {
+        const text = document.getElementById('inputText').value;
+        const lines = text.split('\n');
+        const outputArea = document.getElementById('outputArea');
+        outputArea.innerHTML = '';
+
+        let data = {};
+        let currentSection = 'General';
+
+        lines.forEach(line => {
+            let cleanLine = line.trim();
+            if (!cleanLine) return;
+
+            // Detectar si es un título de sección (ej. *Roses* o *Roses Assorted*)
+            // También asumimos que si no tiene "QB" o "EB", podría ser un título
+            if ((cleanLine.startsWith('*') && cleanLine.endsWith('*')) || (!cleanLine.includes('QB') && !cleanLine.includes('EB') && cleanLine.length < 30)) {
+                currentSection = cleanLine.replace(/\*/g, '').trim();
+                if (!data[currentSection]) data[currentSection] = [];
+            } else {
+                if (!data[currentSection]) data[currentSection] = [];
+                
+                // Formatear la línea: Quitar @ y cambiar $ por USD
+                let formattedLine = cleanLine
+                    .replace(/\s*@\s*/g, ' at ') // Cambia @ por ' at '
+                    .replace(/\$/g, 'USD ');    // Cambia $ por 'USD '
+                
+                // Extraer la cantidad de cajas para ordenar (ej. extrae el 4 de 4QB)
+                let match = formattedLine.match(/^(\d+)(QB|EB)/i);
+                let qty = match ? parseInt(match[1]) : 0;
+
+                data[currentSection].push({
+                    text: formattedLine,
+                    qty: qty,
+                    length: formattedLine.length
+                });
+            }
+        });
+
+        // Renderizar el HTML
+        for (const [section, items] of Object.entries(data)) {
+            if (items.length === 0) continue;
+
+            // Ordenar de mayor a menor cajas
+            items.sort((a, b) => b.qty - a.qty);
+
+            // Título de sección
+            const titleEl = document.createElement('div');
+            titleEl.className = 'section-title';
+            titleEl.innerText = section;
+            outputArea.appendChild(titleEl);
+
+            // Elementos
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                
+                const isTooLong = item.length > 160;
+                const textClass = isTooLong ? 'item-text too-long' : 'item-text';
+                const charClass = isTooLong ? 'char-count too-long' : 'char-count';
+                
+                row.innerHTML = `
+                    <div class="${textClass}">${item.text}</div>
+                    <div class="${charClass}">${item.length}/160</div>
+                    <button onclick="copyToClipboard(this, '${item.text.replace(/'/g, "\\'")}')">
+                        <i class="fi fi-rr-copy"></i> Copiar
+                    </button>
+                `;
+                outputArea.appendChild(row);
+            });
+        }
+    }
+
+    // Copiar al portapapeles
+    function copyToClipboard(btnElement, text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fi fi-rr-check"></i> Copiado';
+            btnElement.style.color = '#27ae60';
+            setTimeout(() => {
+                btnElement.innerHTML = originalHTML;
+                btnElement.style.color = '';
+            }, 1500);
+        });
+    }
+
+    // Compresión de Imagen
+    function handleImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Redimensionar si es muy grande (máx 1920px ancho/alto)
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 1920;
+
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = (height / width) * maxDim;
+                        width = maxDim;
+                    } else {
+                        width = (width / height) * maxDim;
+                        height = maxDim;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprimir reduciendo la calidad hasta que sea < 1MB
+                let quality = 0.9;
+                let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                
+                // Bucle de compresión simple
+                while (dataUrl.length > 1000000 && quality > 0.1) {
+                    quality -= 0.1;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                const sizeKB = (dataUrl.length * (3/4)) / 1024; // Estimación base64 a bytes
+                
+                document.getElementById('imageInfo').innerHTML = `
+                    <span style="color: ${sizeKB > 1000 ? '#eb5757' : '#27ae60'}">
+                        Tamaño final estimado: <strong>${Math.round(sizeKB)} KB</strong> 
+                        (Original: ${Math.round(file.size / 1024)} KB)
+                    </span>
+                `;
+                
+                const finalImg = document.getElementById('compressedImage');
+                finalImg.src = dataUrl;
+                finalImg.style.display = 'block';
+
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.style.display = 'inline-flex';
+                downloadBtn.onclick = function() {
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = 'ringcentral_optimizada.jpg';
+                    a.click();
+                };
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
