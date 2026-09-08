@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - EC Flowers</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Librería Uicons de Flaticon -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     
     <style>
         :root {
@@ -56,6 +57,9 @@
             font-size: 20px;
             margin-right: 8px;
             color: var(--text-color);
+            /* Ajuste ligero para centrar los Uicons con el texto */
+            display: flex;
+            align-items: center;
         }
 
         .domain {
@@ -227,7 +231,7 @@
     <!-- Barra Superior -->
     <header class="topbar">
         <div class="brand-container">
-            <i class="ri-flower-line brand-icon"></i>
+            <i class="fi fi-rr-flower brand-icon"></i>
             EC Flowers<span class="domain">.net</span>
         </div>
         <button id="authBtn" class="login-btn">Acceder</button>
@@ -240,43 +244,43 @@
         <div class="notion-gallery">
             <!-- PÚBLICOS -->
             <a href="https://www.ecflowers.net/flowerpedia" class="notion-card public-card">
-                <i class="ri-plant-line notion-icon"></i>
+                <i class="fi fi-rr-leaf notion-icon"></i>
                 <span>Flowerpedia</span>
             </a>
             
             <a href="https://www.ecflowers.net/artcanvas" class="notion-card public-card">
-                <i class="ri-brush-line notion-icon"></i>
+                <i class="fi fi-rr-paint-brush notion-icon"></i>
                 <span>Art Canvas</span>
             </a>
             
             <a href="https://www.ecflowers.net/cuadre" class="notion-card public-card">
-                <i class="ri-file-list-3-line notion-icon"></i>
+                <i class="fi fi-rr-document notion-icon"></i>
                 <span>Sistema de Cuadre</span>
             </a>
 
             <a href="https://www.ecflowers.net/optiring" class="notion-card public-card">
-                <i class="ri-file-list-3-line notion-icon"></i>
+                <i class="fi fi-rr-magic-wand notion-icon"></i>
                 <span>Ring Central Optimizer</span>
             </a>
 
             <!-- PRIVADOS -->
             <a href="https://www.ecflowers.net/aumento" class="notion-card private-card hidden">
-                <i class="ri-add-box-line notion-icon"></i>
+                <i class="fi fi-rr-square-plus notion-icon"></i>
                 <span>Aumentar Orden</span>
             </a>
             
             <a href="https://www.ecflowers.net/calculo" class="notion-card private-card hidden">
-                <i class="ri-calculator-line notion-icon"></i>
+                <i class="fi fi-rr-calculator notion-icon"></i>
                 <span>Calculo de Cajas</span>
             </a>
             
             <a href="https://www.ecflowers.net/so" class="notion-card private-card hidden">
-                <i class="ri-repeat-2-line notion-icon"></i>
+                <i class="fi fi-rr-refresh notion-icon"></i>
                 <span>Ordenes Fijas</span>
             </a>
 
             <a href="https://www.ecflowers.net/invwa" class="notion-card private-card hidden">
-                <i class="ri-repeat-2-line notion-icon"></i>
+                <i class="fi fi-rr-box-alt notion-icon"></i>
                 <span>Inventario WA</span>
             </a>
         </div>
