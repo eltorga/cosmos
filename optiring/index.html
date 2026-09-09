@@ -27,7 +27,7 @@
         }
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px; /* Diseño más ancho */
         }
         h1 {
             font-size: 24px;
@@ -87,7 +87,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
         button:hover {
             background-color: var(--light-gray);
@@ -98,6 +98,26 @@
         }
         .btn-primary:hover {
             background-color: #5a5a5a;
+        }
+        /* Botón Flotante Global */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            padding: 14px 24px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 15px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none; /* Se activa al procesar */
+            border: none;
+        }
+        .floating-btn:hover {
+            background-color: #5a5a5a;
+            transform: scale(1.02);
         }
         /* Resultados Texto */
         .section-title {
@@ -142,6 +162,7 @@
             text-align: center;
             border-radius: 8px;
             background: var(--light-gray);
+            transition: background 0.3s;
         }
         #imageInfo {
             margin-top: 20px;
@@ -153,9 +174,36 @@
             border-radius: 4px;
             display: none;
         }
+        /* Overlay Drag & Drop */
+        #dragOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(247, 246, 243, 0.9);
+            border: 4px dashed var(--text-color);
+            box-sizing: border-box;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+            pointer-events: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #dragOverlay i {
+            font-size: 48px;
+        }
     </style>
 </head>
 <body>
+
+<!-- Overlay para Drag & Drop Global -->
+<div id="dragOverlay">
+    <i class="fi fi-rr-cloud-upload"></i>
+    Suelta la imagen en cualquier parte para comprimir
+</div>
 
 <div class="container">
     <h1><i class="fi fi-rr-leaf"></i> Optimizador RingCentral</h1>
@@ -167,8 +215,8 @@
 
     <!-- Pestaña 1: Textos -->
     <div id="text-tab" class="tab-content active">
-        <p>Pega la lista de WhatsApp aquí.</p>
-        <textarea id="inputText" placeholder="*Roses*\n1QB Roses 60cm Explorer..."></textarea>
+        <p>Pega la lista de WhatsApp aquí. El sistema quitará las cajas, el tipo de empaque (ej. T/W), el PO, y formateará el precio.</p>
+        <textarea id="inputText" placeholder="*Roses*\n1QB Roses 60cm Explorer (T/W) x 125 stems @ $1.39 per stem. PO104766"></textarea>
         <button class="btn-primary" onclick="processText()"><i class="fi fi-rr-magic-wand"></i> Procesar Texto</button>
         
         <div id="outputArea"></div>
@@ -176,9 +224,9 @@
 
     <!-- Pestaña 2: Imágenes -->
     <div id="image-tab" class="tab-content">
-        <p>Sube una imagen para reducir su peso por debajo de 1MB para enviar por RingCentral.</p>
-        <div class="compress-box">
-            <input type="file" id="imageInput" accept="image/jpeg, image/png, image/webp" onchange="handleImage(event)">
+        <p>Arrastra una imagen, presiona <b>Ctrl+V</b> para pegar, o súbela manualmente.</p>
+        <div class="compress-box" id="dropZone">
+            <input type="file" id="imageInput" accept="image/jpeg, image/png, image/webp" onchange="handleFileInput(event)">
             <p style="color: #787774; font-size: 14px; margin-top: 10px;">Formatos soportados: JPG, PNG, WEBP</p>
         </div>
         <div id="imageInfo"></div>
@@ -187,13 +235,24 @@
     </div>
 </div>
 
+<!-- Botón Flotante para Copiar Todo -->
+<button id="floatingCopyBtn" class="floating-btn" onclick="copyAllFormattedText()">
+    <i class="fi fi-rr-copy"></i> Copiar toda la lista
+</button>
+
 <script>
+    // Variable global para guardar la estructura y exportar a Word
+    let globalDataStructure = {};
+
     // Cambiar Pestañas
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        // Marcar la pestaña correcta en la UI
+        document.querySelectorAll('.tab').forEach(t => {
+            if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
+        });
     }
 
     // Procesar Texto
@@ -202,32 +261,36 @@
         const lines = text.split('\n');
         const outputArea = document.getElementById('outputArea');
         outputArea.innerHTML = '';
+        globalDataStructure = {};
 
-        let data = {};
         let currentSection = 'General';
 
         lines.forEach(line => {
             let cleanLine = line.trim();
             if (!cleanLine) return;
 
-            // Detectar si es un título de sección (ej. *Roses* o *Roses Assorted*)
-            // También asumimos que si no tiene "QB" o "EB", podría ser un título
+            // Detectar si es un título de sección
             if ((cleanLine.startsWith('*') && cleanLine.endsWith('*')) || (!cleanLine.includes('QB') && !cleanLine.includes('EB') && cleanLine.length < 30)) {
                 currentSection = cleanLine.replace(/\*/g, '').trim();
-                if (!data[currentSection]) data[currentSection] = [];
+                if (!globalDataStructure[currentSection]) globalDataStructure[currentSection] = [];
             } else {
-                if (!data[currentSection]) data[currentSection] = [];
+                if (!globalDataStructure[currentSection]) globalDataStructure[currentSection] = [];
                 
-                // Formatear la línea: Quitar @ y cambiar $ por USD
-                let formattedLine = cleanLine
-                    .replace(/\s*@\s*/g, ' at ') // Cambia @ por ' at '
-                    .replace(/\$/g, 'USD ');    // Cambia $ por 'USD '
-                
-                // Extraer la cantidad de cajas para ordenar (ej. extrae el 4 de 4QB)
-                let match = formattedLine.match(/^(\d+)(QB|EB)/i);
+                // 1. Extraer la cantidad de cajas ORIGINAL para usarla en el ordenamiento
+                let match = cleanLine.match(/^(\d+)(QB|EB)/i);
                 let qty = match ? parseInt(match[1]) : 0;
 
-                data[currentSection].push({
+                // 2. Limpieza y Formateo a través de Regex
+                let formattedLine = cleanLine
+                    .replace(/^\d+[a-zA-Z]+\s+/i, '') // Quita el inicio (ej. "1QB ", "2EB ")
+                    .replace(/\s*\([a-zA-Z]\/[a-zA-Z]\)\s*/g, ' ') // Quita el tipo de caja (ej. "(T/W)", "(M/T)")
+                    .replace(/\s*PO\d+\s*$/i, '') // Quita el PO al final (ej. "PO104766")
+                    .replace(/\s*@\s*\$\s*([\d.]+)\s*per stem\.?/i, ' $1/stem.') // Formatea: "@ $1.39 per stem." -> " 1.39/stem."
+                    .replace(/\s*@\s*\$\s*([\d.]+)\s*for the box\.?/i, ' $1/box.') // Formatea cajas: "@ $159.99 for the box." -> " 159.99/box."
+                    .replace(/\s{2,}/g, ' ') // Elimina dobles espacios residuales
+                    .trim();
+
+                globalDataStructure[currentSection].push({
                     text: formattedLine,
                     qty: qty,
                     length: formattedLine.length
@@ -235,20 +298,23 @@
             }
         });
 
-        // Renderizar el HTML
-        for (const [section, items] of Object.entries(data)) {
+        // Renderizar el HTML y mostrar botón flotante
+        let hasData = false;
+        
+        for (const [section, items] of Object.entries(globalDataStructure)) {
             if (items.length === 0) continue;
+            hasData = true;
 
-            // Ordenar de mayor a menor cajas
+            // Ordenar de mayor a menor número de cajas
             items.sort((a, b) => b.qty - a.qty);
 
-            // Título de sección
+            // Crear Título de sección
             const titleEl = document.createElement('div');
             titleEl.className = 'section-title';
             titleEl.innerText = section;
             outputArea.appendChild(titleEl);
 
-            // Elementos
+            // Crear Elementos
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
@@ -261,19 +327,50 @@
                     <div class="${textClass}">${item.text}</div>
                     <div class="${charClass}">${item.length}/160</div>
                     <button onclick="copyToClipboard(this, '${item.text.replace(/'/g, "\\'")}')">
-                        <i class="fi fi-rr-copy"></i> Copiar
+                        <i class="fi fi-rr-copy"></i>
                     </button>
                 `;
                 outputArea.appendChild(row);
             });
         }
+
+        // Mostrar u ocultar el botón flotante
+        document.getElementById('floatingCopyBtn').style.display = hasData ? 'flex' : 'none';
     }
 
-    // Copiar al portapapeles
+    // Copiar Toda la Lista (Para Word)
+    function copyAllFormattedText() {
+        let finalString = "";
+        
+        for (const [section, items] of Object.entries(globalDataStructure)) {
+            if (items.length === 0) continue;
+            
+            finalString += `*${section}*\n`; // Agrega el título con asteriscos
+            items.forEach(item => {
+                finalString += `${item.text}\n`; // Agrega cada línea
+            });
+            finalString += `\n`; // Espacio entre secciones
+        }
+
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(finalString.trim()).then(() => {
+            const btn = document.getElementById('floatingCopyBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fi fi-rr-check"></i> ¡Lista Copiada!';
+            btn.style.backgroundColor = '#27ae60';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.backgroundColor = 'var(--text-color)';
+            }, 2000);
+        });
+    }
+
+    // Copiar línea individual
     function copyToClipboard(btnElement, text) {
         navigator.clipboard.writeText(text).then(() => {
             const originalHTML = btnElement.innerHTML;
-            btnElement.innerHTML = '<i class="fi fi-rr-check"></i> Copiado';
+            btnElement.innerHTML = '<i class="fi fi-rr-check"></i>';
             btnElement.style.color = '#27ae60';
             setTimeout(() => {
                 btnElement.innerHTML = originalHTML;
@@ -282,11 +379,61 @@
         });
     }
 
-    // Compresión de Imagen
-    function handleImage(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    // ==========================================
+    // LÓGICA DE IMÁGENES (DRAG, DROP, PASTE)
+    // ==========================================
 
+    const dragOverlay = document.getElementById('dragOverlay');
+
+    // Eventos Globales Drag & Drop
+    window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragOverlay.style.display = 'flex';
+    });
+
+    window.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        // Si el puntero sale completamente de la ventana
+        if (e.relatedTarget === null) {
+            dragOverlay.style.display = 'none';
+        }
+    });
+
+    window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragOverlay.style.display = 'none';
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            if (file.type.startsWith('image/')) {
+                switchTab('image-tab');
+                processImageFile(file);
+            }
+        }
+    });
+
+    // Evento Global de Pegado (Portapapeles)
+    window.addEventListener('paste', (e) => {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                switchTab('image-tab');
+                processImageFile(file);
+                e.preventDefault();
+                break;
+            }
+        }
+    });
+
+    // Input manual de archivo
+    function handleFileInput(event) {
+        const file = event.target.files[0];
+        if (file) processImageFile(file);
+    }
+
+    // Compresión de Imagen Core
+    function processImageFile(file) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = function (e) {
@@ -319,13 +466,12 @@
                 let quality = 0.9;
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 
-                // Bucle de compresión simple
                 while (dataUrl.length > 1000000 && quality > 0.1) {
                     quality -= 0.1;
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
                 }
 
-                const sizeKB = (dataUrl.length * (3/4)) / 1024; // Estimación base64 a bytes
+                const sizeKB = (dataUrl.length * (3/4)) / 1024; // Estimación bytes
                 
                 document.getElementById('imageInfo').innerHTML = `
                     <span style="color: ${sizeKB > 1000 ? '#eb5757' : '#27ae60'}">
