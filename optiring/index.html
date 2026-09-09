@@ -139,7 +139,15 @@
         .item-row:hover {
             background-color: var(--light-gray);
         }
-        /* Etiqueta de cajas (solo visual) */
+        
+        /* Contenedor e insignias (Visuales únicamente) */
+        .badge-container {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+            min-width: 140px; /* Alinea los textos a la misma altura visual */
+            flex-shrink: 0;
+        }
         .box-badge {
             background-color: #e3e2e0;
             color: #37352f;
@@ -147,10 +155,20 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
-            margin-right: 12px;
             min-width: 35px;
             text-align: center;
         }
+        .po-badge {
+            background-color: #e6ebf1;
+            color: #4a5c6e;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 65px;
+            text-align: center;
+        }
+
         .item-text {
             flex-grow: 1;
             font-size: 14px;
@@ -162,6 +180,7 @@
             margin-right: 15px;
             min-width: 50px;
             text-align: right;
+            flex-shrink: 0;
         }
         .too-long {
             color: var(--danger-color);
@@ -227,7 +246,7 @@
 
     <!-- Pestaña 1: Textos -->
     <div id="text-tab" class="tab-content active">
-        <p>Pega la lista de WhatsApp aquí. El sistema quitará las cajas, el tipo de empaque (ej. T/W), el PO, y formateará el precio.</p>
+        <p>Pega la lista de WhatsApp aquí. El sistema limpiará la línea para envío, pero mantendrá las cajas y el PO visibles a la izquierda.</p>
         <textarea id="inputText" placeholder="*Roses*\n1QB Roses 60cm Explorer (T/W) x 125 stems @ $1.39 per stem. PO104766"></textarea>
         <button class="btn-primary" onclick="processText()"><i class="fi fi-rr-magic-wand"></i> Procesar Texto</button>
         
@@ -253,7 +272,7 @@
 </button>
 
 <script>
-    // Variable global para guardar la estructura y exportar a Word
+    // Variable global para guardar la estructura
     let globalDataStructure = {};
 
     // Cambiar Pestañas
@@ -287,18 +306,22 @@
             } else {
                 if (!globalDataStructure[currentSection]) globalDataStructure[currentSection] = [];
                 
-                // 1. Extraer el prefijo (ej. "1QB", "25EB") para la UI y ordenamiento
+                // 1. Extraer el prefijo de cajas (ej. "1QB")
                 let boxMatch = cleanLine.match(/^(\d+(?:QB|EB))/i);
                 let qty = boxMatch ? parseInt(boxMatch[1]) : 0;
-                let boxPrefix = boxMatch ? boxMatch[1].toUpperCase() : '-';
+                let boxPrefix = boxMatch ? boxMatch[1].toUpperCase() : '';
 
-                // 2. Limpieza y Formateo a través de Regex (Omitiendo "Colors")
+                // 2. Extraer el PO
+                let poMatch = cleanLine.match(/PO\d+/i);
+                let poText = poMatch ? poMatch[0].toUpperCase() : '';
+
+                // 3. Limpieza y Formateo a través de Regex
                 let formattedLine = cleanLine
-                    .replace(/^\d+[a-zA-Z]+\s+/i, '') // Quita el inicio (ej. "1QB ", "2EB ")
+                    .replace(/^\d+[a-zA-Z]+\s+/i, '') // Quita el inicio de cajas
                     .replace(/\s*\([a-zA-Z]\/[a-zA-Z]\)\s*/g, ' ') // Quita el tipo de caja
-                    .replace(/\bAssorted Colors\b/gi, 'Assorted') // Quita Colors si acompaña a Assorted
+                    .replace(/\bAssorted Colors\b/gi, 'Assorted') // Quita Colors
                     .replace(/\s*PO\d+\s*$/i, '') // Quita el PO al final
-                    .replace(/\s*@\s*\$\s*([\d.]+)\s*per stem\.?/i, ' $1/stem.') // Formatea precio por tallo
+                    .replace(/\s*@\s*\$\s*([\d.]+)\s*per stem\.?/i, ' $1/stem.') // Formatea precio
                     .replace(/\s*@\s*\$\s*([\d.]+)\s*for the box\.?/i, ' $1/box.') // Formatea precio por caja
                     .replace(/\s{2,}/g, ' ') // Elimina dobles espacios
                     .trim();
@@ -307,6 +330,7 @@
                     text: formattedLine,
                     qty: qty,
                     boxPrefix: boxPrefix,
+                    poText: poText,
                     length: formattedLine.length
                 });
             }
@@ -337,8 +361,12 @@
                 const textClass = isTooLong ? 'item-text too-long' : 'item-text';
                 const charClass = isTooLong ? 'char-count too-long' : 'char-count';
                 
+                // Construcción de la fila con las insignias (badges) separadas del texto
                 row.innerHTML = `
-                    ${item.boxPrefix !== '-' ? `<div class="box-badge">${item.boxPrefix}</div>` : ''}
+                    <div class="badge-container">
+                        ${item.boxPrefix ? `<div class="box-badge">${item.boxPrefix}</div>` : ''}
+                        ${item.poText ? `<div class="po-badge">${item.poText}</div>` : ''}
+                    </div>
                     <div class="${textClass}">${item.text}</div>
                     <div class="${charClass}">${item.length}/160</div>
                     <button onclick="copyToClipboard(this, '${item.text.replace(/'/g, "\\'")}')">
@@ -366,7 +394,8 @@
             plainString += `${section}\n`;
             
             items.forEach(item => {
-                htmlString += `${item.text}<br>`; // Solo el texto procesado (sin etiquetas de caja)
+                // Solo se copia item.text (No incluye boxPrefix ni poText)
+                htmlString += `${item.text}<br>`; 
                 plainString += `${item.text}\n`;
             });
             
@@ -375,7 +404,6 @@
         }
         htmlString += "</div>";
 
-        // Usar API de portapapeles moderno para copiar texto enriquecido
         try {
             const clipboardItem = new ClipboardItem({
                 'text/plain': new Blob([plainString.trim()], { type: 'text/plain' }),
@@ -385,11 +413,9 @@
             navigator.clipboard.write([clipboardItem]).then(() => {
                 showSuccessButton();
             }).catch(err => {
-                // Fallback si el navegador no soporta ClipboardItem HTML
                 navigator.clipboard.writeText(plainString.trim()).then(() => showSuccessButton());
             });
         } catch (error) {
-            // Fallback general
             navigator.clipboard.writeText(plainString.trim()).then(() => showSuccessButton());
         }
     }
@@ -406,7 +432,7 @@
         }, 2000);
     }
 
-    // Copiar línea individual
+    // Copiar línea individual (Solo item.text)
     function copyToClipboard(btnElement, text) {
         navigator.clipboard.writeText(text).then(() => {
             const originalHTML = btnElement.innerHTML;
