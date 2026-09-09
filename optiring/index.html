@@ -27,7 +27,7 @@
         }
         .container {
             width: 100%;
-            max-width: 1000px; /* Diseño más ancho */
+            max-width: 1000px;
         }
         h1 {
             font-size: 24px;
@@ -112,7 +112,7 @@
             font-size: 15px;
             font-weight: 600;
             z-index: 1000;
-            display: none; /* Se activa al procesar */
+            display: none;
             border: none;
         }
         .floating-btn:hover {
@@ -138,6 +138,18 @@
         }
         .item-row:hover {
             background-color: var(--light-gray);
+        }
+        /* Etiqueta de cajas (solo visual) */
+        .box-badge {
+            background-color: #e3e2e0;
+            color: #37352f;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 12px;
+            min-width: 35px;
+            text-align: center;
         }
         .item-text {
             flex-grow: 1;
@@ -249,7 +261,6 @@
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        // Marcar la pestaña correcta en la UI
         document.querySelectorAll('.tab').forEach(t => {
             if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
         });
@@ -276,23 +287,26 @@
             } else {
                 if (!globalDataStructure[currentSection]) globalDataStructure[currentSection] = [];
                 
-                // 1. Extraer la cantidad de cajas ORIGINAL para usarla en el ordenamiento
-                let match = cleanLine.match(/^(\d+)(QB|EB)/i);
-                let qty = match ? parseInt(match[1]) : 0;
+                // 1. Extraer el prefijo (ej. "1QB", "25EB") para la UI y ordenamiento
+                let boxMatch = cleanLine.match(/^(\d+(?:QB|EB))/i);
+                let qty = boxMatch ? parseInt(boxMatch[1]) : 0;
+                let boxPrefix = boxMatch ? boxMatch[1].toUpperCase() : '-';
 
-                // 2. Limpieza y Formateo a través de Regex
+                // 2. Limpieza y Formateo a través de Regex (Omitiendo "Colors")
                 let formattedLine = cleanLine
                     .replace(/^\d+[a-zA-Z]+\s+/i, '') // Quita el inicio (ej. "1QB ", "2EB ")
-                    .replace(/\s*\([a-zA-Z]\/[a-zA-Z]\)\s*/g, ' ') // Quita el tipo de caja (ej. "(T/W)", "(M/T)")
-                    .replace(/\s*PO\d+\s*$/i, '') // Quita el PO al final (ej. "PO104766")
-                    .replace(/\s*@\s*\$\s*([\d.]+)\s*per stem\.?/i, ' $1/stem.') // Formatea: "@ $1.39 per stem." -> " 1.39/stem."
-                    .replace(/\s*@\s*\$\s*([\d.]+)\s*for the box\.?/i, ' $1/box.') // Formatea cajas: "@ $159.99 for the box." -> " 159.99/box."
-                    .replace(/\s{2,}/g, ' ') // Elimina dobles espacios residuales
+                    .replace(/\s*\([a-zA-Z]\/[a-zA-Z]\)\s*/g, ' ') // Quita el tipo de caja
+                    .replace(/\bAssorted Colors\b/gi, 'Assorted') // Quita Colors si acompaña a Assorted
+                    .replace(/\s*PO\d+\s*$/i, '') // Quita el PO al final
+                    .replace(/\s*@\s*\$\s*([\d.]+)\s*per stem\.?/i, ' $1/stem.') // Formatea precio por tallo
+                    .replace(/\s*@\s*\$\s*([\d.]+)\s*for the box\.?/i, ' $1/box.') // Formatea precio por caja
+                    .replace(/\s{2,}/g, ' ') // Elimina dobles espacios
                     .trim();
 
                 globalDataStructure[currentSection].push({
                     text: formattedLine,
                     qty: qty,
+                    boxPrefix: boxPrefix,
                     length: formattedLine.length
                 });
             }
@@ -324,6 +338,7 @@
                 const charClass = isTooLong ? 'char-count too-long' : 'char-count';
                 
                 row.innerHTML = `
+                    ${item.boxPrefix !== '-' ? `<div class="box-badge">${item.boxPrefix}</div>` : ''}
                     <div class="${textClass}">${item.text}</div>
                     <div class="${charClass}">${item.length}/160</div>
                     <button onclick="copyToClipboard(this, '${item.text.replace(/'/g, "\\'")}')">
@@ -338,32 +353,57 @@
         document.getElementById('floatingCopyBtn').style.display = hasData ? 'flex' : 'none';
     }
 
-    // Copiar Toda la Lista (Para Word)
+    // Copiar Toda la Lista con Formato Enriquecido (Word / HTML)
     function copyAllFormattedText() {
-        let finalString = "";
+        let htmlString = "<div style='font-family: Arial, sans-serif; font-size: 14px;'>";
+        let plainString = "";
         
         for (const [section, items] of Object.entries(globalDataStructure)) {
             if (items.length === 0) continue;
             
-            finalString += `*${section}*\n`; // Agrega el título con asteriscos
-            items.forEach(item => {
-                finalString += `${item.text}\n`; // Agrega cada línea
-            });
-            finalString += `\n`; // Espacio entre secciones
-        }
-
-        // Copiar al portapapeles
-        navigator.clipboard.writeText(finalString.trim()).then(() => {
-            const btn = document.getElementById('floatingCopyBtn');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fi fi-rr-check"></i> ¡Lista Copiada!';
-            btn.style.backgroundColor = '#27ae60';
+            // Sección: Título en negrita para HTML, texto plano para fallback
+            htmlString += `<strong>${section}</strong><br>`;
+            plainString += `${section}\n`;
             
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.style.backgroundColor = 'var(--text-color)';
-            }, 2000);
-        });
+            items.forEach(item => {
+                htmlString += `${item.text}<br>`; // Solo el texto procesado (sin etiquetas de caja)
+                plainString += `${item.text}\n`;
+            });
+            
+            htmlString += `<br>`;
+            plainString += `\n`;
+        }
+        htmlString += "</div>";
+
+        // Usar API de portapapeles moderno para copiar texto enriquecido
+        try {
+            const clipboardItem = new ClipboardItem({
+                'text/plain': new Blob([plainString.trim()], { type: 'text/plain' }),
+                'text/html': new Blob([htmlString], { type: 'text/html' })
+            });
+
+            navigator.clipboard.write([clipboardItem]).then(() => {
+                showSuccessButton();
+            }).catch(err => {
+                // Fallback si el navegador no soporta ClipboardItem HTML
+                navigator.clipboard.writeText(plainString.trim()).then(() => showSuccessButton());
+            });
+        } catch (error) {
+            // Fallback general
+            navigator.clipboard.writeText(plainString.trim()).then(() => showSuccessButton());
+        }
+    }
+
+    function showSuccessButton() {
+        const btn = document.getElementById('floatingCopyBtn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fi fi-rr-check"></i> ¡Formato Word Copiado!';
+        btn.style.backgroundColor = '#27ae60';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.backgroundColor = 'var(--text-color)';
+        }, 2000);
     }
 
     // Copiar línea individual
@@ -385,7 +425,6 @@
 
     const dragOverlay = document.getElementById('dragOverlay');
 
-    // Eventos Globales Drag & Drop
     window.addEventListener('dragover', (e) => {
         e.preventDefault();
         dragOverlay.style.display = 'flex';
@@ -393,7 +432,6 @@
 
     window.addEventListener('dragleave', (e) => {
         e.preventDefault();
-        // Si el puntero sale completamente de la ventana
         if (e.relatedTarget === null) {
             dragOverlay.style.display = 'none';
         }
@@ -412,7 +450,6 @@
         }
     });
 
-    // Evento Global de Pegado (Portapapeles)
     window.addEventListener('paste', (e) => {
         const items = e.clipboardData.items;
         for (let i = 0; i < items.length; i++) {
@@ -426,13 +463,11 @@
         }
     });
 
-    // Input manual de archivo
     function handleFileInput(event) {
         const file = event.target.files[0];
         if (file) processImageFile(file);
     }
 
-    // Compresión de Imagen Core
     function processImageFile(file) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -443,7 +478,6 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // Redimensionar si es muy grande (máx 1920px ancho/alto)
                 let width = img.width;
                 let height = img.height;
                 const maxDim = 1920;
@@ -462,7 +496,6 @@
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Comprimir reduciendo la calidad hasta que sea < 1MB
                 let quality = 0.9;
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 
@@ -471,7 +504,7 @@
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
                 }
 
-                const sizeKB = (dataUrl.length * (3/4)) / 1024; // Estimación bytes
+                const sizeKB = (dataUrl.length * (3/4)) / 1024; 
                 
                 document.getElementById('imageInfo').innerHTML = `
                     <span style="color: ${sizeKB > 1000 ? '#eb5757' : '#27ae60'}">
