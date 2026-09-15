@@ -739,6 +739,11 @@
                     </div>
                 </div>
 
+                <!-- BOTON MIX BOX -->
+                <button class="btn" onclick="openMixBoxModal()" style="background: var(--text-color); color: white; border-color: var(--text-color);">
+                    <i class="ri-box-3-line"></i> Mix Box
+                </button>
+
                 <!-- BOTON FARM ARRIVAL -->
                 <button class="btn" onclick="openFarmsModal()">
                     <i class="ri-truck-line"></i> Farm Arrival
@@ -838,6 +843,44 @@
 
             <div id="farmsListGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow-y: auto; padding-right: 8px;">
                 <!-- Cargado via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mix Box Modal -->
+    <div id="mixBoxModal" class="modal-overlay">
+        <div class="modal-content" style="width: 750px; padding: 32px; display: flex; flex-direction: column; height: auto; max-height: 85vh;">
+            <button class="close-btn" onclick="closeModal('mixBoxModal')"><i class="ri-close-line"></i></button>
+            <h2 style="margin-top:0; margin-bottom: 8px; font-size: 1.5rem; display: flex; align-items: center; gap: 8px;">
+                <i class="ri-box-3-line"></i> Mix Box Creator
+            </h2>
+            <p style="font-size: 0.9rem; color: #777; margin-bottom: 24px;">Search varieties to see which farms can pack them together in the same box.</p>
+            
+            <!-- Buscador y Cápsulas -->
+            <div style="position: relative; margin-bottom: 20px;">
+                <div class="dropdown-search-area" style="margin: 0; padding: 8px; cursor: text;" onclick="document.getElementById('mixBoxSearch').focus()">
+                    <div class="notion-selected-container" id="mixBoxPills" style="margin-bottom: 0;"></div>
+                    <input type="text" class="dropdown-search-input" id="mixBoxSearch" placeholder="Type variety name (e.g. Freedom)..." oninput="handleMixBoxSearch(event)" autocomplete="off">
+                </div>
+                <!-- Dropdown de Autocompletado -->
+                <div class="multi-dropdown-options" id="mixBoxAutocomplete" style="width: 100%; top: calc(100% + 4px);">
+                    <div class="options-list" id="mixBoxAutocompleteList"></div>
+                </div>
+            </div>
+
+            <!-- Preview de Productos Seleccionados (Fotitos) -->
+            <div id="mixBoxSelectedPreview" style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 16px; min-height: 80px;">
+                <!-- Cargado por JS -->
+            </div>
+
+            <!-- Resultados de Fincas (Intersección) -->
+            <div style="flex: 1; border-top: 1px solid var(--border-color); padding-top: 20px; overflow-y: auto;">
+                <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-truck-line"></i> Available Farms for this Mix
+                </h3>
+                <div id="mixBoxFarmResults">
+                    <div style="color: #999; font-size: 0.9rem;">Add at least one variety to check availability.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1608,8 +1651,153 @@
             document.getElementById(id).classList.remove('active');
         }
 
+        // ==========================================
+        // LÓGICA DE MIX BOX CREATOR
+        // ==========================================
+        let mixSelectedVarieties = [];
+
+        function openMixBoxModal() {
+            mixSelectedVarieties = [];
+            document.getElementById('mixBoxSearch').value = '';
+            document.getElementById('mixBoxAutocomplete').classList.remove('show');
+            renderMixBoxState();
+            document.getElementById('mixBoxModal').classList.add('active');
+            setTimeout(() => document.getElementById('mixBoxSearch').focus(), 100);
+        }
+
+        function handleMixBoxSearch(e) {
+            const term = e.target.value.toLowerCase().trim();
+            const list = document.getElementById('mixBoxAutocompleteList');
+            const dropdown = document.getElementById('mixBoxAutocomplete');
+
+            if (!term) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            // Filtrar variedades (que no estén ya seleccionadas)
+            const matches = allData.filter(row => 
+                row.NAME && 
+                row.NAME.toLowerCase().includes(term) && 
+                !mixSelectedVarieties.some(v => v.name === row.NAME)
+            );
+
+            list.innerHTML = '';
+            if (matches.length === 0) {
+                list.innerHTML = '<div style="padding: 8px 12px; color: #999; font-size: 0.85rem;">No matches found</div>';
+            } else {
+                matches.slice(0, 8).forEach(row => {
+                    const div = document.createElement('div');
+                    div.className = 'multi-dropdown-option';
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.gap = '12px';
+                    div.innerHTML = `
+                        <img src="${row.IMG ? row.IMG.trim() : fallbackImg}" onerror="this.onerror=null; this.src='${fallbackImg}'" style="width:32px; height:32px; border-radius:4px; object-fit:cover; border: 1px solid var(--border-color);"> 
+                        <span style="font-weight: 500;">${row.NAME}</span>
+                    `;
+                    div.onclick = () => addVarietyToMixBox(row);
+                    list.appendChild(div);
+                });
+            }
+            dropdown.classList.add('show');
+        }
+
+        function addVarietyToMixBox(row) {
+            const farms = row.FARM ? row.FARM.split(',').map(f => f.trim()) : [];
+            mixSelectedVarieties.push({
+                name: row.NAME,
+                img: row.IMG ? row.IMG.trim() : fallbackImg,
+                farms: farms
+            });
+            
+            document.getElementById('mixBoxSearch').value = '';
+            document.getElementById('mixBoxAutocomplete').classList.remove('show');
+            document.getElementById('mixBoxSearch').focus();
+            renderMixBoxState();
+        }
+
+        function removeVarietyFromMixBox(name) {
+            mixSelectedVarieties = mixSelectedVarieties.filter(v => v.name !== name);
+            renderMixBoxState();
+        }
+
+        function renderMixBoxState() {
+            // 1. Renderizar Cápsulas (Pills) en el buscador
+            const pillsContainer = document.getElementById('mixBoxPills');
+            pillsContainer.innerHTML = '';
+            mixSelectedVarieties.forEach(v => {
+                pillsContainer.innerHTML += `
+                    <div class="notion-selected-pill">
+                        ${v.name}
+                        <i class="ri-close-line" onclick="removeVarietyFromMixBox('${v.name.replace(/'/g, "\\'")}')"></i>
+                    </div>`;
+            });
+
+            // 2. Renderizar las fotitos abajo
+            const previewContainer = document.getElementById('mixBoxSelectedPreview');
+            previewContainer.innerHTML = '';
+            mixSelectedVarieties.forEach(v => {
+                previewContainer.innerHTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 70px; gap: 6px; flex-shrink: 0;">
+                        <img src="${v.img}" onerror="this.onerror=null; this.src='${fallbackImg}'" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <span style="font-size: 0.7rem; font-weight: 500; text-align: center; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${v.name}</span>
+                    </div>
+                `;
+            });
+
+            // 3. Calcular intersección de fincas
+            const resultsContainer = document.getElementById('mixBoxFarmResults');
+            
+            if (mixSelectedVarieties.length === 0) {
+                resultsContainer.innerHTML = '<div style="color: #999; font-size: 0.9rem;">Add at least one variety to check availability.</div>';
+                return;
+            }
+
+            // Empieza asumiendo que las fincas posibles son las de la primera flor
+            let commonFarms = mixSelectedVarieties[0].farms;
+            
+            // Filtra iterativamente asegurando que las siguientes flores también tengan esa finca
+            for (let i = 1; i < mixSelectedVarieties.length; i++) {
+                commonFarms = commonFarms.filter(farm => mixSelectedVarieties[i].farms.includes(farm));
+            }
+
+            // Si no hay fincas en común, mostrar error
+            if (commonFarms.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div style="background: #FFEBEE; border: 1px solid #FFCDD2; color: #C62828; padding: 20px; border-radius: 8px; display: flex; gap: 16px; align-items: center;">
+                        <i class="ri-emotion-sad-line" style="font-size: 2rem;"></i>
+                        <div>
+                            <strong style="display: block; font-size: 1.1rem; margin-bottom: 4px;">We are sorry!</strong>
+                            We cannot make this box. No single farm produces all these selected varieties together.
+                        </div>
+                    </div>`;
+            } else {
+                // Si hay fincas, renderizarlas
+                let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+                commonFarms.sort().forEach(farm => {
+                    const status = farmsArrival[farm.toLowerCase()] || '';
+                    const { iconHtml, bgStyle } = getFarmIconHtml(status);
+                    html += `
+                        <div class="capsule" style="${bgStyle}; padding: 8px 14px; font-size: 0.9rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            ${iconHtml} ${farm}
+                        </div>`;
+                });
+                html += '</div>';
+                resultsContainer.innerHTML = html;
+            }
+        }
+
         window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) event.target.classList.remove('active');
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+            
+            // Cerrar el autocompletado de MixBox si se hace clic fuera
+            if (!event.target.closest('#mixBoxAutocomplete') && !event.target.closest('.dropdown-search-area')) {
+                const autocomplete = document.getElementById('mixBoxAutocomplete');
+                if (autocomplete) autocomplete.classList.remove('show');
+            }
         }
     </script>
 </body>
