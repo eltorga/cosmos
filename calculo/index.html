@@ -1,320 +1,1205 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cálculo - Sistema Comercial</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #37352f; margin: 0; padding: 0; overflow: hidden; background: #f7f7f5; }
-        
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de Precios US / UK</title>
 
-        .notion-input { border: 1px solid transparent; border-radius: 4px; padding: 4px 8px; background: transparent; transition: background 0.2s, border 0.2s; outline: none; width: 100%; }
-        .notion-input:hover { background: #EFEFEF; }
-        .notion-input:focus { background: #fff; border: 1px solid #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
-        
-        .table-header { font-size: 11px; color: #787774; font-weight: 500; text-transform: uppercase; padding: 8px; border-bottom: 1px solid #e9e9e7; text-align: left; white-space: nowrap; }
-        .table-cell { padding: 4px; border-bottom: 1px solid #e9e9e7; vertical-align: middle; }
+<!-- UIcons by Flaticon -->
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
 
-        .notion-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-        .btn-ghost { background: transparent; color: #787774; }
-        .btn-ghost:hover { background: #efefe6; color: #37352f; }
-        .btn-primary { background: #2383e2; color: #fff; border: 1px solid #1a73e8; }
-        .btn-primary:hover { background: #006bce; }
-    </style>
+<style>
+:root{
+  --page:#fbfbfa;
+  --white:#fff;
+  --text:#37352f;
+  --muted:#787774;
+  --faint:#a7a7a4;
+  --line:#e9e9e7;
+  --line2:#dededb;
+  --hover:#f7f7f5;
+  --selected:#f1f1ef;
+  --blue:#2383e2;
+  --blue-soft:#edf6ff;
+  --green:#2f9e69;
+  --green-bg:#eaf7f0;
+  --red:#e05252;
+  --red-bg:#fff0f0;
+  --shadow:0 14px 40px rgba(15,15,15,.13);
+}
+*{box-sizing:border-box}
+html{background:var(--page)}
+body{
+  margin:0;
+  background:var(--page);
+  color:var(--text);
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:14px;
+}
+button,input{font:inherit;color:inherit}
+button{touch-action:manipulation}
+.fi{line-height:1}
+
+.app{
+  width:min(1200px,calc(100% - 32px));
+  margin:0 auto;
+  padding:46px 0 80px;
+}
+
+.page-head{margin-bottom:25px}
+.eyebrow{
+  display:flex;align-items:center;gap:7px;
+  color:var(--muted);font-size:12px;font-weight:600;
+  margin-bottom:8px;
+}
+.eyebrow-dot{width:8px;height:8px;border-radius:50%;background:#d3d3d0}
+h1{
+  margin:0;
+  font-size:34px;
+  line-height:1.2;
+  letter-spacing:-.035em;
+  font-weight:700;
+}
+.subtitle{
+  margin:8px 0 0;
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.55;
+}
+
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:2px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:24px;
+}
+.tab{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  height:42px;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  position:relative;
+  font-weight:500;
+}
+.tab:hover{background:var(--hover);color:var(--text)}
+.tab.active{color:var(--text);font-weight:600}
+.tab.active::after{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;bottom:-1px;
+  height:2px;background:var(--text);
+}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Notion-like database table */
+.database-wrap{
+  border:1px solid var(--line);
+  background:var(--white);
+  border-radius:7px;
+  overflow:hidden;
+}
+.calc-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+.calc-table col.box{width:39%}
+.calc-table col.qty{width:13%}
+.calc-table col.cost{width:15%}
+.calc-table col.markup{width:15%}
+.calc-table col.price{width:15%}
+.calc-table col.action{width:42px}
+
+.calc-table th{
+  height:38px;
+  padding:0 10px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:500;
+  text-align:left;
+}
+.calc-table th:last-child{border-right:0}
+.calc-table td{
+  height:59px;
+  padding:0;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  vertical-align:middle;
+}
+.calc-table td:last-child{border-right:0}
+.calc-table tbody tr:last-child td{border-bottom:0}
+
+.cell-input{
+  width:100%;
+  height:58px;
+  border:0;
+  outline:0;
+  background:transparent;
+  padding:0 11px;
+}
+.cell-input:hover{background:var(--hover)}
+.cell-input:focus{
+  background:#fff;
+  box-shadow:inset 0 0 0 2px var(--blue);
+}
+.cell-input::placeholder{color:#bab9b6}
+
+.money-wrap,.percent-wrap{height:58px;position:relative}
+.money-symbol,.percent-symbol{
+  position:absolute;top:0;height:58px;
+  display:flex;align-items:center;
+  pointer-events:none;
+  color:var(--muted);
+  font-size:13px;
+}
+.money-symbol{left:10px}
+.percent-symbol{right:10px}
+.money-wrap .cell-input{padding-left:24px}
+.percent-wrap .cell-input{padding-right:26px}
+.price-cell .cell-input{font-weight:600}
+
+.box-btn{
+  width:100%;
+  height:58px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 10px;
+  cursor:pointer;
+  text-align:left;
+}
+.box-btn:hover{background:var(--hover)}
+.box-btn:focus{outline:none;box-shadow:inset 0 0 0 2px var(--blue)}
+.box-info{min-width:0;display:flex;align-items:center;gap:8px}
+.box-copy{min-width:0}
+.box-name{
+  display:block;
+  font-weight:500;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.box-meta{
+  display:block;
+  margin-top:3px;
+  color:var(--faint);
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.box-arrow{color:#aaa9a5;font-size:18px;flex:0 0 auto}
+
+.status-dot{
+  width:9px;height:9px;border-radius:50%;
+  display:inline-block;flex:0 0 auto;
+  box-shadow:0 0 0 2px #fff;
+}
+.status-dot.y{background:var(--green)}
+.status-dot.n{background:var(--red)}
+.status-dot.none{background:#c7c7c4}
+
+.action-cell{text-align:center}
+.icon-btn{
+  border:0;
+  background:transparent;
+  width:34px;height:34px;
+  border-radius:5px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:#a6a6a2;
+}
+.icon-btn:hover{background:var(--hover);color:var(--red)}
+.icon-btn:disabled{opacity:.25;cursor:not-allowed;background:transparent}
+
+.add-row{
+  border:0;
+  background:#fff;
+  width:100%;
+  height:42px;
+  padding:0 12px;
+  border-top:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  cursor:pointer;
+  text-align:left;
+}
+.add-row:hover{background:var(--hover);color:var(--text)}
+.add-row i{font-size:13px}
+
+.section-caption{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 10px;
+}
+.section-caption h2{
+  margin:0;
+  font-size:18px;
+  letter-spacing:-.02em;
+}
+.section-caption p{
+  margin:3px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+.soft-badge{
+  background:var(--hover);
+  border-radius:5px;
+  padding:6px 8px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+/* Shared dimensional adjustment, separate for each market. */
+.caption-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.padding-control{
+  display:flex;align-items:center;gap:10px;
+  padding:5px 8px 5px 10px;
+  border:1px solid var(--line2);
+  background:#fff;
+  border-radius:7px;
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+}
+.padding-control input{
+  width:64px;height:32px;
+  padding:0 7px;
+  text-align:center;
+  background:var(--page);
+  border:1px solid var(--line2);
+  border-radius:5px;
+  color:var(--text);
+  font-size:14px;
+  font-weight:700;
+  outline:none;
+}
+.padding-control input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(35,131,226,.10)}
+.padding-control input[aria-invalid="true"]{border-color:var(--red);background:var(--red-bg)}
+.padding-control .unit{color:var(--faint)}
+@media(max-width:680px){
+  .section-caption{align-items:flex-start;flex-direction:column}
+  .caption-actions{justify-content:flex-start}
+}
+
+/* Stem calculator */
+.stem-table col.name{width:46%}
+.stem-table col.stems{width:24%}
+.stem-table col.unitprice{width:25%}
+.stem-summary{
+  margin-top:20px;
+  border-top:1px solid var(--line2);
+  padding-top:17px;
+  display:grid;
+  grid-template-columns:46% 24% 25% 42px;
+  align-items:center;
+  row-gap:14px;
+}
+.summary-label{
+  text-align:right;
+  padding-right:22px;
+  font-size:15px;
+  font-weight:700;
+}
+.summary-value{
+  font-size:16px;
+  font-weight:700;
+}
+.summary-price{
+  font-size:19px;
+  font-weight:700;
+}
+.summary-blue{color:#0645e5}
+
+/* Box selector modal */
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:rgba(15,15,15,.28);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+.overlay.open{display:flex}
+.modal{
+  width:min(900px,100%);
+  max-height:min(800px,90vh);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+}
+.modal-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:13px 14px;
+  border-bottom:1px solid var(--line);
+}
+.modal-title{flex:1;min-width:0}
+.modal-title strong{display:block;font-size:14px}
+.modal-title span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:2px;
+}
+.modal-close{
+  width:32px;height:32px;border:0;background:transparent;
+  border-radius:5px;cursor:pointer;color:var(--muted);
+}
+.modal-close:hover{background:var(--hover);color:var(--text)}
+
+.search-wrap{
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  position:relative;
+}
+.search-wrap i{
+  position:absolute;
+  left:24px;top:21px;
+  color:#aaa9a5;font-size:13px;
+}
+.search{
+  width:100%;
+  height:37px;
+  padding:0 10px 0 32px;
+  outline:none;
+  border:1px solid var(--line2);
+  border-radius:6px;
+  background:#fff;
+}
+.search:focus{
+  border-color:#a7c7e8;
+  box-shadow:0 0 0 2px rgba(35,131,226,.11);
+}
+
+.box-columns,.box-option{
+  display:grid;
+  grid-template-columns:minmax(260px,2fr) repeat(4,minmax(78px,.65fr));
+  align-items:center;
+}
+.box-columns{
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  background:#fbfbfa;
+  font-size:11px;
+}
+.box-list{
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.group-title{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#f7f7f5;
+  color:#5f5e5b;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:7px 12px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.015em;
+}
+.group-title:first-child{border-top:0}
+.box-option{
+  width:100%;
+  min-height:45px;
+  padding:0 12px;
+  border:0;
+  border-bottom:1px solid #f1f1ef;
+  background:#fff;
+  text-align:left;
+  cursor:pointer;
+}
+.box-option:hover{background:var(--hover)}
+.option-name-wrap{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding-right:12px;
+}
+.option-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:500;
+}
+.measure{font-size:12px;color:var(--muted)}
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:32px 15px;
+}
+.modal-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 12px;
+  background:#fbfbfa;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+}
+
+@media(max-width:800px){
+  .app{width:calc(100% - 20px);padding-top:28px}
+  h1{font-size:28px}
+  .tabs{overflow:auto}
+  .database-wrap{overflow-x:auto}
+  .calc-table{min-width:830px}
+  .add-row{min-width:830px}
+  .stem-summary{min-width:830px}
+  .box-columns,.box-option{
+    grid-template-columns:minmax(220px,2fr) repeat(3,minmax(70px,.7fr));
+  }
+  .box-columns>:last-child,.box-option>:last-child{display:none}
+}
+</style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col m-0 p-0">
+<body>
+<main class="app">
+  <header class="page-head">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> Price tools</div>
+    <h1>Calculadora de precios</h1>
+    <p class="subtitle">Cálculos US y UK con cajas de Sheet1, estado de aprobación y una calculadora independiente de precio por tallo.</p>
+  </header>
 
-    <!-- Login Screen -->
-    <div id="login-overlay" class="fixed inset-0 bg-white z-[99999] flex flex-col items-center justify-center transition-opacity duration-300">
-        <i class="ri-calculator-line text-5xl text-gray-400 mb-4"></i>
-        <h2 class="text-xl font-bold text-gray-800">Sistema de Operaciones Comerciales</h2>
-        <p class="text-sm text-gray-500 mt-2 mb-6">Para ver, por favor ingresa la clave.</p>
-        <div class="relative w-64">
-            <input type="password" id="sys-pwd" class="w-full border border-gray-300 rounded-md py-2 px-3 outline-none focus:border-blue-500 pr-10" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkLogin()">
-            <i class="ri-arrow-right-line absolute right-3 top-2.5 text-gray-400 cursor-pointer hover:text-blue-500" onclick="checkLogin()"></i>
-        </div>
-        <p id="pwd-error" class="text-red-500 text-xs mt-2 hidden">Clave incorrecta</p>
+  <nav class="tabs" aria-label="Pestañas">
+    <button class="tab active" data-tab="us" type="button"><i class="fi fi-rr-dollar"></i> US</button>
+    <button class="tab" data-tab="uk" type="button"><i class="fi fi-rr-pound"></i> UK</button>
+    <button class="tab" data-tab="stem" type="button"><i class="fi fi-rr-calculator"></i> Precio por tallo</button>
+  </nav>
+
+  <!-- US -->
+  <section id="panel-us" class="panel active">
+    <div class="section-caption">
+      <div>
+        <h2>US</h2>
+        <p>Las cajas de finca se muestran agrupadas por nombre para encontrarlas más rápido.</p>
+      </div>
+      <div class="caption-actions">
+        <label class="padding-control" title="Sheet1!U2: añade centímetros a las tres dimensiones de las cajas de finca. Las cajas base no cambian.">
+          Ajuste de finca (U2)
+          <input id="usPadding" type="text" inputmode="decimal" value="2" aria-label="Ajuste de finca US, en centímetros" aria-invalid="false">
+          <span class="unit">cm</span>
+        </label>
+        <span class="soft-badge">Markup inicial 25%</span>
+      </div>
     </div>
 
-    <!-- Header Principal -->
-    <header class="flex justify-between items-center border-b border-gray-200 px-6 py-4 shrink-0 w-full bg-white z-10 shadow-sm">
-        <div class="font-bold text-xl flex items-center gap-2">
-            <i class="ri-calculator-fill text-blue-600"></i> Calculo de Cajas
-        </div>
-    </header>
+    <div class="database-wrap">
+      <table class="calc-table">
+        <colgroup>
+          <col class="box"><col class="qty"><col class="cost"><col class="markup"><col class="price"><col class="action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Tipo de caja</th>
+            <th>Cantidad</th>
+            <th>Costo</th>
+            <th>Markup</th>
+            <th>Precio</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="usRows"></tbody>
+      </table>
+      <button class="add-row" data-add="us" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+    </div>
+  </section>
 
-    <!-- Contenido: Calculo -->
-    <div class="flex-col flex-grow min-h-0 w-full overflow-auto px-6 py-8 flex items-center">
-        
-        <!-- Tabla de Cálculo -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px] mb-8">
-            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-calculator-line text-blue-500 mr-2"></i> Tabla de Cálculo</h3>
-            <table class="w-full text-sm border-collapse" id="calc-table">
-                <thead>
-                    <tr>
-                        <th class="table-header w-[120px]">Box Type</th>
-                        <th class="table-header w-[80px]">Stems</th>
-                        <th class="table-header w-[100px]">Cost</th>
-                        <th class="table-header w-[100px]">Markup</th>
-                        <th class="table-header w-[100px]">Price</th>
-                        <th class="table-header w-[40px]"></th>
-                    </tr>
-                </thead>
-                <tbody id="calc-table-body">
-                    <!-- Filas Dinámicas -->
-                </tbody>
-            </table>
-            <button onclick="addCalcTableRow()" class="notion-btn btn-ghost mt-2"><i class="ri-add-line"></i> Agregar Fila</button>
-        </div>
-
-        <!-- Desglose de Caja -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px]">
-            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-box-3-line text-blue-500 mr-2"></i> Desglose de Caja</h3>
-            <table class="w-full text-sm text-left mb-2">
-                <thead>
-                    <tr class="text-gray-500 text-xs border-b">
-                        <th class="pb-2 w-[40%]">Nombre Variedad</th>
-                        <th class="pb-2 w-[25%] text-center">Cantidad Tallos</th>
-                        <th class="pb-2 w-[25%] text-center">Precio x Tallo</th>
-                        <th class="pb-2 w-[10%]"></th>
-                    </tr>
-                </thead>
-                <tbody id="calc-breakdown-body">
-                    <!-- Filas init -->
-                </tbody>
-            </table>
-            <button class="notion-btn btn-ghost text-xs mb-6" onclick="addBreakdownRow()"><i class="ri-add-line"></i> Más Filas</button>
-            
-            <!-- Totales -->
-            <div class="border-t pt-4 grid grid-cols-10 gap-4 font-bold text-gray-700 items-center">
-                <div class="col-span-4 text-right">TOTALES:</div>
-                <div class="col-span-3 text-center" id="calc-tot-stems">0</div>
-                <div class="col-span-3">
-                    <span class="text-lg text-gray-800">$<span id="calc-tot-price">0,00</span></span>
-                </div>
-            </div>
-            <div class="grid grid-cols-10 gap-4 mt-2 font-bold text-blue-700 items-center">
-                <div class="col-span-4 text-right">PRECIO POR TALLO:</div>
-                <div class="col-span-3"></div>
-                <div class="col-span-3">
-                    <span class="text-lg">$<span id="calc-avg-price">0,00</span></span>
-                </div>
-            </div>
-        </div>
+  <!-- UK -->
+  <section id="panel-uk" class="panel">
+    <div class="section-caption">
+      <div>
+        <h2>UK</h2>
+        <p>Solo cajas de finca · Costo en USD y precio en GBP. El ajuste modifica el peso y la aprobación; el flete UK se calcula con su caja base UK.</p>
+      </div>
+      <div class="caption-actions">
+        <label class="padding-control" title="Ajuste independiente para UK: añade centímetros a las medidas de finca para evaluar su capacidad frente a la caja UK equivalente.">
+          Ajuste de finca (U2)
+          <input id="ukPadding" type="text" inputmode="decimal" value="2" aria-label="Ajuste de finca UK, en centímetros" aria-invalid="false">
+          <span class="unit">cm</span>
+        </label>
+        <span class="soft-badge">Markup inicial 25%</span>
+      </div>
     </div>
 
-    <script>
-        // Check Login
-        if(localStorage.getItem('auth') === 'true') {
-            document.getElementById('login-overlay').style.display = 'none';
-        }
-        function checkLogin() {
-            let pwd = document.getElementById('sys-pwd').value;
-            if(pwd === '1980') {
-                localStorage.setItem('auth', 'true');
-                document.getElementById('login-overlay').style.opacity = '0';
-                setTimeout(() => document.getElementById('login-overlay').style.display = 'none', 300);
-            } else {
-                document.getElementById('pwd-error').classList.remove('hidden');
-            }
-        }
+    <div class="database-wrap">
+      <table class="calc-table">
+        <colgroup>
+          <col class="box"><col class="qty"><col class="cost"><col class="markup"><col class="price"><col class="action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Tipo de caja</th>
+            <th>Cantidad</th>
+            <th>Costo (USD)</th>
+            <th>Markup</th>
+            <th>Precio (GBP)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ukRows"></tbody>
+      </table>
+      <button class="add-row" data-add="uk" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+    </div>
+  </section>
 
-        // Datos de Cajas (Solo para dimensiones en la Tabla de Cálculo)
-        const boxesData = [
-            { name: "QB", l: 99, w: 35, h: 16 },
-            { name: "EB", l: 105, w: 17, h: 17 },
-            { name: "HB", l: 105, w: 35, h: 33 },
-            { name: "QB2", l: 85, w: 30, h: 28 },
-            { name: "EB2", l: 39, w: 30, h: 30 },
-            { name: "SB", l: 90, w: 15, h: 10 }
-        ];
+  <!-- PRICE PER STEM -->
+  <section id="panel-stem" class="panel">
+    <div class="section-caption">
+      <div>
+        <h2>Precio por tallo</h2>
+        <p>Calcula el total y el precio promedio ponderado por tallo.</p>
+      </div>
+    </div>
 
-        // --- Navegación Estilo Excel con Flechas (Para el Desglose) ---
-        document.addEventListener('keydown', function(e) {
-            if (!e.target.classList.contains('nav-input')) return;
-            
-            const currentCell = e.target.closest('td');
-            const currentRow = e.target.closest('tr');
-            const tbody = currentRow.closest('tbody');
-            if (!tbody) return;
+    <div class="database-wrap">
+      <table class="calc-table stem-table">
+        <colgroup>
+          <col class="name"><col class="stems"><col class="unitprice"><col class="action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Nombre Variedad</th>
+            <th>Cantidad Tallos</th>
+            <th>Precio x Tallo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="stemRows"></tbody>
+      </table>
+      <button class="add-row" data-add="stem" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+    </div>
 
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const rowIndex = rows.indexOf(currentRow);
-            const cells = Array.from(currentRow.querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
-            const colIndex = cells.indexOf(currentCell);
+    <div class="stem-summary">
+      <div class="summary-label">TOTALES:</div>
+      <div id="stemTotalQty" class="summary-value">0</div>
+      <div id="stemTotalPrice" class="summary-price">$0,00</div>
+      <div></div>
 
-            let nextInput = null;
+      <div class="summary-label summary-blue">PRECIO POR TALLO:</div>
+      <div></div>
+      <div id="stemAverage" class="summary-price summary-blue">$0,00</div>
+      <div></div>
+    </div>
+  </section>
+</main>
 
-            if (e.key === 'ArrowUp') {
-                if (rowIndex > 0) {
-                    const nextRowCells = Array.from(rows[rowIndex - 1].querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
-                    if(nextRowCells[colIndex]) nextInput = nextRowCells[colIndex].querySelector('.nav-input');
-                }
-                e.preventDefault();
-            } else if (e.key === 'ArrowDown') {
-                if (rowIndex < rows.length - 1) {
-                    const nextRowCells = Array.from(rows[rowIndex + 1].querySelectorAll('td')).filter(td => td.querySelector('.nav-input'));
-                    if(nextRowCells[colIndex]) nextInput = nextRowCells[colIndex].querySelector('.nav-input');
-                }
-                e.preventDefault();
-            } else if (e.key === 'ArrowLeft') {
-                if (e.target.selectionStart === 0 && colIndex > 0) {
-                    nextInput = cells[colIndex - 1].querySelector('.nav-input');
-                    e.preventDefault();
-                }
-            } else if (e.key === 'ArrowRight') {
-                // Mover a la derecha si el cursor está al final del texto
-                if (e.target.selectionEnd === e.target.value.length && colIndex < cells.length - 1) {
-                    nextInput = cells[colIndex + 1].querySelector('.nav-input');
-                    e.preventDefault();
-                }
-            }
+<!-- BOX PICKER -->
+<div id="boxOverlay" class="overlay" aria-hidden="true">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="boxModalTitle">
+    <div class="modal-head">
+      <div class="modal-title">
+        <strong id="boxModalTitle">Seleccionar tipo de caja</strong>
+        <span id="boxModalSubtitle">Largo × Ancho × Alto · peso volumétrico actualizado</span>
+      </div>
+      <button id="closeBoxModal" class="modal-close" type="button" aria-label="Cerrar"><i class="fi fi-rr-cross-small"></i></button>
+    </div>
 
-            if (nextInput) {
-                nextInput.focus();
-                // Selecciona el texto para poder sobrescribir rápidamente como en Excel
-                setTimeout(() => nextInput.select(), 0);
-            }
-        });
+    <div class="search-wrap">
+      <i class="fi fi-rr-search"></i>
+      <input id="boxSearch" class="search" type="search" placeholder="Buscar caja o finca…">
+    </div>
 
-        // --- Tabla de Cálculo (Principal) ---
-        function addCalcTableRow() {
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-gray-100 transition-colors hover:bg-gray-50";
-            tr.innerHTML = `
-                <td class="table-cell">
-                    <select class="notion-input inp-boxtype text-xs bg-gray-50 font-bold text-gray-700" onchange="interactiveCalc(this.closest('tr'), 'cost')">
-                        <option value="EB">EB</option><option value="QB">QB</option><option value="HB">HB</option>
-                        <option value="EB2">EB2</option><option value="QB2">QB2</option><option value="SB">SB</option>
-                    </select>
-                </td>
-                <td class="table-cell"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
-                <td class="table-cell">
-                    <div class="flex items-center gap-1 focus-within:text-blue-500 text-gray-500">
-                        <span class="text-xs">$</span>
-                        <input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')">
-                    </div>
-                </td>
-                <td class="table-cell">
-                    <input type="text" class="notion-input inp-markup font-medium" placeholder="0.0%" 
-                        onfocus="this.value = this.value.replace('%','')" 
-                        onblur="if(this.value && !this.value.includes('%')) this.value += '%';" 
-                        oninput="interactiveCalc(this.closest('tr'), 'markup')">
-                </td>
-                <td class="table-cell">
-                    <div class="flex items-center gap-1 focus-within:text-blue-500 text-gray-500">
-                        <span class="text-xs">$</span>
-                        <input type="number" step="0.01" class="notion-input inp-price font-medium text-gray-800" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')">
-                    </div>
-                </td>
-                <td class="table-cell text-center">
-                    <button class="text-gray-300 hover:text-red-500 transition-colors" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button>
-                </td>
-            `;
-            document.getElementById('calc-table-body').appendChild(tr);
-        }
+    <div class="box-columns">
+      <span>Nombre</span><span>Largo</span><span>Ancho</span><span>Alto</span><span>Peso</span>
+    </div>
 
-        // Lógica Matemática Principal
-        function interactiveCalc(row, source) {
-            const costInp = row.querySelector('.inp-cost');
-            const priceInp = row.querySelector('.inp-price');
-            const markupInp = row.querySelector('.inp-markup');
-            
-            const cost = parseFloat(costInp.value) || 0;
-            const type = row.querySelector('.inp-boxtype').value;
-            const stems = parseFloat(row.querySelector('.inp-stems').value) || 1;
-            
-            let dims = boxesData.find(b => b.name === type) || {l:100, w:30, h:20}; 
-            // Como quitamos la baseVol, el volumen se calcula de forma directa
-            let vol = (dims.l * dims.w * dims.h) / 6000; 
-            
-            const duties = cost * 0.1586;
-            const transp2 = (vol * 5.25) * 1.36;
-            const transp = stems > 0 ? transp2 / stems : 0;
-            const totalBase = cost + duties + transp;
+    <div id="boxList" class="box-list"></div>
 
-            if (source === 'cost' || source === 'auto-cost' || source === 'price') {
-                const p = parseFloat(priceInp.value);
-                if (p && p > 0) {
-                    let m = 1 - (totalBase / (p * 0.96));
-                    // Pone el % si el campo no está en foco, pero lo guarda como texto con %
-                    markupInp.value = (m * 100).toFixed(2) + "%";
-                }
-            }
-            if (source === 'markup') {
-                let mVal = markupInp.value.replace('%', '');
-                let m = parseFloat(mVal) / 100;
-                if (!isNaN(m)) {
-                    let p = totalBase / ((1 - m) * 0.96);
-                    priceInp.value = p.toFixed(2);
-                }
-            }
-        }
+    <div class="modal-foot">
+      <span><span class="status-dot y"></span> Aprobado &nbsp;&nbsp; <span class="status-dot n"></span> No aprobado</span>
+      <span id="boxCount"></span>
+    </div>
+  </section>
+</div>
 
-        // --- Desglose de Caja ---
-        function addBreakdownRow() {
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-gray-50 transition-colors hover:bg-gray-50";
-            tr.innerHTML = `
-                <td class="py-1 px-2"><input type="text" class="notion-input w-full text-xs font-medium text-gray-700 placeholder:font-normal nav-input" placeholder="Variedad..."></td>
-                <td class="py-1 px-2"><input type="number" class="notion-input w-full text-center text-xs font-medium text-gray-700 nav-input" placeholder="0" oninput="calcBreakdown()"></td>
-                <td class="py-1 px-2">
-                    <div class="flex items-center justify-center gap-1 text-gray-400 focus-within:text-blue-500 transition-colors">
-                        <span class="text-xs">$</span>
-                        <input type="text" class="notion-input w-[70px] bg-transparent text-xs outline-none font-medium text-gray-700 nav-input text-center" placeholder="0,00" oninput="calcBreakdown()" onblur="formatPrice(this)">
-                    </div>
-                </td>
-                <td class="py-1 px-2 text-center w-[40px]">
-                    <button class="text-gray-300 hover:text-red-500 transition-colors" onclick="this.closest('tr').remove(); calcBreakdown();"><i class="ri-delete-bin-line"></i></button>
-                </td>
-            `;
-            document.getElementById('calc-breakdown-body').appendChild(tr);
-        }
+<script>
+const BOXES = [{"id":"b2","sheetRow":2,"name":"SB","largo":90,"ancho":15,"alto":10,"peso":2.25,"approved":"y","group":"","kind":"SB"},{"id":"b3","sheetRow":3,"name":"EB","largo":105,"ancho":17,"alto":17,"peso":5.0575,"approved":"y","group":"","kind":"EB"},{"id":"b4","sheetRow":4,"name":"QB","largo":99,"ancho":35,"alto":16,"peso":9.24,"approved":"y","group":"","kind":"QB"},{"id":"b5","sheetRow":5,"name":"HB","largo":105,"ancho":35,"alto":33,"peso":20.2125,"approved":"y","group":"","kind":"HB"},{"id":"b6","sheetRow":6,"name":"EB2","largo":39,"ancho":30,"alto":30,"peso":5.85,"approved":"y","group":"","kind":"EB2"},{"id":"b7","sheetRow":7,"name":"QB2","largo":85,"ancho":30,"alto":28,"peso":11.9,"approved":"y","group":"","kind":"QB2"},{"id":"b8","sheetRow":8,"name":"SB UK","largo":90,"ancho":15,"alto":10,"peso":3.128,"approved":"n","group":"","kind":"SB"},{"id":"b9","sheetRow":9,"name":"EB UK","largo":105,"ancho":17,"alto":16,"peso":6.099,"approved":"n","group":"","kind":"EB"},{"id":"b10","sheetRow":10,"name":"QB UK","largo":105,"ancho":32,"alto":18,"peso":12.126666666666667,"approved":"n","group":"","kind":"QB"},{"id":"b11","sheetRow":11,"name":"HB UK","largo":105,"ancho":35,"alto":33,"peso":23.094166666666666,"approved":"n","group":"","kind":"HB"},{"id":"b12","sheetRow":12,"name":"EB2 UK","largo":55,"ancho":30,"alto":30,"peso":9.728,"approved":"n","group":"","kind":"EB2"},{"id":"b13","sheetRow":13,"name":"QB2 UK","largo":110,"ancho":30,"alto":28,"peso":17.92,"approved":"n","group":"","kind":"QB2"},{"id":"b14","sheetRow":14,"name":"EC QB 1","largo":71,"ancho":35,"alto":17,"peso":8.553166666666666,"approved":"y","group":"EC","kind":"QB"},{"id":"b15","sheetRow":15,"name":"EC QB 2","largo":80,"ancho":35,"alto":15,"peso":8.596333333333334,"approved":"y","group":"EC","kind":"QB"},{"id":"b16","sheetRow":16,"name":"Anthonela EB 5K","largo":90,"ancho":26,"alto":12.5,"peso":6.225333333333333,"approved":"n","group":"Anthonela","kind":"EB"},{"id":"b17","sheetRow":17,"name":"Anthonela EB 9K","largo":90,"ancho":26,"alto":15,"peso":7.298666666666667,"approved":"n","group":"Anthonela","kind":"EB"},{"id":"b18","sheetRow":18,"name":"Anthonela QB 13K","largo":104.4,"ancho":25,"alto":15,"peso":8.139600000000002,"approved":"y","group":"Anthonela","kind":"QB"},{"id":"b19","sheetRow":19,"name":"Anthonela QB 15K","largo":103,"ancho":30,"alto":20,"peso":12.32,"approved":"n","group":"Anthonela","kind":"QB"},{"id":"b20","sheetRow":20,"name":"Anthonela HB 24K","largo":103.6,"ancho":35,"alto":25,"peso":17.5824,"approved":"y","group":"Anthonela","kind":"HB"},{"id":"b21","sheetRow":21,"name":"Agrivaldani HB F1","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b22","sheetRow":22,"name":"Agrivaldani HB F2","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b23","sheetRow":23,"name":"Agrivaldani HB F3","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Agrivaldani","kind":"HB"},{"id":"b24","sheetRow":24,"name":"Agrivaldani QB F4","largo":106,"ancho":31,"alto":15,"peso":10.098,"approved":"n","group":"Agrivaldani","kind":"QB"},{"id":"b25","sheetRow":25,"name":"Agrivaldani QB F5","largo":70,"ancho":31,"alto":16,"peso":7.128,"approved":"y","group":"Agrivaldani","kind":"QB"},{"id":"b26","sheetRow":26,"name":"Agrivaldani QB C1","largo":105,"ancho":34,"alto":16,"peso":11.556,"approved":"n","group":"Agrivaldani","kind":"QB"},{"id":"b27","sheetRow":27,"name":"Agrivaldani HB C2","largo":140,"ancho":35,"alto":35,"peso":32.39966666666667,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b28","sheetRow":28,"name":"Agrogana SB","largo":58,"ancho":17.5,"alto":13,"peso":2.925,"approved":"n","group":"Agrogana","kind":"SB"},{"id":"b29","sheetRow":29,"name":"Agrogana EB Auto","largo":64.5,"ancho":26.5,"alto":16.5,"peso":5.8436875,"approved":"n","group":"Agrogana","kind":"EB"},{"id":"b30","sheetRow":30,"name":"Agrogana EB Ceja","largo":73,"ancho":13,"alto":23,"peso":4.6875,"approved":"y","group":"Agrogana","kind":"EB"},{"id":"b31","sheetRow":31,"name":"Agrogana EB Grande","largo":75,"ancho":28,"alto":19,"peso":8.085,"approved":"n","group":"Agrogana","kind":"EB"},{"id":"b32","sheetRow":32,"name":"Agrogana QB Corto","largo":75,"ancho":34,"alto":16,"peso":8.316,"approved":"y","group":"Agrogana","kind":"QB"},{"id":"b33","sheetRow":33,"name":"Agrogana QB Largo","largo":104,"ancho":30,"alto":18,"peso":11.306666666666667,"approved":"n","group":"Agrogana","kind":"QB"},{"id":"b34","sheetRow":34,"name":"Agrogana HB Corto","largo":85,"ancho":30,"alto":30,"peso":14.848,"approved":"y","group":"Agrogana","kind":"HB"},{"id":"b35","sheetRow":35,"name":"Agrogana HB Largo","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Agrogana","kind":"HB"},{"id":"b36","sheetRow":36,"name":"Agroprim EB","largo":103,"ancho":18.6,"alto":14.1,"peso":5.80405,"approved":"n","group":"Agroprim","kind":"EB"},{"id":"b37","sheetRow":37,"name":"Agroprim QB Pequeño","largo":104.4,"ancho":25.2,"alto":12.1,"peso":6.801088,"approved":"y","group":"Agroprim","kind":"QB"},{"id":"b38","sheetRow":38,"name":"Agroprim QB Mediano","largo":99.4,"ancho":26,"alto":15.7,"peso":8.37564,"approved":"y","group":"Agroprim","kind":"QB"},{"id":"b39","sheetRow":39,"name":"Agroprim QB Grande","largo":104.4,"ancho":25.2,"alto":20.6,"peso":10.901034666666668,"approved":"n","group":"Agroprim","kind":"QB"},{"id":"b40","sheetRow":40,"name":"Agroprim HB","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Agroprim","kind":"HB"},{"id":"b41","sheetRow":41,"name":"Alinatura QB Roses + Stem","largo":39,"ancho":59,"alto":31,"peso":13.7555,"approved":"n","group":"Alinatura","kind":"QB"},{"id":"b42","sheetRow":42,"name":"Alinatura HB Preservadas","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Alinatura","kind":"HB"},{"id":"b43","sheetRow":43,"name":"Betel EB","largo":104,"ancho":14,"alto":25,"peso":7.632,"approved":"n","group":"Betel","kind":"EB"},{"id":"b44","sheetRow":44,"name":"Betel QB","largo":104,"ancho":18,"alto":25,"peso":9.54,"approved":"n","group":"Betel","kind":"QB"},{"id":"b45","sheetRow":45,"name":"Casageo EB","largo":104,"ancho":12.5,"alto":12,"peso":3.586333333333333,"approved":"y","group":"Casageo","kind":"EB"},{"id":"b46","sheetRow":46,"name":"Casageo QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"Casageo","kind":"QB"},{"id":"b47","sheetRow":47,"name":"Casageo HB","largo":104,"ancho":35,"alto":35,"peso":24.185666666666666,"approved":"n","group":"Casageo","kind":"HB"},{"id":"b48","sheetRow":48,"name":"Casageo HB Grande","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Casageo","kind":"HB"},{"id":"b49","sheetRow":49,"name":"Christopher Flowers EB","largo":104,"ancho":13,"alto":12,"peso":3.71,"approved":"y","group":"Christopher Flowers","kind":"EB"},{"id":"b50","sheetRow":50,"name":"Christopher Flowers QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Christopher Flowers","kind":"QB"},{"id":"b51","sheetRow":51,"name":"Cultivos del Norte QB2","largo":102,"ancho":16,"alto":30,"peso":9.984,"approved":"y","group":"Cultivos del Norte","kind":"QB2"},{"id":"b52","sheetRow":52,"name":"Cultivos del Norte HB2 1","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Cultivos del Norte","kind":"HB"},{"id":"b53","sheetRow":53,"name":"Cultivos del Norte HB2 1 Ruso","largo":118,"ancho":30,"alto":30,"peso":20.48,"approved":"n","group":"Cultivos del Norte","kind":"HB"},{"id":"b54","sheetRow":54,"name":"Ceres EB","largo":75,"ancho":18,"alto":15,"peso":4.363333333333333,"approved":"y","group":"Ceres","kind":"EB"},{"id":"b55","sheetRow":55,"name":"Ceres QB Pequeño","largo":82.5,"ancho":32.5,"alto":18,"peso":9.7175,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b56","sheetRow":56,"name":"Ceres QB Mediano","largo":92.5,"ancho":32.5,"alto":20,"peso":11.95425,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b57","sheetRow":57,"name":"Ceres QB Grande","largo":113.5,"ancho":32.5,"alto":20,"peso":14.61075,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b58","sheetRow":58,"name":"Ceres HB 1 Jumbo","largo":100,"ancho":32,"alto":30.8,"peso":18.958399999999997,"approved":"y","group":"Ceres","kind":"HB"},{"id":"b59","sheetRow":59,"name":"Ceres HB 2 Extra Jumbo","largo":108,"ancho":32,"alto":30.8,"peso":20.44533333333333,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b60","sheetRow":60,"name":"Ceres HB 3 Super Jumbo","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b61","sheetRow":61,"name":"Ceres HB 4 Mega Jumbo","largo":150,"ancho":40,"alto":35,"peso":39.368,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b62","sheetRow":62,"name":"Coop EB","largo":104,"ancho":13,"alto":12,"peso":3.71,"approved":"y","group":"Coop","kind":"EB"},{"id":"b63","sheetRow":63,"name":"Coop QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Coop","kind":"QB"},{"id":"b64","sheetRow":64,"name":"Coop HB","largo":104,"ancho":25.5,"alto":19,"peso":10.2025,"approved":"y","group":"Coop","kind":"HB"},{"id":"b65","sheetRow":65,"name":"Cultivos del Norte QB2","largo":102,"ancho":16,"alto":30,"peso":9.984,"approved":"y","group":"Cultivos del Norte","kind":"QB2"},{"id":"b66","sheetRow":66,"name":"Cultivos del Norte HB2","largo":101,"ancho":29,"alto":33,"peso":18.625833333333333,"approved":"y","group":"Cultivos del Norte","kind":"HB"},{"id":"b67","sheetRow":67,"name":"Dummen Orange QB","largo":104.5,"ancho":24,"alto":15,"peso":7.8455,"approved":"y","group":"Dummen Orange","kind":"QB"},{"id":"b68","sheetRow":68,"name":"Eden QB 1","largo":85,"ancho":30,"alto":17,"peso":8.816,"approved":"y","group":"Eden","kind":"QB"},{"id":"b69","sheetRow":69,"name":"Eden QB 2","largo":104,"ancho":30,"alto":17,"peso":10.741333333333333,"approved":"n","group":"Eden","kind":"QB"},{"id":"b70","sheetRow":70,"name":"Eden HB E","largo":85,"ancho":35,"alto":35,"peso":19.8505,"approved":"y","group":"Eden","kind":"HB"},{"id":"b71","sheetRow":71,"name":"Eden HB A","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Eden","kind":"HB"},{"id":"b72","sheetRow":72,"name":"Eden HB J","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Eden","kind":"HB"},{"id":"b73","sheetRow":73,"name":"La Conchita QB2 Alto","largo":104,"ancho":24,"alto":16,"peso":8.268,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b74","sheetRow":74,"name":"La Conchita QB2 Normal","largo":104,"ancho":24,"alto":12,"peso":6.430666666666666,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b75","sheetRow":75,"name":"La Conchita EB2","largo":103,"ancho":15,"alto":12,"peso":4.165,"approved":"y","group":"La Conchita","kind":"EB2"},{"id":"b76","sheetRow":76,"name":"Floraroma QB","largo":94.4,"ancho":30.1,"alto":15.5,"peso":9.025450000000001,"approved":"y","group":"Floraroma","kind":"QB"},{"id":"b77","sheetRow":77,"name":"Floraroma HB Normal","largo":103.2,"ancho":31.3,"alto":30.6,"peso":19.033836,"approved":"y","group":"Floraroma","kind":"HB"},{"id":"b78","sheetRow":78,"name":"Florisol EB","largo":86,"ancho":14.5,"alto":12.5,"peso":3.509,"approved":"y","group":"Florisol","kind":"EB"},{"id":"b79","sheetRow":79,"name":"Florisol EB Grande","largo":90,"ancho":15,"alto":15,"peso":4.431333333333333,"approved":"y","group":"Florisol","kind":"EB"},{"id":"b80","sheetRow":80,"name":"Florisol QB Fillers","largo":105,"ancho":29,"alto":15,"peso":9.398166666666667,"approved":"n","group":"Florisol","kind":"QB"},{"id":"b81","sheetRow":81,"name":"Florisol QB Roses","largo":null,"ancho":null,"alto":null,"peso":0.0013333333333333333,"approved":"y","group":"Florisol","kind":"QB"},{"id":"b82","sheetRow":82,"name":"Florisol HB","largo":104.6,"ancho":25.1,"alto":25.4,"peso":13.192460666666666,"approved":"y","group":"Florisol","kind":"HB"},{"id":"b83","sheetRow":83,"name":"Florisol HB2","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Florisol","kind":"HB"},{"id":"b84","sheetRow":84,"name":"Florecal EB Pequeño","largo":87,"ancho":17,"alto":12.5,"peso":4.0865833333333335,"approved":"y","group":"Florecal","kind":"EB"},{"id":"b85","sheetRow":85,"name":"Florecal EB Grande","largo":95,"ancho":17.8,"alto":18.6,"peso":6.594060000000002,"approved":"n","group":"Florecal","kind":"EB"},{"id":"b86","sheetRow":86,"name":"Florecal QB Pequeño","largo":88,"ancho":30,"alto":16.8,"peso":9.024,"approved":"y","group":"Florecal","kind":"QB"},{"id":"b87","sheetRow":87,"name":"Florecal QB Grande","largo":99,"ancho":30.4,"alto":17,"peso":10.362599999999999,"approved":"n","group":"Florecal","kind":"QB"},{"id":"b88","sheetRow":88,"name":"Florecal HB 1","largo":99.2,"ancho":32.5,"alto":26.1,"peso":16.351390000000002,"approved":"y","group":"Florecal","kind":"HB"},{"id":"b89","sheetRow":89,"name":"Florecal HB 2 Jumbo","largo":120.7,"ancho":37.5,"alto":35.4,"peso":30.210785000000005,"approved":"n","group":"Florecal","kind":"HB"},{"id":"b90","sheetRow":90,"name":"Flores Verdes EB","largo":86,"ancho":14.5,"alto":12.5,"peso":3.509,"approved":"y","group":"Flores Verdes","kind":"EB"},{"id":"b91","sheetRow":91,"name":"Flores Verdes QB Corta","largo":87,"ancho":27.5,"alto":17,"peso":8.314083333333333,"approved":"y","group":"Flores Verdes","kind":"QB"},{"id":"b92","sheetRow":92,"name":"Flores Verdes QB Larga","largo":104.2,"ancho":27.4,"alto":14.7,"peso":8.690345999999998,"approved":"y","group":"Flores Verdes","kind":"QB"},{"id":"b93","sheetRow":93,"name":"Flores Verdes HB 1","largo":98,"ancho":29.5,"alto":25.8,"peso":14.595,"approved":"y","group":"Flores Verdes","kind":"HB"},{"id":"b94","sheetRow":94,"name":"Flores Verdes HB 2 Jumbo","largo":120,"ancho":34,"alto":34,"peso":26.352,"approved":"n","group":"Flores Verdes","kind":"HB"},{"id":"b95","sheetRow":95,"name":"Florecot EB","largo":104,"ancho":14,"alto":12,"peso":3.957333333333333,"approved":"y","group":"Florecot","kind":"EB"},{"id":"b96","sheetRow":96,"name":"Florecot QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Florecot","kind":"QB"},{"id":"b97","sheetRow":97,"name":"Florsani EB","largo":88,"ancho":18,"alto":14,"peso":4.8,"approved":"y","group":"Florsani","kind":"EB"},{"id":"b98","sheetRow":98,"name":"Florsani QB","largo":105,"ancho":27,"alto":13,"peso":7.7575,"approved":"y","group":"Florsani","kind":"QB"},{"id":"b99","sheetRow":99,"name":"Florsani QBJ","largo":105,"ancho":26,"alto":15,"peso":8.488666666666667,"approved":"y","group":"Florsani","kind":"QB"},{"id":"b100","sheetRow":100,"name":"Florsani HB","largo":105,"ancho":27,"alto":21,"peso":11.894833333333333,"approved":"y","group":"Florsani","kind":"HB"},{"id":"b101","sheetRow":101,"name":"Florsani HB HE","largo":105,"ancho":27,"alto":28,"peso":15.515,"approved":"y","group":"Florsani","kind":"HB"},{"id":"b102","sheetRow":102,"name":"Florsani HB HJ","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Florsani","kind":"HB"},{"id":"b103","sheetRow":103,"name":"Flower Village EB","largo":105,"ancho":16,"alto":13,"peso":4.815,"approved":"y","group":"Flower Village","kind":"EB"},{"id":"b104","sheetRow":104,"name":"Flower Village QB Pequeño","largo":94,"ancho":28,"alto":14,"peso":7.68,"approved":"y","group":"Flower Village","kind":"QB"},{"id":"b105","sheetRow":105,"name":"Flower Village QB Grande","largo":97,"ancho":30,"alto":17,"peso":10.032,"approved":"n","group":"Flower Village","kind":"QB"},{"id":"b106","sheetRow":106,"name":"Flower Village HB Pequeño","largo":90,"ancho":30,"alto":28,"peso":14.72,"approved":"y","group":"Flower Village","kind":"HB"},{"id":"b107","sheetRow":107,"name":"Flower Village HB Pequeño","largo":97,"ancho":30,"alto":30,"peso":16.896,"approved":"y","group":"Flower Village","kind":"HB"},{"id":"b108","sheetRow":108,"name":"Flower Village HB Mediano","largo":120,"ancho":33,"alto":33,"peso":24.908333333333335,"approved":"n","group":"Flower Village","kind":"HB"},{"id":"b109","sheetRow":109,"name":"Flower Village HB Grande","largo":130,"ancho":33,"alto":33,"peso":26.95,"approved":"n","group":"Flower Village","kind":"HB"},{"id":"b110","sheetRow":110,"name":"Flower Party EB","largo":100,"ancho":14,"alto":12,"peso":3.808,"approved":"y","group":"Flowers Party","kind":"EB"},{"id":"b111","sheetRow":111,"name":"Flowers Party QB","largo":103,"ancho":30,"alto":14,"peso":8.96,"approved":"y","group":"Flowers Party","kind":"QB"},{"id":"b112","sheetRow":112,"name":"High Garden EB","largo":104,"ancho":15,"alto":15,"peso":5.105666666666667,"approved":"n","group":"High Garden","kind":"EB"},{"id":"b113","sheetRow":113,"name":"High Garden QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"High Garden","kind":"QB"},{"id":"b114","sheetRow":114,"name":"Hoja Verde EB","largo":80,"ancho":18,"alto":20,"peso":6.013333333333334,"approved":"n","group":"Hoja Verde","kind":"EB"},{"id":"b115","sheetRow":115,"name":"Hoja Verde QB 96","largo":96,"ancho":32,"alto":20,"peso":12.217333333333332,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b116","sheetRow":116,"name":"Hoja Verde QB 104","largo":104,"ancho":30,"alto":15,"peso":9.610666666666667,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b117","sheetRow":117,"name":"Hoja Verde QB 120","largo":120,"ancho":32,"alto":30,"peso":22.122666666666667,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b118","sheetRow":118,"name":"Hoja Verde HB 25","largo":104,"ancho":25,"alto":25,"peso":12.879,"approved":"y","group":"Hoja Verde","kind":"HB"},{"id":"b119","sheetRow":119,"name":"Hoja Verde HB 30","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Hoja Verde","kind":"HB"},{"id":"b120","sheetRow":120,"name":"Hoja Verde HB 35","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b121","sheetRow":121,"name":"Hoja Verde HB 40","largo":120,"ancho":40,"alto":40,"peso":35.868,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b122","sheetRow":122,"name":"Hoja Verde HB 120","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b123","sheetRow":123,"name":"Ikebana EB","largo":102.11,"ancho":17.02,"alto":13,"peso":4.9504304999999995,"approved":"y","group":"Ikebana","kind":"EB"},{"id":"b124","sheetRow":124,"name":"La Conchita EB2","largo":103,"ancho":15,"alto":12,"peso":4.165,"approved":"y","group":"La Conchita","kind":"EB2"},{"id":"b125","sheetRow":125,"name":"La Conchita QB2 Normal","largo":104,"ancho":25.5,"alto":12,"peso":6.801666666666667,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b126","sheetRow":126,"name":"La Conchita QB2 Alto","largo":104,"ancho":24,"alto":16,"peso":8.268,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b127","sheetRow":127,"name":"La Conchita HB2","largo":105,"ancho":25.5,"alto":25,"peso":13.24125,"approved":"y","group":"La Conchita","kind":"HB"},{"id":"b128","sheetRow":128,"name":"La Conchita HB2 Telestropic","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"La Conchita","kind":"HB"},{"id":"b129","sheetRow":129,"name":"Latina Farms QB","largo":101,"ancho":30,"alto":20,"peso":12.085333333333333,"approved":"n","group":"Latina Farms","kind":"QB"},{"id":"b130","sheetRow":130,"name":"Latina Farms HB 100","largo":100,"ancho":35,"alto":35,"peso":23.273,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b131","sheetRow":131,"name":"Latina Farms HB 110","largo":110,"ancho":25,"alto":25,"peso":13.608,"approved":"y","group":"Latina Farms","kind":"HB"},{"id":"b132","sheetRow":132,"name":"Latina Farms HB 120","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b133","sheetRow":133,"name":"Latina Farms HB 130","largo":130,"ancho":35,"alto":35,"peso":30.118,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b134","sheetRow":134,"name":"Lulu Display QB","largo":58,"ancho":31.8,"alto":40,"peso":14.195999999999998,"approved":"n","group":"Lulu","kind":"QB"},{"id":"b135","sheetRow":135,"name":"Lulu Master Box HB","largo":69.6,"ancho":36,"alto":47.3,"peso":22.355906666666662,"approved":"n","group":"Lulu","kind":"HB"},{"id":"b136","sheetRow":136,"name":"Lulu EB","largo":70,"ancho":22.5,"alto":15,"peso":4.998,"approved":"y","group":"Lulu","kind":"EB"},{"id":"b137","sheetRow":137,"name":"Lulu QB","largo":90,"ancho":17,"alto":28,"peso":8.74,"approved":"y","group":"Lulu","kind":"QB"},{"id":"b138","sheetRow":138,"name":"Lulu HB","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Lulu","kind":"HB"},{"id":"b139","sheetRow":139,"name":"Luxus QB 104","largo":104,"ancho":30,"alto":17,"peso":10.741333333333333,"approved":"n","group":"Luxus","kind":"QB"},{"id":"b140","sheetRow":140,"name":"Luxus QB 105","largo":105,"ancho":26,"alto":25,"peso":13.482,"approved":"n","group":"Luxus","kind":"QB"},{"id":"b141","sheetRow":141,"name":"Luxus HB USA 112","largo":112,"ancho":30,"alto":28,"peso":18.24,"approved":"y","group":"Luxus","kind":"HB"},{"id":"b142","sheetRow":142,"name":"Luxus HB Jumbo 120","largo":120,"ancho":33,"alto":32,"peso":24.196666666666665,"approved":"n","group":"Luxus","kind":"HB"},{"id":"b143","sheetRow":143,"name":"Luxus HB Super Jumbo 130","largo":130,"ancho":36,"alto":36,"peso":31.768,"approved":"n","group":"Luxus","kind":"HB"},{"id":"b144","sheetRow":144,"name":"Naranjo Preserved QB","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b145","sheetRow":145,"name":"Naranjo EB","largo":15,"ancho":25,"alto":91,"peso":7.1145,"approved":"n","group":"Naranjo","kind":"EB"},{"id":"b146","sheetRow":146,"name":"Naranjo QB Angeflor","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b147","sheetRow":147,"name":"Naranjo QB Pequeño","largo":18,"ancho":30,"alto":85,"peso":9.28,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b148","sheetRow":148,"name":"Naranjo QB Grande","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b149","sheetRow":149,"name":"Naranjo HB P Angeflor","largo":30,"ancho":30,"alto":90,"peso":15.701333333333332,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b150","sheetRow":150,"name":"Naranjo HB M Angeflor","largo":30,"ancho":30,"alto":105,"peso":18.261333333333333,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b151","sheetRow":151,"name":"Naranjo HB Pequeña","largo":30,"ancho":30,"alto":90,"peso":15.701333333333332,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b152","sheetRow":152,"name":"Naranjo HB Mediana","largo":30,"ancho":30,"alto":105,"peso":18.261333333333333,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b153","sheetRow":153,"name":"Nranajo HB Grande","largo":35,"ancho":35,"alto":120,"peso":27.836333333333332,"approved":"n","group":"Naranjo","kind":"HB"},{"id":"b154","sheetRow":154,"name":"Naranjo HB Extra Grande","largo":40,"ancho":40,"alto":120,"peso":35.868,"approved":"n","group":"Naranjo","kind":"HB"},{"id":"b155","sheetRow":155,"name":"Naranjo HB Preserved 2","largo":82,"ancho":32,"alto":20,"peso":10.472,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b156","sheetRow":156,"name":"Nivalia QB","largo":98,"ancho":28,"alto":17,"peso":9.5,"approved":"n","group":"Nivalia","kind":"QB"},{"id":"b157","sheetRow":157,"name":"Nivalia HB","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Nivalia","kind":"HB"},{"id":"b158","sheetRow":158,"name":"Nivalia HB J","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Nivalia","kind":"HB"},{"id":"b159","sheetRow":159,"name":"Optimum Roses + Stem QB","largo":40,"ancho":32,"alto":56,"peso":13.804,"approved":"n","group":"Optimum","kind":"QB"},{"id":"b160","sheetRow":160,"name":"Proteas Sol Andino QB","largo":92,"ancho":29,"alto":12,"peso":6.799333333333333,"approved":"y","group":"Proteas Sol Andino","kind":"QB"},{"id":"b161","sheetRow":161,"name":"Proteas Sol Andino HB","largo":92,"ancho":29,"alto":20,"peso":10.684666666666667,"approved":"y","group":"Proteas Sol Andino","kind":"HB"},{"id":"b162","sheetRow":162,"name":"San Luis EB Pequeño","largo":78,"ancho":17,"alto":19,"peso":5.32,"approved":"n","group":"San Luis","kind":"EB"},{"id":"b163","sheetRow":163,"name":"San Luis EB Grande","largo":79,"ancho":24,"alto":21,"peso":8.073,"approved":"n","group":"San Luis","kind":"EB"},{"id":"b164","sheetRow":164,"name":"San Luis QB Pequeño","largo":90,"ancho":18,"alto":30,"peso":9.813333333333333,"approved":"n","group":"San Luis","kind":"QB"},{"id":"b165","sheetRow":165,"name":"San Luis QB Grande","largo":90,"ancho":22,"alto":30,"peso":11.776,"approved":"n","group":"San Luis","kind":"QB"},{"id":"b166","sheetRow":166,"name":"San Luis HB 1","largo":110,"ancho":30,"alto":30,"peso":19.11466666666667,"approved":"y","group":"San Luis","kind":"HB"},{"id":"b167","sheetRow":167,"name":"San Luis HB 2","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"San Luis","kind":"HB"},{"id":"b168","sheetRow":168,"name":"San Luis HB 3","largo":130,"ancho":40,"alto":40,"peso":38.808,"approved":"n","group":"San Luis","kind":"HB"},{"id":"b169","sheetRow":169,"name":"Star Roses EB","largo":95,"ancho":17,"alto":18,"peso":6.1433333333333335,"approved":"n","group":"Star Roses","kind":"EB"},{"id":"b170","sheetRow":170,"name":"Star Roses QB Kraft","largo":95,"ancho":28,"alto":17,"peso":9.215,"approved":"y","group":"Star Roses","kind":"QB"},{"id":"b171","sheetRow":171,"name":"Star Roses QB Grande","largo":95,"ancho":40,"alto":20,"peso":14.938,"approved":"n","group":"Star Roses","kind":"QB"},{"id":"b172","sheetRow":172,"name":"Star Roses HB USA","largo":95,"ancho":33,"alto":30,"peso":18.106666666666666,"approved":"y","group":"Star Roses","kind":"HB"},{"id":"b173","sheetRow":173,"name":"Star Roses HB Rusa Corta","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Star Roses","kind":"HB"},{"id":"b174","sheetRow":174,"name":"Treasure Flowers QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"Treasure Flowers","kind":"QB"},{"id":"b175","sheetRow":175,"name":"Tumbabiro EB","largo":105,"ancho":15,"alto":12.5,"peso":4.3959166666666665,"approved":"y","group":"Tumbabiro","kind":"EB"},{"id":"b176","sheetRow":176,"name":"Tumbabiro QB","largo":105,"ancho":27,"alto":12.5,"peso":7.498916666666666,"approved":"y","group":"Tumbabiro","kind":"QB"}];
 
-        function formatPrice(input) {
-            let val = input.value.trim();
-            if (!val) return;
-            // Convierte temporalmente a punto para hacer la matemática
-            val = val.replace(',', '.');
-            let num = parseFloat(val);
-            if (!isNaN(num)) {
-                // Formatea a 2 decimales (agrega 0 iniciales si es necesario) y vuelve a poner coma
-                input.value = num.toFixed(2).replace('.', ',');
-            }
-            calcBreakdown();
-        }
+const BASE_US = new Set(["SB","EB","QB","HB","EB2","QB2"]);
+const BASE_UK = new Set(["SB UK","EB UK","QB UK","HB UK","EB2 UK","QB2 UK"]);
 
-        function calcBreakdown() {
-            let sumStems = 0;
-            let sumPrice = 0;
-            document.querySelectorAll('#calc-breakdown-body tr').forEach(row => {
-                let inputs = row.querySelectorAll('.nav-input');
-                let s = parseFloat(inputs[1].value) || 0;
-                
-                // Extrae el precio reemplazando la coma por punto para el cálculo
-                let priceStr = inputs[2].value.replace(',', '.');
-                let p = parseFloat(priceStr) || 0;
-                
-                sumStems += s;
-                sumPrice += (s * p);
-            });
-            let avg = sumStems > 0 ? sumPrice / sumStems : 0;
+const BASE_UK_BY_KIND = {
+  "SB":"SB UK",
+  "EB":"EB UK",
+  "QB":"QB UK",
+  "HB":"HB UK",
+  "EB2":"EB2 UK",
+  "QB2":"QB2 UK"
+};
 
-            document.getElementById('calc-tot-stems').innerText = sumStems;
-            // Mostrando los totales con comas
-            document.getElementById('calc-tot-price').innerText = sumPrice.toFixed(2).replace('.', ',');
-            document.getElementById('calc-avg-price').innerText = avg.toFixed(2).replace('.', ',');
-        }
+const US_IMPORT_DUTY = 0.1586;
+// Sheet1!U2 can be edited independently in the US and UK tabs.
+const paddingByMarket = {us:2, uk:2};
+const US_FREIGHT = 5.25;
+const US_FREIGHT_FACTOR = 1.36;
+const US_NET_FACTOR = 0.96;
 
-        window.onload = function() {
-            addCalcTableRow();
-            for(let i=0; i<5; i++) addBreakdownRow();
-        };
-    </script>
+const UK_USD_PER_GBP = 1.26; // Excel: Compra UK / 1.26
+const UK_FREIGHT = 3.2;
+const UK_FREIGHT_FACTOR = 1.1;
+const UK_NET_FACTOR = 0.97;
+
+const DEFAULT_MARKUP = 25;
+
+const $ = id => document.getElementById(id);
+let rowCounter = 0;
+let modalContext = null;
+
+function parseNum(v){
+  if(v === null || v === undefined || String(v).trim()==="") return NaN;
+  const cleaned = String(v).trim().replace(",",".").replace(/[^0-9.\-]/g,"");
+  if(cleaned==="") return NaN;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function roundUp(value, digits=2){
+  if(!Number.isFinite(value)) return NaN;
+  const f = 10 ** digits;
+  return value >= 0
+    ? Math.ceil((value - Number.EPSILON) * f) / f
+    : Math.floor((value + Number.EPSILON) * f) / f;
+}
+
+function formatMeasure(v){
+  if(v === null || v === undefined || v === "") return "—";
+  return Number(v).toLocaleString("es-EC",{maximumFractionDigits:2});
+}
+
+function moneyEs(v, symbol="$"){
+  if(!Number.isFinite(v)) v = 0;
+  return symbol + v.toLocaleString("es-EC",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* The Sheet1[Peso] formula uses plain dimensions for six US base boxes
+   and (dimension + U2) for every other box. For UK, Catalogo[Op UK]
+   compares the finca's padded weight against the UNPADDED UK base volume. */
+function volumeOf(box, adjustment){
+  if(!box) return NaN;
+  const sides=[box.largo,box.ancho,box.alto].map(Number);
+  if(!sides.every(v=>Number.isFinite(v) && v>0) || !Number.isFinite(adjustment) || adjustment<0) return NaN;
+  return sides.reduce((a,b)=>a*(b+adjustment),1)/6000;
+}
+
+function boxWeight(box, market){
+  if(!box) return NaN;
+  const unpadded = BASE_US.has(box.name) || (market==="uk" && BASE_UK.has(box.name));
+  return volumeOf(box,unpadded?0:paddingByMarket[market]);
+}
+
+function boxBaseForApproval(box, market){
+  if(!box) return null;
+  const name= market==="uk"
+    ? BASE_UK_BY_KIND[box.kind]
+    : box.kind;
+  if(!name) return null;
+  return BOXES.find(b=>b.name===name) || null;
+}
+
+function approvalFor(box, market){
+  const base=boxBaseForApproval(box,market);
+  const weight=boxWeight(box,market);
+  const capacity=volumeOf(base,0);
+  if(!Number.isFinite(weight) || !Number.isFinite(capacity)) return "";
+  return weight>capacity+1e-10 ? "n" : "y";
+}
+
+function approvalClass(box,market){
+  return approvalFor(box,market) || "none";
+}
+
+function approvalTitle(box,market){
+  const approved=approvalFor(box,market);
+  const weight=boxWeight(box,market);
+  const base=boxBaseForApproval(box,market);
+  if(!approved) return "Sin caja base equivalente para comparar";
+  return `${approved==="y"?"Aprobado: Y":"No aprobado: N"} · ${formatMeasure(weight)} kg vol. / ${formatMeasure(volumeOf(base,0))} kg vol. (${base.name})`;
+}
+
+function refreshBoxRowStatus(tr){
+  const box=getBox(tr.dataset.boxId);
+  const dot=tr.querySelector('[data-role="status"]');
+  if(!box){dot.className="status-dot none";dot.title="Sin caja seleccionada";return;}
+  dot.className=`status-dot ${approvalClass(box,tr.dataset.market)}`;
+  dot.title=approvalTitle(box,tr.dataset.market);
+  tr.querySelector('[data-role="box"]').title=dot.title;
+}
+
+function refreshMarket(market){
+  $(market+"Rows").querySelectorAll("tr").forEach(tr=>{
+    refreshBoxRowStatus(tr);
+    recalculateRow(tr);
+  });
+  if(modalContext?.market===market) renderBoxModal();
+}
+
+for(const market of ["us","uk"]){
+  const input=$(market+"Padding");
+  input.addEventListener("input",()=>{
+    const raw=input.value.trim().replace(",",".");
+    const next=raw!=="" && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : NaN;
+    const valid=Number.isFinite(next) && next>=0 && next<=100;
+    input.setAttribute("aria-invalid",String(!valid));
+    if(!valid) return; // Keep the last valid value while the user edits.
+    paddingByMarket[market]=next;
+    refreshMarket(market);
+  });
+}
+
+function getBox(id){
+  return BOXES.find(b => b.id === id) || null;
+}
+
+/* ---------------- TABS ---------------- */
+
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===tab));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    $("panel-"+tab.dataset.tab).classList.add("active");
+  });
+});
+
+/* ---------------- CALCULATOR ROWS ---------------- */
+
+function createCalcRow(market){
+  rowCounter++;
+  const id = `${market}-${rowCounter}`;
+  const tbody = $(market+"Rows");
+  const tr = document.createElement("tr");
+  tr.dataset.rowId = id;
+  tr.dataset.market = market;
+  tr.dataset.boxId = "";
+  tr.dataset.lastEdited = "markup";
+
+  const priceSymbol = market === "uk" ? "£" : "$";
+
+  tr.innerHTML = `
+    <td>
+      <button class="box-btn" type="button" data-role="box">
+        <span class="box-info">
+          <span class="status-dot none" data-role="status" title="Sin caja seleccionada"></span>
+          <span class="box-copy">
+            <span class="box-name" data-role="boxName">Seleccionar caja</span>
+            <span class="box-meta" data-role="boxMeta">Ver cajas y medidas</span>
+          </span>
+        </span>
+        <i class="fi fi-rr-angle-small-down box-arrow"></i>
+      </button>
+    </td>
+    <td><input class="cell-input" data-role="qty" inputmode="numeric" placeholder="125"></td>
+    <td>
+      <div class="money-wrap">
+        <span class="money-symbol">$</span>
+        <input class="cell-input" data-role="cost" inputmode="decimal" placeholder="0,00">
+      </div>
+    </td>
+    <td>
+      <div class="percent-wrap">
+        <input class="cell-input" data-role="markup" inputmode="decimal" value="25,00">
+        <span class="percent-symbol">%</span>
+      </div>
+    </td>
+    <td class="price-cell">
+      <div class="money-wrap">
+        <span class="money-symbol">${priceSymbol}</span>
+        <input class="cell-input" data-role="price" inputmode="decimal" placeholder="0,00">
+      </div>
+    </td>
+    <td class="action-cell">
+      <button class="icon-btn" type="button" data-role="delete" title="Eliminar fila" aria-label="Eliminar fila">
+        <i class="fi fi-rr-trash"></i>
+      </button>
+    </td>
+  `;
+
+  tbody.appendChild(tr);
+
+  tr.querySelector('[data-role="box"]').addEventListener("click",()=>openBoxModal(market,id));
+
+  tr.querySelector('[data-role="qty"]').addEventListener("input",()=>recalculateRow(tr));
+  tr.querySelector('[data-role="cost"]').addEventListener("input",()=>recalculateRow(tr));
+
+  const markup = tr.querySelector('[data-role="markup"]');
+  const price = tr.querySelector('[data-role="price"]');
+
+  markup.addEventListener("focus",()=>tr.dataset.lastEdited="markup");
+  markup.addEventListener("input",()=>{
+    tr.dataset.lastEdited="markup";
+    priceFromMarkup(tr);
+  });
+
+  price.addEventListener("focus",()=>tr.dataset.lastEdited="price");
+  price.addEventListener("input",()=>{
+    tr.dataset.lastEdited="price";
+    markupFromPrice(tr);
+  });
+
+  tr.querySelector('[data-role="delete"]').addEventListener("click",()=>{
+    const rows = tbody.querySelectorAll("tr");
+    if(rows.length <= 1) return;
+    tr.remove();
+    updateDeleteButtons(market);
+  });
+
+  updateDeleteButtons(market);
+  return tr;
+}
+
+function updateDeleteButtons(market){
+  const rows = $(market+"Rows").querySelectorAll("tr");
+  rows.forEach(row=>{
+    row.querySelector('[data-role="delete"]').disabled = rows.length <= 1;
+  });
+}
+
+function getUsComponents(box, qty, cost){
+  const L = Number(box.largo), A = Number(box.ancho), H = Number(box.alto);
+  if(![L,A,H].every(Number.isFinite)) return null;
+
+  const volume = boxWeight(box,"us");
+
+  const transport2 = roundUp((volume * US_FREIGHT) * US_FREIGHT_FACTOR,2);
+  const transport = roundUp(transport2 / qty,2);
+  const duties = roundUp(cost * US_IMPORT_DUTY,2);
+
+  return {baseCost:cost + duties + transport};
+}
+
+function getUkBaseBox(selected){
+  if(BASE_UK.has(selected.name)) return selected;
+  const baseName = BASE_UK_BY_KIND[selected.kind];
+  return BOXES.find(b=>b.name===baseName) || null;
+}
+
+function getUkComponents(box, qty, cost){
+  const base = getUkBaseBox(box);
+  if(!base) return null;
+
+  const L=Number(base.largo), A=Number(base.ancho), H=Number(base.alto);
+  if(![L,A,H].every(Number.isFinite)) return null;
+
+  // UK follows the formula in US_WEEK_39.xlsx, Catalogo[Markup UK].
+  // The user's Cost input is in USD (Compra UK); the sales price is in GBP.
+  const costGBP = cost / UK_USD_PER_GBP;
+  const volume = (L*A*H)/6000;
+  const transport2 = roundUp((volume * UK_FREIGHT) * UK_FREIGHT_FACTOR,2);
+  const transport = roundUp(transport2 / qty,2);
+  // Excel rounds the combined GBP cost UP before computing markup or price.
+  const totalCostGBP = roundUp(costGBP + transport,2);
+
+  return {baseCost:totalCostGBP, baseBox:base};
+}
+
+function getRowComponents(tr){
+  const box = getBox(tr.dataset.boxId);
+  const qty = parseNum(tr.querySelector('[data-role="qty"]').value);
+  const cost = parseNum(tr.querySelector('[data-role="cost"]').value);
+
+  if(!box || !Number.isFinite(qty) || qty<=0 || !Number.isFinite(cost) || cost<0) return null;
+  return tr.dataset.market==="uk"
+    ? getUkComponents(box,qty,cost)
+    : getUsComponents(box,qty,cost);
+}
+
+function priceFromMarkup(tr){
+  const c = getRowComponents(tr);
+  const markup = parseNum(tr.querySelector('[data-role="markup"]').value);
+  const priceInput = tr.querySelector('[data-role="price"]');
+
+  if(!c || !Number.isFinite(markup) || markup>=100){
+    if(!c) priceInput.value="";
+    return;
+  }
+
+  const factor = tr.dataset.market==="uk" ? UK_NET_FACTOR : US_NET_FACTOR;
+  const price = c.baseCost / ((1-(markup/100))*factor);
+  priceInput.value = Number.isFinite(price) ? price.toFixed(2).replace(".",",") : "";
+}
+
+function markupFromPrice(tr){
+  const c = getRowComponents(tr);
+  const price = parseNum(tr.querySelector('[data-role="price"]').value);
+  const markupInput = tr.querySelector('[data-role="markup"]');
+
+  if(!c || !Number.isFinite(price) || price<=0) return;
+
+  const factor = tr.dataset.market==="uk" ? UK_NET_FACTOR : US_NET_FACTOR;
+  const markup = (1 - (c.baseCost/(price*factor))) * 100;
+  markupInput.value = Number.isFinite(markup) ? markup.toFixed(2).replace(".",",") : "";
+}
+
+function recalculateRow(tr){
+  if(tr.dataset.lastEdited==="price" && tr.querySelector('[data-role="price"]').value.trim()!==""){
+    markupFromPrice(tr);
+  }else{
+    priceFromMarkup(tr);
+  }
+
+  // Update UK meta because the equivalent base depends on the chosen box.
+  if(tr.dataset.market==="uk" && tr.dataset.boxId){
+    const box = getBox(tr.dataset.boxId);
+    const base = box ? getUkBaseBox(box) : null;
+    if(box && base){
+      tr.querySelector('[data-role="boxMeta"]').textContent =
+        `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm · Base UK: ${base.name}`;
+    }
+  }
+}
+
+document.querySelectorAll('[data-add="us"],[data-add="uk"]').forEach(btn=>{
+  btn.addEventListener("click",()=>createCalcRow(btn.dataset.add));
+});
+
+/* ---------------- BOX MODAL ---------------- */
+
+function availableBoxes(market){
+  return BOXES.filter(box=>{
+    if(market==="us" && BASE_UK.has(box.name)) return false;
+    // UK base boxes remain reference values for price and capacity, not options.
+    if(market==="uk" && (BASE_US.has(box.name) || BASE_UK.has(box.name))) return false;
+    return true;
+  });
+}
+
+function boxMatches(box,q){
+  if(!q) return true;
+  const market=modalContext?.market || "us";
+  const hay = `${box.name} ${box.group} ${box.largo} ${box.ancho} ${box.alto} ${formatMeasure(boxWeight(box,market))} ${approvalFor(box,market)}`.toLocaleLowerCase("es");
+  return hay.includes(q);
+}
+
+function renderBoxModal(){
+  if(!modalContext) return;
+
+  const market = modalContext.market;
+  const q = $("boxSearch").value.trim().toLocaleLowerCase("es");
+  const all = availableBoxes(market);
+
+  const baseNames = market==="us" ? BASE_US : BASE_UK;
+  const base = all.filter(b=>baseNames.has(b.name) && boxMatches(b,q));
+
+  const farms = all.filter(b=>!BASE_US.has(b.name) && !BASE_UK.has(b.name));
+  const grouped = new Map();
+
+  farms.forEach(box=>{
+    const groupHit = q && box.group.toLocaleLowerCase("es").includes(q);
+    if(q && !groupHit && !boxMatches(box,q)) return;
+    const key = box.group || "Otras";
+    if(!grouped.has(key)) grouped.set(key,[]);
+    grouped.get(key).push(box);
+  });
+
+  let html = "";
+  let visible = 0;
+
+  if(base.length){
+    html += `<div class="group-title">${market==="us" ? "Cajas base US" : "Cajas base UK"}</div>`;
+    html += base.map(box=>boxOptionHtml(box,market)).join("");
+    visible += base.length;
+  }
+
+  [...grouped.keys()].sort((a,b)=>a.localeCompare(b,"es")).forEach(group=>{
+    const groupBoxes = grouped.get(group);
+    if(!groupBoxes.length) return;
+    html += `<div class="group-title">${escapeHtml(group)}</div>`;
+    html += groupBoxes.map(box=>boxOptionHtml(box,market)).join("");
+    visible += groupBoxes.length;
+  });
+
+  $("boxList").innerHTML = html || `<div class="empty">No encontré cajas con esa búsqueda.</div>`;
+  $("boxCount").textContent = `${visible} resultado${visible===1?"":"s"}`;
+
+  $("boxList").querySelectorAll("[data-box-id]").forEach(btn=>{
+    btn.addEventListener("click",()=>chooseBox(btn.dataset.boxId));
+  });
+}
+
+function boxOptionHtml(box,market){
+  return `
+    <button class="box-option" type="button" data-box-id="${box.id}">
+      <span class="option-name-wrap">
+        <span class="status-dot ${approvalClass(box,market)}" title="${escapeHtml(approvalTitle(box,market))}"></span>
+        <span class="option-name" title="${escapeHtml(box.name)}">${escapeHtml(box.name)}</span>
+      </span>
+      <span class="measure">${formatMeasure(box.largo)} cm</span>
+      <span class="measure">${formatMeasure(box.ancho)} cm</span>
+      <span class="measure">${formatMeasure(box.alto)} cm</span>
+      <span class="measure">${formatMeasure(boxWeight(box,market))}</span>
+    </button>
+  `;
+}
+
+function openBoxModal(market,rowId){
+  modalContext={market,rowId};
+  $("boxModalTitle").textContent = market==="us" ? "Seleccionar caja · US" : "Seleccionar caja · UK";
+  $("boxSearch").value="";
+  $("boxOverlay").classList.add("open");
+  $("boxOverlay").setAttribute("aria-hidden","false");
+  renderBoxModal();
+  setTimeout(()=>$("boxSearch").focus(),20);
+}
+
+function closeBoxModal(){
+  $("boxOverlay").classList.remove("open");
+  $("boxOverlay").setAttribute("aria-hidden","true");
+  modalContext=null;
+}
+
+function chooseBox(boxId){
+  if(!modalContext) return;
+  const box = getBox(boxId);
+  const tr = document.querySelector(`tr[data-row-id="${modalContext.rowId}"]`);
+  if(!box || !tr || !availableBoxes(modalContext.market).includes(box)) return;
+
+  tr.dataset.boxId=box.id;
+  refreshBoxRowStatus(tr);
+  tr.querySelector('[data-role="boxName"]').textContent=box.name;
+
+  if(tr.dataset.market==="uk"){
+    const base=getUkBaseBox(box);
+    tr.querySelector('[data-role="boxMeta"]').textContent =
+      `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm` +
+      (base ? ` · Base UK: ${base.name}` : "");
+  }else{
+    tr.querySelector('[data-role="boxMeta"]').textContent =
+      `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm`;
+  }
+
+  closeBoxModal();
+  recalculateRow(tr);
+}
+
+$("boxSearch").addEventListener("input",renderBoxModal);
+$("closeBoxModal").addEventListener("click",closeBoxModal);
+$("boxOverlay").addEventListener("click",e=>{
+  if(e.target===$("boxOverlay")) closeBoxModal();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && $("boxOverlay").classList.contains("open")) closeBoxModal();
+});
+
+/* ---------------- STEM TABLE ---------------- */
+
+let stemCounter=0;
+
+function createStemRow(){
+  stemCounter++;
+  const tr=document.createElement("tr");
+  tr.dataset.stemId=stemCounter;
+  tr.innerHTML=`
+    <td><input class="cell-input" data-role="name" placeholder="Variedad…"></td>
+    <td><input class="cell-input" data-role="stems" inputmode="numeric" placeholder="0"></td>
+    <td>
+      <div class="money-wrap">
+        <span class="money-symbol">$</span>
+        <input class="cell-input" data-role="unitPrice" inputmode="decimal" placeholder="0,00">
+      </div>
+    </td>
+    <td class="action-cell">
+      <button class="icon-btn" type="button" data-role="deleteStem" title="Eliminar fila" aria-label="Eliminar fila">
+        <i class="fi fi-rr-trash"></i>
+      </button>
+    </td>
+  `;
+  $("stemRows").appendChild(tr);
+
+  tr.querySelector('[data-role="stems"]').addEventListener("input",recalcStem);
+  tr.querySelector('[data-role="unitPrice"]').addEventListener("input",recalcStem);
+  tr.querySelector('[data-role="deleteStem"]').addEventListener("click",()=>{
+    const rows=$("stemRows").querySelectorAll("tr");
+    if(rows.length<=1) return;
+    tr.remove();
+    updateStemDeleteButtons();
+    recalcStem();
+  });
+
+  updateStemDeleteButtons();
+  recalcStem();
+}
+
+function updateStemDeleteButtons(){
+  const rows=$("stemRows").querySelectorAll("tr");
+  rows.forEach(row=>{
+    row.querySelector('[data-role="deleteStem"]').disabled=rows.length<=1;
+  });
+}
+
+function recalcStem(){
+  let qty=0,total=0;
+
+  $("stemRows").querySelectorAll("tr").forEach(row=>{
+    const q=parseNum(row.querySelector('[data-role="stems"]').value);
+    const p=parseNum(row.querySelector('[data-role="unitPrice"]').value);
+    const safeQ=Number.isFinite(q)&&q>0?q:0;
+    const safeP=Number.isFinite(p)&&p>=0?p:0;
+    qty += safeQ;
+    total += safeQ*safeP;
+  });
+
+  const avg=qty>0 ? total/qty : 0;
+  $("stemTotalQty").textContent=qty.toLocaleString("es-EC",{maximumFractionDigits:2});
+  $("stemTotalPrice").textContent=moneyEs(total,"$");
+  $("stemAverage").textContent=moneyEs(avg,"$");
+}
+
+document.querySelector('[data-add="stem"]').addEventListener("click",createStemRow);
+
+/* ---------------- INITIAL STATE ---------------- */
+
+createCalcRow("us");
+createCalcRow("us");
+createCalcRow("uk");
+createCalcRow("uk");
+createStemRow();
+createStemRow();
+</script>
 </body>
 </html>
