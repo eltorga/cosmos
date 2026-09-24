@@ -1001,12 +1001,11 @@ document.querySelectorAll('[data-add="us"],[data-add="uk"]').forEach(btn=>{
 /* ---------------- BOX MODAL ---------------- */
 
 function availableBoxes(market){
-  return BOXES.filter(box=>{
-    if(market==="us" && BASE_UK.has(box.name)) return false;
-    // UK base boxes remain reference values for price and capacity, not options.
-    if(market==="uk" && (BASE_US.has(box.name) || BASE_UK.has(box.name))) return false;
-    return true;
-  });
+  // Cada mercado permite sus propias seis cajas base más las cajas de finca.
+  // Las cajas base del otro mercado nunca aparecen, ni en búsquedas.
+  return BOXES.filter(box => market === "uk"
+    ? !BASE_US.has(box.name)
+    : !BASE_UK.has(box.name));
 }
 
 function boxMatches(box,q){
@@ -1023,8 +1022,13 @@ function renderBoxModal(){
   const q = $("boxSearch").value.trim().toLocaleLowerCase("es");
   const all = availableBoxes(market);
 
-  const baseNames = market==="us" ? BASE_US : BASE_UK;
-  const base = all.filter(b=>baseNames.has(b.name) && boxMatches(b,q));
+  // Orden fijo de las cajas base: siempre arriba, antes de cualquier finca.
+  const baseOrder = market === "uk"
+    ? ["SB UK", "EB UK", "QB UK", "HB UK", "EB2 UK", "QB2 UK"]
+    : ["SB", "EB", "QB", "HB", "EB2", "QB2"];
+  const base = baseOrder
+    .map(name => all.find(box => box.name === name))
+    .filter(box => box && boxMatches(box,q));
 
   const farms = all.filter(b=>!BASE_US.has(b.name) && !BASE_UK.has(b.name));
   const grouped = new Map();
