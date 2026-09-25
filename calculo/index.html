@@ -303,6 +303,7 @@ h1{
 }
 
 /* Stem calculator */
+.stem-always{margin-top:36px;padding-top:28px;border-top:1px solid var(--line2)}
 .stem-table col.name{width:46%}
 .stem-table col.stems{width:24%}
 .stem-table col.unitprice{width:25%}
@@ -492,13 +493,12 @@ h1{
   <header class="page-head">
     <div class="eyebrow"><span class="eyebrow-dot"></span> Price tools</div>
     <h1>Calculadora de precios</h1>
-    <p class="subtitle">Cálculos US y UK con cajas de Sheet1, estado de aprobación y una calculadora independiente de precio por tallo.</p>
   </header>
 
   <nav class="tabs" aria-label="Pestañas">
     <button class="tab active" data-tab="us" type="button"><i class="fi fi-rr-dollar"></i> US</button>
+    <button class="tab" data-tab="us48" type="button"><i class="fi fi-rr-bolt"></i> US 48H</button>
     <button class="tab" data-tab="uk" type="button"><i class="fi fi-rr-pound"></i> UK</button>
-    <button class="tab" data-tab="stem" type="button"><i class="fi fi-rr-calculator"></i> Precio por tallo</button>
   </nav>
 
   <!-- US -->
@@ -510,7 +510,7 @@ h1{
       </div>
       <div class="caption-actions">
         <label class="padding-control" title="Sheet1!U2: añade centímetros a las tres dimensiones de las cajas de finca. Las cajas base no cambian.">
-          Ajuste de seguridad
+          Ajuste de finca (U2)
           <input id="usPadding" type="text" inputmode="decimal" value="2" aria-label="Ajuste de finca US, en centímetros" aria-invalid="false">
           <span class="unit">cm</span>
         </label>
@@ -539,16 +539,54 @@ h1{
     </div>
   </section>
 
+  <!-- US 48H -->
+  <section id="panel-us48" class="panel">
+    <div class="section-caption">
+      <div>
+        <h2>US 48H</h2>
+        <p>Entrega Flash 48H: usa el mismo cálculo US con 25% adicional en Transport2.</p>
+      </div>
+      <div class="caption-actions">
+        <label class="padding-control" title="Mismo Sheet1!U2 de USA. Cambiarlo aquí también actualiza US normal.">
+          Ajuste de finca (U2)
+          <input id="us48Padding" type="text" inputmode="decimal" value="2" aria-label="Ajuste de finca USA, en centímetros" aria-invalid="false">
+          <span class="unit">cm</span>
+        </label>
+        <span class="soft-badge">Markup inicial 25%</span>
+      </div>
+    </div>
+
+    <div class="database-wrap">
+      <table class="calc-table">
+        <colgroup>
+          <col class="box"><col class="qty"><col class="cost"><col class="markup"><col class="price"><col class="action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Tipo de caja</th>
+            <th>Cantidad</th>
+            <th>Costo</th>
+            <th>Markup</th>
+            <th>Precio</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="us48Rows"></tbody>
+      </table>
+      <button class="add-row" data-add="us48" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+    </div>
+  </section>
+
   <!-- UK -->
   <section id="panel-uk" class="panel">
     <div class="section-caption">
       <div>
         <h2>UK</h2>
-        <p>Solo cajas de finca · Costo en USD y precio en GBP. El ajuste modifica el peso y la aprobación; el flete UK se calcula con su caja base UK.</p>
+        <p>Costo en USD y precio en GBP. El ajuste modifica el peso y la aprobación; el flete UK se calcula con su caja base UK.</p>
       </div>
       <div class="caption-actions">
         <label class="padding-control" title="Ajuste independiente para UK: añade centímetros a las medidas de finca para evaluar su capacidad frente a la caja UK equivalente.">
-          Ajuste de seguridad
+          Ajuste de finca (U2)
           <input id="ukPadding" type="text" inputmode="decimal" value="2" aria-label="Ajuste de finca UK, en centímetros" aria-invalid="false">
           <span class="unit">cm</span>
         </label>
@@ -578,7 +616,7 @@ h1{
   </section>
 
   <!-- PRICE PER STEM -->
-  <section id="panel-stem" class="panel">
+  <section id="stemCalculator" class="stem-always">
     <div class="section-caption">
       <div>
         <h2>Precio por tallo</h2>
@@ -665,6 +703,7 @@ const BASE_UK_BY_KIND = {
 const US_IMPORT_DUTY = 0.1586;
 // Sheet1!U2 can be edited independently in the US and UK tabs.
 const paddingByMarket = {us:2, uk:2};
+function paddingKey(market){ return market==="us48" ? "us" : market; }
 const US_FREIGHT = 5.25;
 const US_FREIGHT_FACTOR = 1.36;
 const US_NET_FACTOR = 0.96;
@@ -731,7 +770,7 @@ function volumeOf(box, adjustment){
 function boxWeight(box, market){
   if(!box) return NaN;
   const unpadded = BASE_US.has(box.name) || (market==="uk" && BASE_UK.has(box.name));
-  return volumeOf(box,unpadded?0:paddingByMarket[market]);
+  return volumeOf(box,unpadded?0:paddingByMarket[paddingKey(market)]);
 }
 
 function boxBaseForApproval(box, market){
@@ -773,25 +812,50 @@ function refreshBoxRowStatus(tr){
 }
 
 function refreshMarket(market){
-  $(market+"Rows").querySelectorAll("tr").forEach(tr=>{
-    refreshBoxRowStatus(tr);
-    recalculateRow(tr);
-  });
+  const body=$(market+"Rows");
+  if(body){
+    body.querySelectorAll("tr").forEach(tr=>{
+      refreshBoxRowStatus(tr);
+      recalculateRow(tr);
+    });
+  }
   if(modalContext?.market===market) renderBoxModal();
 }
 
-for(const market of ["us","uk"]){
-  const input=$(market+"Padding");
+function parsePaddingInput(input){
+  const raw=input.value.trim().replace(",",".");
+  const next=raw!=="" && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : NaN;
+  const valid=Number.isFinite(next) && next>=0 && next<=100;
+  input.setAttribute("aria-invalid",String(!valid));
+  return valid ? next : NaN;
+}
+
+function bindUsPadding(inputId, mirrorId){
+  const input=$(inputId);
   input.addEventListener("input",()=>{
-    const raw=input.value.trim().replace(",",".");
-    const next=raw!=="" && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : NaN;
-    const valid=Number.isFinite(next) && next>=0 && next<=100;
-    input.setAttribute("aria-invalid",String(!valid));
-    if(!valid) return; // Keep the last valid value while the user edits.
-    paddingByMarket[market]=next;
-    refreshMarket(market);
+    const next=parsePaddingInput(input);
+    if(!Number.isFinite(next)) return;
+    paddingByMarket.us=next;
+    const mirror=$(mirrorId);
+    if(mirror && mirror.value!==input.value){
+      mirror.value=input.value;
+      mirror.setAttribute("aria-invalid","false");
+    }
+    refreshMarket("us");
+    refreshMarket("us48");
   });
 }
+
+bindUsPadding("usPadding","us48Padding");
+bindUsPadding("us48Padding","usPadding");
+
+$("ukPadding").addEventListener("input",()=>{
+  const input=$("ukPadding");
+  const next=parsePaddingInput(input);
+  if(!Number.isFinite(next)) return;
+  paddingByMarket.uk=next;
+  refreshMarket("uk");
+});
 
 function getBox(id){
   return BOXES.find(b => b.id === id) || null;
@@ -805,6 +869,67 @@ document.querySelectorAll(".tab").forEach(tab=>{
     document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
     $("panel-"+tab.dataset.tab).classList.add("active");
   });
+});
+
+/* ---------------- KEYBOARD NAVIGATION ---------------- */
+
+function focusGridCell(target){
+  if(!target) return;
+  target.focus();
+  if(target.matches("input")){
+    try{ target.select(); }catch(_){}
+  }
+}
+
+function rowGridTargets(tr){
+  if(!tr) return [];
+  if(tr.dataset.market){
+    return ["box","qty","cost","markup","price"]
+      .map(role=>tr.querySelector(`[data-role="${role}"]`))
+      .filter(Boolean);
+  }
+  if(tr.closest("#stemRows")){
+    return ["name","stems","unitPrice"]
+      .map(role=>tr.querySelector(`[data-role="${role}"]`))
+      .filter(Boolean);
+  }
+  return [];
+}
+
+document.addEventListener("keydown",e=>{
+  // The box picker has its own keyboard behavior.
+  if($("boxOverlay").classList.contains("open")) return;
+  if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)) return;
+
+  const tr=e.target.closest("tbody tr");
+  if(!tr) return;
+
+  const currentTargets=rowGridTargets(tr);
+  const col=currentTargets.indexOf(e.target);
+  if(col<0) return;
+
+  let target=null;
+
+  if(e.key==="ArrowLeft" || e.key==="ArrowRight"){
+    const nextCol=col+(e.key==="ArrowRight"?1:-1);
+    if(nextCol>=0 && nextCol<currentTargets.length){
+      target=currentTargets[nextCol];
+    }
+  }else{
+    const tbody=tr.parentElement;
+    const rows=[...tbody.querySelectorAll("tr")];
+    const rowIndex=rows.indexOf(tr);
+    const nextRow=rowIndex+(e.key==="ArrowDown"?1:-1);
+    if(nextRow>=0 && nextRow<rows.length){
+      const nextTargets=rowGridTargets(rows[nextRow]);
+      target=nextTargets[Math.min(col,nextTargets.length-1)] || null;
+    }
+  }
+
+  if(target){
+    e.preventDefault();
+    focusGridCell(target);
+  }
 });
 
 /* ---------------- CALCULATOR ROWS ---------------- */
@@ -900,13 +1025,16 @@ function updateDeleteButtons(market){
   });
 }
 
-function getUsComponents(box, qty, cost){
+function getUsComponents(box, qty, cost, market="us"){
   const L = Number(box.largo), A = Number(box.ancho), H = Number(box.alto);
   if(![L,A,H].every(Number.isFinite)) return null;
 
-  const volume = boxWeight(box,"us");
+  const volume = boxWeight(box,market);
+  const flash48Factor = market==="us48" ? 1.25 : 1;
 
-  const transport2 = roundUp((volume * US_FREIGHT) * US_FREIGHT_FACTOR,2);
+  // US normal: ROUNDUP((Volumen * 5.25) * 1.36, 2)
+  // US 48H (Test rows 5/6): ROUNDUP(((Volumen * 5.25) * 1.25) * 1.36, 2)
+  const transport2 = roundUp(((volume * US_FREIGHT) * flash48Factor) * US_FREIGHT_FACTOR,2);
   const transport = roundUp(transport2 / qty,2);
   const duties = roundUp(cost * US_IMPORT_DUTY,2);
 
@@ -946,7 +1074,7 @@ function getRowComponents(tr){
   if(!box || !Number.isFinite(qty) || qty<=0 || !Number.isFinite(cost) || cost<0) return null;
   return tr.dataset.market==="uk"
     ? getUkComponents(box,qty,cost)
-    : getUsComponents(box,qty,cost);
+    : getUsComponents(box,qty,cost,tr.dataset.market);
 }
 
 function priceFromMarkup(tr){
@@ -994,19 +1122,18 @@ function recalculateRow(tr){
   }
 }
 
-document.querySelectorAll('[data-add="us"],[data-add="uk"]').forEach(btn=>{
+document.querySelectorAll('[data-add="us"],[data-add="us48"],[data-add="uk"]').forEach(btn=>{
   btn.addEventListener("click",()=>createCalcRow(btn.dataset.add));
 });
 
 /* ---------------- BOX MODAL ---------------- */
 
 function availableBoxes(market){
-  return BOXES.filter(box=>{
-    if(market==="us" && BASE_UK.has(box.name)) return false;
-    // UK base boxes remain reference values for price and capacity, not options.
-    if(market==="uk" && (BASE_US.has(box.name) || BASE_UK.has(box.name))) return false;
-    return true;
-  });
+  // Cada mercado permite sus propias seis cajas base más las cajas de finca.
+  // Las cajas base del otro mercado nunca aparecen, ni en búsquedas.
+  return BOXES.filter(box => market === "uk"
+    ? !BASE_US.has(box.name)
+    : !BASE_UK.has(box.name));
 }
 
 function boxMatches(box,q){
@@ -1023,8 +1150,13 @@ function renderBoxModal(){
   const q = $("boxSearch").value.trim().toLocaleLowerCase("es");
   const all = availableBoxes(market);
 
-  const baseNames = market==="us" ? BASE_US : BASE_UK;
-  const base = all.filter(b=>baseNames.has(b.name) && boxMatches(b,q));
+  // Orden fijo de las cajas base: siempre arriba, antes de cualquier finca.
+  const baseOrder = market === "uk"
+    ? ["SB UK", "EB UK", "QB UK", "HB UK", "EB2 UK", "QB2 UK"]
+    : ["SB", "EB", "QB", "HB", "EB2", "QB2"];
+  const base = baseOrder
+    .map(name => all.find(box => box.name === name))
+    .filter(box => box && boxMatches(box,q));
 
   const farms = all.filter(b=>!BASE_US.has(b.name) && !BASE_UK.has(b.name));
   const grouped = new Map();
@@ -1079,7 +1211,7 @@ function boxOptionHtml(box,market){
 
 function openBoxModal(market,rowId){
   modalContext={market,rowId};
-  $("boxModalTitle").textContent = market==="us" ? "Seleccionar caja · US" : "Seleccionar caja · UK";
+  $("boxModalTitle").textContent = market==="uk" ? "Seleccionar caja · UK" : market==="us48" ? "Seleccionar caja · US 48H" : "Seleccionar caja · US";
   $("boxSearch").value="";
   $("boxOverlay").classList.add("open");
   $("boxOverlay").setAttribute("aria-hidden","false");
@@ -1122,6 +1254,45 @@ $("closeBoxModal").addEventListener("click",closeBoxModal);
 $("boxOverlay").addEventListener("click",e=>{
   if(e.target===$("boxOverlay")) closeBoxModal();
 });
+$("boxSearch").addEventListener("keydown",e=>{
+  if(e.key==="ArrowDown"){
+    const first=$("boxList").querySelector(".box-option");
+    if(first){
+      e.preventDefault();
+      first.focus();
+    }
+  }else if(e.key==="Enter"){
+    const first=$("boxList").querySelector(".box-option");
+    if(first){
+      e.preventDefault();
+      first.click();
+    }
+  }
+});
+
+$("boxList").addEventListener("keydown",e=>{
+  const current=e.target.closest(".box-option");
+  if(!current) return;
+  const options=[...$("boxList").querySelectorAll(".box-option")];
+  const index=options.indexOf(current);
+  if(index<0) return;
+
+  if(e.key==="ArrowDown" || e.key==="ArrowUp"){
+    e.preventDefault();
+    const next=Math.max(0,Math.min(options.length-1,index+(e.key==="ArrowDown"?1:-1)));
+    options[next].focus();
+  }else if(e.key==="Home"){
+    e.preventDefault();
+    options[0]?.focus();
+  }else if(e.key==="End"){
+    e.preventDefault();
+    options[options.length-1]?.focus();
+  }else if(e.key==="Enter"){
+    e.preventDefault();
+    current.click();
+  }
+});
+
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && $("boxOverlay").classList.contains("open")) closeBoxModal();
 });
@@ -1196,6 +1367,8 @@ document.querySelector('[data-add="stem"]').addEventListener("click",createStemR
 
 createCalcRow("us");
 createCalcRow("us");
+createCalcRow("us48");
+createCalcRow("us48");
 createCalcRow("uk");
 createCalcRow("uk");
 createStemRow();
