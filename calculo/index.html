@@ -715,6 +715,10 @@ const UK_NET_FACTOR = 0.97;
 
 const DEFAULT_MARKUP = 25;
 
+function isUsMarket(market){
+  return market==="us" || market==="us48";
+}
+
 const $ = id => document.getElementById(id);
 let rowCounter = 0;
 let modalContext = null;
@@ -769,15 +773,19 @@ function volumeOf(box, adjustment){
 
 function boxWeight(box, market){
   if(!box) return NaN;
-  const unpadded = BASE_US.has(box.name) || (market==="uk" && BASE_UK.has(box.name));
+  const unpadded =
+    (isUsMarket(market) && BASE_US.has(box.name)) ||
+    (market==="uk" && BASE_UK.has(box.name));
   return volumeOf(box,unpadded?0:paddingByMarket[paddingKey(market)]);
 }
 
 function boxBaseForApproval(box, market){
   if(!box) return null;
-  const name= market==="uk"
+  const name = market==="uk"
     ? BASE_UK_BY_KIND[box.kind]
-    : box.kind;
+    : isUsMarket(market)
+      ? box.kind
+      : null;
   if(!name) return null;
   return BOXES.find(b=>b.name===name) || null;
 }
@@ -1129,11 +1137,15 @@ document.querySelectorAll('[data-add="us"],[data-add="us48"],[data-add="uk"]').f
 /* ---------------- BOX MODAL ---------------- */
 
 function availableBoxes(market){
-  // Cada mercado permite sus propias seis cajas base más las cajas de finca.
-  // Las cajas base del otro mercado nunca aparecen, ni en búsquedas.
-  return BOXES.filter(box => market === "uk"
-    ? !BASE_US.has(box.name)
-    : !BASE_UK.has(box.name));
+  // US y US 48H usan exactamente las mismas seis cajas base de USA.
+  // UK usa exclusivamente sus seis cajas base UK.
+  if(isUsMarket(market)){
+    return BOXES.filter(box => !BASE_UK.has(box.name));
+  }
+  if(market==="uk"){
+    return BOXES.filter(box => !BASE_US.has(box.name));
+  }
+  return [];
 }
 
 function boxMatches(box,q){
@@ -1151,9 +1163,9 @@ function renderBoxModal(){
   const all = availableBoxes(market);
 
   // Orden fijo de las cajas base: siempre arriba, antes de cualquier finca.
-  const baseOrder = market === "uk"
-    ? ["SB UK", "EB UK", "QB UK", "HB UK", "EB2 UK", "QB2 UK"]
-    : ["SB", "EB", "QB", "HB", "EB2", "QB2"];
+  const baseOrder = isUsMarket(market)
+    ? ["SB", "EB", "QB", "HB", "EB2", "QB2"]
+    : ["SB UK", "EB UK", "QB UK", "HB UK", "EB2 UK", "QB2 UK"];
   const base = baseOrder
     .map(name => all.find(box => box.name === name))
     .filter(box => box && boxMatches(box,q));
@@ -1173,7 +1185,7 @@ function renderBoxModal(){
   let visible = 0;
 
   if(base.length){
-    html += `<div class="group-title">${market==="us" ? "Cajas base US" : "Cajas base UK"}</div>`;
+    html += `<div class="group-title">${isUsMarket(market) ? "Cajas base US" : "Cajas base UK"}</div>`;
     html += base.map(box=>boxOptionHtml(box,market)).join("");
     visible += base.length;
   }
