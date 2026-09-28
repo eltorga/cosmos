@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario Logística — Estilo Notion</title>
+    <title>Inventario Whatsapp — Lista Viernes y Lista Lunes</title>
     
     <!-- Uicons de Flaticon -->
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -228,6 +228,62 @@
         }
         .btn-secondary:hover { background-color: #f1f1ef; }
 
+
+        /* =========================================
+           Pestañas Lista Viernes / Lista Lunes
+           ========================================= */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e9e9e7;
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            color: #787774;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: #f1f1ef;
+            color: #37352f;
+        }
+
+        .tab-btn.active {
+            background: #37352f;
+            color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .tab-content .table-container {
+            display: block;
+        }
+
+        .empty-state {
+            color: #787774;
+            text-align: center;
+            margin-top: 60px;
+            font-size: 14px;
+        }
+
         @media (max-width: 850px) {
             .container { flex-direction: column; }
             body { height: auto; padding: 20px 10px; }
@@ -265,31 +321,81 @@
             
             <!-- PANEL DERECHO -->
             <div class="panel">
-                <h2><i class="fi fi-rr-list-check"></i> Vista Previa Formateada</h2>
-                
-                <div id="rightVisualContainer" class="table-container right-table-container">
-                    <div id="emptyState" style="color: #787774; text-align: center; margin-top: 60px; font-size: 14px;">
-                        Las categorías ordenadas aparecerán aquí...
+                <h2><i class="fi fi-rr-list-check"></i> Listas Formateadas</h2>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="viernes">Lista Viernes</button>
+                    <button class="tab-btn" data-tab="lunes">Lista Lunes</button>
+                </div>
+
+                <!-- PRIMERA PESTAÑA -->
+                <div id="tab-viernes" class="tab-content active">
+                    <div id="rightVisualContainer" class="table-container right-table-container">
+                        <div id="emptyState" class="empty-state">
+                            Las categorías ordenadas aparecerán aquí...
+                        </div>
+                        <table class="excel-table" id="rightTable" style="display: none;">
+                            <tbody></tbody>
+                        </table>
                     </div>
-                    <table class="excel-table" id="rightTable" style="display: none;">
-                        <tbody></tbody>
-                    </table>
+
+                    <div class="counters" id="rightCounters">
+                        <div class="counter-item pill-eb">EB: <span id="r-eb">0</span></div>
+                        <div class="counter-item pill-qb">QB: <span id="r-qb">0</span></div>
+                        <div class="counter-item pill-hb">HB: <span id="r-hb">0</span></div>
+                        <div class="counter-item pill-tot"><i class="fi fi-rr-sigma"></i> Total: <span id="r-tot">0</span></div>
+                    </div>
+
+                    <button class="btn btn-action" id="copyBtn"><i class="fi fi-rr-copy"></i> Copiar Lista Viernes</button>
                 </div>
 
-                <div class="counters" id="rightCounters">
-                    <div class="counter-item pill-eb">EB: <span id="r-eb">0</span></div>
-                    <div class="counter-item pill-qb">QB: <span id="r-qb">0</span></div>
-                    <div class="counter-item pill-hb">HB: <span id="r-hb">0</span></div>
-                    <div class="counter-item pill-tot"><i class="fi fi-rr-sigma"></i> Total: <span id="r-tot">0</span></div>
-                </div>
+                <!-- SEGUNDA PESTAÑA -->
+                <div id="tab-lunes" class="tab-content">
+                    <div class="table-container right-table-container">
+                        <div id="mondayEmptyState" class="empty-state">
+                            Aquí aparecerán automáticamente todos los productos que contengan (T/F).
+                        </div>
+                        <table class="excel-table" id="mondayTable" style="display: none;">
+                            <tbody></tbody>
+                        </table>
+                    </div>
 
-                <button class="btn btn-action" id="copyBtn"><i class="fi fi-rr-copy"></i> Copiar para WhatsApp</button>
+                    <div class="counters">
+                        <div class="counter-item pill-eb">EB: <span id="m-eb">0</span></div>
+                        <div class="counter-item pill-qb">QB: <span id="m-qb">0</span></div>
+                        <div class="counter-item pill-hb">HB: <span id="m-hb">0</span></div>
+                        <div class="counter-item pill-tot"><i class="fi fi-rr-sigma"></i> Total: <span id="m-tot">0</span></div>
+                    </div>
+
+                    <button class="btn btn-action" id="copyMondayBtn"><i class="fi fi-rr-copy"></i> Copiar Lista Lunes</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let rawWhatsappText = ""; 
+        let rawWhatsappText = "";
+        let mondayWhatsappText = "";
+
+        /* =========================================================
+           CONFIGURACIÓN FÁCIL DE PRODUCTOS NUEVOS
+           =========================================================
+           Para mandar un producto nuevo a una categoría concreta,
+           agrega una regla dentro de CUSTOM_PRODUCT_RULES.
+
+           Ejemplo:
+           { keywords: ["free spirit"], category: "Roses" },
+
+           También puedes poner varios nombres:
+           { keywords: ["producto x", "product x"], category: "Fillers" },
+
+           Las categorías válidas son las que aparecen en DISPLAY_ORDER.
+           Estas reglas tienen PRIORIDAD sobre la base general.
+           ========================================================= */
+        const CUSTOM_PRODUCT_RULES = [
+            // { keywords: ["nuevo producto"], category: "Fillers" },
+            // { keywords: ["otra rosa"], category: "Roses" },
+        ];
 
         const FLOWER_DATABASE = [
             {
@@ -353,6 +459,78 @@
             "Fillers",
             "Otras (Sin Categoría)"
         ];
+
+
+        const STORAGE_KEY = "inventarioWhatsappState_v2";
+
+        function saveState(extra = {}) {
+            const current = {
+                rawInput: document.getElementById('rawInput')?.value || "",
+                processed: document.getElementById('rawInput')?.style.display === 'none',
+                activeTab: document.querySelector('.tab-btn.active')?.dataset.tab || "viernes",
+                ...extra
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+        }
+
+        function loadState() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+            } catch (error) {
+                console.warn("No se pudo leer el estado guardado.", error);
+                return {};
+            }
+        }
+
+        function isValidCategory(category) {
+            return DISPLAY_ORDER.includes(category);
+        }
+
+        function matchesKeywords(lowerText, keywords) {
+            return Array.isArray(keywords) &&
+                keywords.some(keyword => lowerText.includes(String(keyword).toLowerCase()));
+        }
+
+        function getCategoryForItem(item) {
+            // 1) Reglas personalizadas: prioridad máxima.
+            for (const rule of CUSTOM_PRODUCT_RULES) {
+                if (!isValidCategory(rule.category)) {
+                    console.warn(`Categoría inválida en CUSTOM_PRODUCT_RULES: "${rule.category}"`);
+                    continue;
+                }
+
+                if (matchesKeywords(item.lower, rule.keywords)) {
+                    return rule.category;
+                }
+            }
+
+            // 2) Base de productos existente.
+            for (const dbItem of FLOWER_DATABASE) {
+                if (dbItem.match) {
+                    if (dbItem.match(item.lower)) return dbItem.category;
+                } else if (dbItem.keywords) {
+                    if (matchesKeywords(item.lower, dbItem.keywords)) return dbItem.category;
+                }
+            }
+
+            return "Otras (Sin Categoría)";
+        }
+
+        function setActiveTab(tabName, shouldSave = true) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.toggle('active', tab.id === `tab-${tabName}`);
+            });
+
+            if (shouldSave) saveState({ activeTab: tabName });
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+        });
 
         function getBoxStats(items) {
             let eb = 0, qb = 0, hb = 0, tot = 0;
@@ -435,21 +613,17 @@
             document.getElementById('leftVisualContainer').style.display = 'block';
             document.getElementById('editBtn').style.display = 'flex';
 
+            // Lista Viernes: excluye por completo los productos marcados con (T/F).
+            const fridayItems = parsedItems.filter(item => !/\(T\/F\)/i.test(item.text));
+
             const categorizedData = {};
             DISPLAY_ORDER.forEach(cat => categorizedData[cat] = []);
 
-            parsedItems.forEach(item => {
-                let assignedCategory = "Otras (Sin Categoría)";
-
-                for (const dbItem of FLOWER_DATABASE) {
-                    if (dbItem.match) {
-                        if (dbItem.match(item.lower)) { assignedCategory = dbItem.category; break; }
-                    } else if (dbItem.keywords) {
-                        if (dbItem.keywords.some(keyword => item.lower.includes(keyword))) { assignedCategory = dbItem.category; break; }
-                    }
+            fridayItems.forEach(item => {
+                const assignedCategory = getCategoryForItem(item);
+                if (!categorizedData[assignedCategory]) {
+                    categorizedData[assignedCategory] = [];
                 }
-                
-                if (!categorizedData[assignedCategory]) { categorizedData[assignedCategory] = []; }
                 categorizedData[assignedCategory].push(item);
             });
 
@@ -565,7 +739,79 @@
             rightTable.querySelector('tbody').innerHTML = rightTbodyHTML;
             rightTable.style.display = 'table';
             
-            updateGlobalCounters(parsedItems, 'r');
+            updateGlobalCounters(fridayItems, 'r');
+
+            // =====================================================
+            // LISTA LUNES
+            // Solo incluye líneas que contengan exactamente (T/F),
+            // sin importar mayúsculas/minúsculas.
+            // =====================================================
+            const mondayItems = parsedItems.filter(item => /\(T\/F\)/i.test(item.text));
+            const mondayCategorized = {};
+            DISPLAY_ORDER.forEach(cat => mondayCategorized[cat] = []);
+
+            mondayItems.forEach(item => {
+                const assignedCategory = getCategoryForItem(item);
+                if (!mondayCategorized[assignedCategory]) {
+                    mondayCategorized[assignedCategory] = [];
+                }
+                mondayCategorized[assignedCategory].push(item);
+            });
+
+            let mondayTbodyHTML = "";
+            mondayWhatsappText = "";
+
+            DISPLAY_ORDER.forEach(cat => {
+                const items = mondayCategorized[cat];
+                if (!items || items.length === 0) return;
+
+                const catStats = getBoxStats(items);
+
+                mondayTbodyHTML += `
+                    <tr class="cat-row">
+                        <td colspan="2">
+                            <div class="cat-row-content">
+                                <span class="cat-title">${cat}</span>
+                                <div class="cat-stats">
+                                    EB: <span>${catStats.eb}</span> &nbsp;|&nbsp;
+                                    QB: <span>${catStats.qb}</span> &nbsp;|&nbsp;
+                                    HB: <span>${catStats.hb}</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                mondayWhatsappText += `*${cat}*\n`;
+
+                items.forEach(item => {
+                    mondayTbodyHTML += `
+                        <tr>
+                            <td class="col-num">${item.originalIndex}</td>
+                            <td>${item.text}</td>
+                        </tr>
+                    `;
+                    mondayWhatsappText += item.text + '\n';
+                });
+
+                mondayWhatsappText += '\n';
+            });
+
+            const mondayTable = document.getElementById('mondayTable');
+            const mondayEmptyState = document.getElementById('mondayEmptyState');
+
+            if (mondayItems.length > 0) {
+                mondayEmptyState.style.display = 'none';
+                mondayTable.querySelector('tbody').innerHTML = mondayTbodyHTML;
+                mondayTable.style.display = 'table';
+            } else {
+                mondayEmptyState.style.display = 'block';
+                mondayTable.querySelector('tbody').innerHTML = '';
+                mondayTable.style.display = 'none';
+            }
+
+            updateGlobalCounters(mondayItems, 'm');
+            saveState({ processed: true });
         });
 
         document.getElementById('editBtn').addEventListener('click', () => {
@@ -573,6 +819,11 @@
             document.getElementById('formatBtn').style.display = 'flex';
             document.getElementById('leftVisualContainer').style.display = 'none';
             document.getElementById('editBtn').style.display = 'none';
+            saveState({ processed: false });
+        });
+
+        document.getElementById('rawInput').addEventListener('input', () => {
+            saveState({ processed: false });
         });
 
         document.getElementById('copyBtn').addEventListener('click', () => {
@@ -585,11 +836,45 @@
                 btn.innerHTML = '<i class="fi fi-rr-check"></i> Copiado con éxito';
                 btn.style.backgroundColor = '#2eaadc';
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fi fi-rr-copy"></i> Copiar para WhatsApp';
+                    btn.innerHTML = '<i class="fi fi-rr-copy"></i> Copiar Lista Viernes';
                     btn.style.backgroundColor = '#2383e2';
                 }, 2000);
             });
         });
+
+        document.getElementById('copyMondayBtn').addEventListener('click', () => {
+            if (!mondayWhatsappText) {
+                alert("No hay productos con (T/F) en la Lista Lunes.");
+                return;
+            }
+
+            navigator.clipboard.writeText(mondayWhatsappText.trim()).then(() => {
+                const btn = document.getElementById('copyMondayBtn');
+                btn.innerHTML = '<i class="fi fi-rr-check"></i> Copiado con éxito';
+                btn.style.backgroundColor = '#2eaadc';
+
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fi fi-rr-copy"></i> Copiar Lista Lunes';
+                    btn.style.backgroundColor = '#2383e2';
+                }, 2000);
+            });
+        });
+
+        // Restaurar automáticamente los datos al volver a abrir la página.
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = loadState();
+
+            if (saved.rawInput) {
+                document.getElementById('rawInput').value = saved.rawInput;
+            }
+
+            setActiveTab(saved.activeTab === 'lunes' ? 'lunes' : 'viernes', false);
+
+            if (saved.processed && saved.rawInput) {
+                document.getElementById('formatBtn').click();
+            }
+        });
+
     </script>
 </body>
 </html>
