@@ -1,1006 +1,207 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comercio - Sistema de Operaciones Comerciales</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #37352f; margin: 0; padding: 0; overflow: hidden; background: #fff; }
-        
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
-        .notion-input { border: 1px solid transparent; border-radius: 4px; padding: 4px 8px; background: transparent; transition: background 0.2s, border 0.2s; outline: none; width: 100%; }
-        .notion-input:hover { background: #EFEFEF; }
-        .notion-input:focus { background: #fff; border: 1px solid #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
-        
-        .table-header { font-size: 11px; color: #787774; font-weight: 500; text-transform: uppercase; padding: 8px; border-bottom: 1px solid #e9e9e7; text-align: left; white-space: nowrap; }
-        .table-cell { padding: 4px; border-bottom: 1px solid #e9e9e7; vertical-align: middle; }
-        
-        .resize-header { resize: horizontal; overflow: hidden; display: inline-flex; align-items: center; min-width: 30px; width: 100%; max-width: 600px; padding-bottom: 2px; white-space: nowrap; }
-        .resize-header:hover { border-right: 2px solid #ccc; cursor: col-resize; }
-
-        .notion-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-        .btn-ghost { background: transparent; color: #787774; }
-        .btn-ghost:hover { background: #efefe6; color: #37352f; }
-        .btn-primary { background: #2383e2; color: #fff; border: 1px solid #1a73e8; }
-        .btn-primary:hover { background: #006bce; }
-        
-        .tag { display: inline-flex; align-items: center; background: #e3e2e0; color: #37352f; border: 1px solid #d3d2d0; border-radius: 4px; padding: 2px 6px; font-size: 12px; margin: 2px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
-        .inv-container { background: #fff; border: 1px solid #e9e9e7; border-radius: 4px; padding: 2px 4px; transition: border 0.2s; min-height: 32px; display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; align-items: center; gap: 4px; cursor: text; scrollbar-width: none; }
-        .inv-container::-webkit-scrollbar { display: none; }
-        .inv-container:hover { border-color: #ccc; }
-        .inv-container:focus-within { border-color: #0B6E99; box-shadow: 0 0 0 1px #0B6E9922; }
-
-        .autocomplete-list { position: absolute; z-index: 9999; background: white; border: 1px solid #e9e9e7; border-radius: 4px; max-height: 200px; overflow-y: auto; width: max-content; min-width: 100%; top: 100%; left: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; margin-top: 2px; }
-        .autocomplete-item { padding: 6px 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
-        .autocomplete-item:hover, .autocomplete-item.active-item { background: #f0f0f0; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: flex; }
-        .tab-btn { padding: 8px 16px; border-bottom: 2px solid transparent; font-weight: 500; color: #787774; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
-        .tab-btn.active { border-bottom-color: #37352f; color: #37352f; }
-        
-        textarea.notion-input { line-height: 1.4; vertical-align: middle; padding-top: 6px; padding-bottom: 6px; }
-
-        .custom-select-wrap { position: relative; width: 100%; }
-        .custom-select-box { display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: transparent; padding: 4px 8px; border-radius: 4px; white-space: nowrap; }
-        .custom-select-box:hover { background: #EFEFEF; }
-        .custom-select-options { position: absolute; top: 100%; left: 0; width: max-content; min-width: 100%; background: white; border: 1px solid #e9e9e7; border-radius: 4px; max-height: 250px; overflow-y: auto; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .opt-item { padding: 6px 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
-        .opt-item:hover { background: #f0f0f0; }
-        .opt-group { padding: 4px 10px; font-weight: bold; font-size: 11px; color: #787774; background: #fafafa; text-transform: uppercase; }
-        
-        input[type=checkbox] { cursor: pointer; accent-color: #1a73e8; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EC Flowers · Aumentos</title>
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--text:#37352f;--muted:#787774;--line:#e9e9e7;--hover:#f1f1ef;--accent:#2383e2;--green:#0f7b6c;--red:#d44c47;--orange:#d9822b;--gray:#9b9a97;--shadow:0 10px 34px rgba(15,15,15,.14)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{width:100%;max-width:none;margin:0;padding:16px}.top{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.brand h1{margin:0;font-size:25px;letter-spacing:-.45px}.brand p{margin:4px 0 0;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}button{font:inherit;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:7px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}button:hover{background:var(--hover)}button.danger{color:var(--red)}button.exportbtn{background:#e6e6e3;color:#8d8c88;border-color:#dededb;font-weight:600;transition:.15s}button.exportbtn.ready{background:var(--green);color:#fff;border-color:var(--green)}button.exportbtn.ready:hover{filter:brightness(.96)}button i{line-height:1}.summary{display:grid;grid-template-columns:minmax(170px,.7fr) minmax(230px,1fr) minmax(220px,.8fr);gap:10px;margin-bottom:12px}.summarybox{background:#fff;border:1px solid var(--line);border-radius:10px;min-height:76px;padding:12px 14px;display:flex;align-items:center;gap:12px}.weeknum{font-size:30px;font-weight:700;letter-spacing:-1px}.summarylabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700}.dates{margin-left:auto;text-align:right;line-height:1.65}.dates b{font-weight:650}.extraBox{display:flex;align-items:center;gap:10px;width:100%}.extraBox .copy{min-width:0}.extraBox .copy b{display:block}.extraBox .copy span{display:block;color:var(--muted);font-size:12px}.extraInput{margin-left:auto;width:82px;height:38px;border:1px solid var(--line);border-radius:7px;padding:0 9px;font:inherit;font-weight:650;text-align:center;outline:none}.extraInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(35,131,226,.12)}.card{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.02);overflow:hidden}.tabs{height:44px;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;padding:0 12px;gap:4px}.tab{border:0;border-radius:0;background:transparent;height:44px;padding:0 13px;color:var(--muted);position:relative}.tab:hover{background:transparent;color:var(--text)}.tab.active{color:var(--text);font-weight:650}.tab.active:after{content:"";position:absolute;height:2px;left:10px;right:10px;bottom:0;background:var(--text);border-radius:2px}.toolbar{padding:8px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}.hint{color:var(--muted);font-size:12px}.tablewrap{width:100%;overflow:auto;max-height:72vh}.grid{border-collapse:separate;border-spacing:0;min-width:100%;width:max-content;table-layout:fixed}.grid th,.grid td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);height:38px;padding:0;position:relative;background:#fff;overflow:hidden}.grid th{position:sticky;top:0;z-index:4;background:#fafafa;text-align:left;padding:0 9px;font-size:12px;font-weight:650;color:#5f5e5b;white-space:nowrap}.grid th:first-child,.grid td:first-child{position:sticky;left:0;z-index:3;background:#fafafa;text-align:center;color:var(--muted)}.grid th:first-child{z-index:6}.grid input:not([type="checkbox"]),.grid select,.cellbtn,.readonlycell{width:100%;height:37px;border:0;background:transparent;padding:0 9px;font:inherit;color:inherit;outline:none;min-width:0}.grid input:not([type="checkbox"]):focus,.grid select:focus,.cellbtn:focus,.readonlycell:focus,.sendcheck:focus-visible{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}.cellbtn{text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;justify-content:space-between;border-radius:0}.cellbtn.placeholder{color:#aaa}.cellbtn .dropicon{font-size:11px;color:#a5a4a1}.readonlycell{display:flex;align-items:center;white-space:nowrap;text-overflow:ellipsis;background:#fcfcfb!important}.readonlycell strong{font-weight:550}.checkcell{text-align:center!important}.sendcheck{width:18px;height:18px;accent-color:var(--green);cursor:pointer;vertical-align:middle}.rowmenu{border:0;background:transparent;padding:4px 8px;border-radius:5px}.resizer{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:8}.resizer:hover,.resizer.dragging{background:rgba(35,131,226,.25)}.addrow td{height:40px;background:#fafafa!important}.addrowbtn{width:100%;height:39px;border:0;border-radius:0;background:transparent;text-align:left;padding-left:54px;color:var(--muted);justify-content:flex-start}.addrowbtn:hover{background:var(--hover);color:var(--text)}.footer{min-height:38px;padding:10px 12px;display:flex;justify-content:flex-end;color:var(--muted);font-size:12px}.pctwrap{position:relative}.pctwrap input{padding-right:25px!important}.pctwrap:after{content:'%';position:absolute;right:8px;top:9px;color:var(--muted);pointer-events:none}.boxbtn{justify-content:flex-start!important;gap:8px}.boxbtn .label{min-width:0;overflow:hidden;text-overflow:ellipsis}.boxbtn .dropicon{margin-left:auto}.light{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto;box-shadow:0 0 0 2px rgba(0,0,0,.04)}.light.green{background:#36a269}.light.red{background:#df5b57}.light.orange{background:#e7a03c}.light.gray{background:#b7b6b2}.namecell{height:37px;display:flex;align-items:center;min-width:0}.namecell input{flex:1;width:auto!important;padding-right:4px!important}.arrival{flex:0 0 auto;margin-right:8px;font-size:11px;background:#f1f1ef;color:#666;padding:2px 6px;border-radius:5px;white-space:nowrap}.standingbtn{justify-content:center!important;font-variant-numeric:tabular-nums}.standingbtn.has{font-weight:700;color:var(--green);background:#f4fbf8}.modalback{position:fixed;inset:0;background:rgba(15,15,15,.18);display:none;align-items:flex-start;justify-content:center;padding-top:10vh;z-index:20}.modalback.show{display:flex}.modal{width:min(590px,92vw);background:white;border-radius:10px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--line)}.modalTitle{padding:13px 14px 4px;font-size:15px;font-weight:700}.search{padding:10px 12px 12px;border-bottom:1px solid var(--line);position:relative}.search>i{position:absolute;left:24px;top:22px;color:#aaa}.search input{width:100%;height:38px;border:1px solid var(--line);border-radius:7px;padding:0 10px 0 34px;font:inherit;outline:none}.search input:focus{border-color:#aaa}.options{max-height:390px;overflow:auto;padding:6px}.option{padding:9px 10px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center}.option:hover,.option.active{background:var(--hover)}.option small{color:var(--muted);text-align:right}.optionGroup{position:sticky;top:0;z-index:2;margin:6px 2px 3px;padding:6px 9px 5px;background:#f7f7f5;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#85847f}.optionGroup:first-child{margin-top:0}.optionGroup.selectedFarm{color:var(--green);background:#f2faf7}.optionGroup .groupHint{float:right;text-transform:none;letter-spacing:0;font-weight:600;font-size:10px;color:#9a9995}.optionMain{display:flex;align-items:center;gap:8px;min-width:0}.optionMain span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.modalhint{padding:7px 12px 10px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}.toast{position:fixed;right:20px;bottom:20px;background:#222;color:#fff;padding:10px 14px;border-radius:8px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:40}.toast.show{opacity:1;transform:none}.pill{padding:2px 6px;border-radius:5px;background:#f1f1ef;font-size:11px;color:#666}.validation{padding:18px}.validation h3{margin:0 0 8px;font-size:18px}.validation p{margin:0 0 12px;color:var(--muted)}.missing{max-height:300px;overflow:auto;border:1px solid var(--line);background:#fafafa;border-radius:7px;padding:10px 12px;white-space:pre-line}.validation .closebar{display:flex;justify-content:flex-end;margin-top:12px}.guidesPane{display:none}.guidesPane.show{display:block}.editorPane.hide{display:none}.guidesWrap{padding:14px;overflow:auto}.guidesTable{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}.guidesTable th,.guidesTable td{padding:10px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);text-align:left}.guidesTable th{background:#fafafa;color:#5f5e5b;font-size:12px}.guidesTable tr:last-child td{border-bottom:0}.guidesTable th:last-child,.guidesTable td:last-child{border-right:0}.guideCode{font-variant-numeric:tabular-nums}.standingModal{width:min(650px,94vw)}.standingSummary{padding:0 14px 10px;color:var(--muted);font-size:12px}.chips{padding:10px 12px 4px;display:flex;gap:6px;flex-wrap:wrap;min-height:42px}.chip{display:inline-flex;align-items:center;gap:6px;background:#f1f1ef;border:1px solid #e4e4e1;border-radius:999px;padding:5px 7px 5px 10px;font-size:12px}.chip button{border:0;padding:0;width:18px;height:18px;border-radius:50%;justify-content:center;background:transparent;color:#888}.chip button:hover{background:#ddd}.standingInputWrap{padding:8px 12px 12px;position:relative}.standingInputWrap input{width:100%;height:40px;border:1px solid var(--line);border-radius:7px;padding:0 10px;font:inherit;outline:none}.standingInputWrap input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(35,131,226,.1)}.standingError{min-height:18px;margin-top:5px;color:var(--red);font-size:11px}.sellerOptions{border-top:1px solid var(--line);max-height:230px;overflow:auto;padding:6px;display:none}.sellerOptions.show{display:block}.sellerOption{padding:8px 10px;border-radius:6px;display:flex;justify-content:space-between;gap:10px;cursor:pointer}.sellerOption.active,.sellerOption:hover{background:var(--hover)}.sellerOption small{color:var(--muted)}.standingFooter{border-top:1px solid var(--line);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.standingFooter button{padding:6px 10px}.kbd{font-size:10px;border:1px solid #ddd;border-bottom-width:2px;border-radius:4px;padding:1px 4px;background:#fafafa;color:#666}
+@media(max-width:820px){.app{padding:9px}.top{display:block}.actions{margin-top:12px}.brand h1{font-size:22px}.summary{grid-template-columns:1fr}.dates{margin-left:0;text-align:left}.hint{display:none}}
+</style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col m-0 p-0">
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand"><h1>EC Flowers · Aumentos</h1><p>Editor de la hoja test · versión GitHub Pages · exportación local a Excel.</p></div>
+    <div class="actions"><button id="clear"><i class="fi fi-rr-eraser"></i>Limpiar</button><button class="exportbtn" id="export"><i class="fi fi-rr-download"></i>Descargar</button></div>
+  </div>
 
-    <!-- Login Screen -->
-    <div id="login-overlay" class="fixed inset-0 bg-white z-[99999] flex flex-col items-center justify-center transition-opacity duration-300">
-        <i class="ri-store-2-line text-5xl text-gray-400 mb-4"></i>
-        <h2 class="text-xl font-bold text-gray-800">Sistema de Operaciones Comerciales</h2>
-        <p class="text-sm text-gray-500 mt-2 mb-6">To view, please enter the password.</p>
-        <div class="relative w-64">
-            <input type="password" id="sys-pwd" class="w-full border border-gray-300 rounded-md py-2 px-3 outline-none focus:border-blue-500 pr-10" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkLogin()">
-            <i class="ri-arrow-right-line absolute right-3 top-2.5 text-gray-400 cursor-pointer hover:text-blue-500" onclick="checkLogin()"></i>
-        </div>
-        <p id="pwd-error" class="text-red-500 text-xs mt-2 hidden">Clave incorrecta</p>
+  <div class="summary">
+    <div class="summarybox"><div><div class="summarylabel">Semana de trabajo</div><div class="weeknum" id="weekNum">—</div></div></div>
+    <div class="summarybox"><div class="extraBox"><i class="fi fi-rr-box-open" style="font-size:22px;color:#777"></i><div class="copy"><b>Seguro / U2</b><span>Ajusta el peso de las cajas no base y el semáforo.</span></div><input id="boxExtra" class="extraInput" type="number" min="0" step="0.1" value="2" aria-label="Valor Sheet1 U2"></div></div>
+    <div class="summarybox"><i class="fi fi-rr-calendar" style="font-size:21px;color:#777"></i><div class="dates"><div><span class="summarylabel">Del</span> <b id="dateFrom">—</b></div><div><span class="summarylabel">Al</span> <b id="dateTo">—</b></div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs"><button class="tab active" data-tab="editor"><i class="fi fi-rr-table-list"></i>Aumentos</button><button class="tab" data-tab="guides"><i class="fi fi-rr-plane"></i>Guías</button></div>
+    <div class="editorPane" id="editorPane">
+      <div class="toolbar"><div><b>Hoja test</b> <span class="pill" id="count">0 filas</span></div><div class="hint">Tab/Shift+Tab avanza y retrocede · flechas mueven entre celdas · Enter abre Finca/Caja/Standing Orders.</div></div>
+      <div class="tablewrap">
+        <table class="grid" id="grid">
+          <colgroup>
+            <col data-colkey="num"><col data-colkey="finca"><col data-colkey="qty"><col data-colkey="box"><col data-colkey="cantidadMin"><col data-colkey="variedad"><col data-colkey="nombre"><col data-colkey="cost"><col data-colkey="markup"><col data-colkey="precio"><col data-colkey="fecha"><col data-colkey="guia"><col data-colkey="standing"><col data-colkey="sendEmail"><col data-colkey="menu">
+          </colgroup>
+          <thead><tr>
+            <th>#</th><th data-resize="finca">Finca<span class="resizer"></span></th><th data-resize="qty">Qty<span class="resizer"></span></th><th data-resize="box">Type of Box<span class="resizer"></span></th><th data-resize="cantidadMin">Cantidad_Min<span class="resizer"></span></th><th data-resize="variedad">Variedad<span class="resizer"></span></th><th data-resize="nombre">Nombre<span class="resizer"></span></th><th data-resize="cost">Cost<span class="resizer"></span></th><th data-resize="markup">Markup<span class="resizer"></span></th><th data-resize="precio">Precio<span class="resizer"></span></th><th data-resize="fecha">Fecha Entrega<span class="resizer"></span></th><th data-resize="guia">Guia<span class="resizer"></span></th><th data-resize="standing">Standing Orders<span class="resizer"></span></th><th data-resize="sendEmail">SendEmail<span class="resizer"></span></th><th></th>
+          </tr></thead>
+          <tbody id="body"></tbody>
+          <tfoot><tr class="addrow"><td colspan="15"><button class="addrowbtn" id="add"><i class="fi fi-rr-plus"></i>Agregar fila</button></td></tr></tfoot>
+        </table>
+      </div>
+      <div class="footer"><span id="status">Cargando datos…</span></div>
     </div>
-
-    <!-- Header Principal -->
-    <header class="flex justify-between items-center border-b border-gray-200 px-6 pt-3 pb-0 shrink-0 w-full bg-white z-10 shadow-sm">
-        <div class="flex items-center gap-8 h-full">
-            <div class="font-bold text-xl cursor-pointer flex items-center gap-2 mb-2 hover:opacity-80 transition" onclick="switchTab('Aumento', document.getElementById('tab-aumento'))">
-                <i class="ri-store-2-line text-blue-600"></i> Comercio
-            </div>
-            <div class="flex h-full items-end">
-                <div id="tab-aumento" class="tab-btn active" onclick="switchTab('Aumento', this)">Aumento</div>
-                <div class="tab-btn" onclick="switchTab('Calculo', this)">Calculo</div>
-                <div class="tab-btn" onclick="switchTab('Cajas', this)">Cajas</div>
-                <div class="tab-btn" onclick="switchTab('Guias', this)">Guias</div>
-            </div>
-        </div>
-        
-        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1 border border-gray-200 rounded-md mb-2 shadow-sm">
-            <i class="ri-lock-line text-gray-500 text-sm"></i>
-            <input type="number" id="global-base-vol" value="2" class="w-8 bg-transparent outline-none font-bold text-gray-800 text-center" oninput="updateBaseVol(); interactiveCalcAllRows();">
-            <span class="text-gray-500 text-sm font-bold">cm</span>
-        </div>
-    </header>
-
-    <!-- Contenido: Tab Aumento -->
-    <div id="Aumento" class="tab-content active flex-col flex-grow min-h-0 w-full relative">
-        <div class="flex-grow overflow-auto px-6 pb-10 w-full">
-            <table class="w-full text-sm border-collapse" id="orders-table" style="table-layout: auto;">
-                <thead>
-                    <tr>
-                        <th class="table-header"><div class="resize-header w-[150px]">Finca</div></th>
-                        <th class="table-header"><div class="resize-header w-[40px]">Qty</div></th>
-                        <th class="table-header"><div class="resize-header w-[110px]">Box Type</div></th>
-                        <th class="table-header"><div class="resize-header w-[60px]">Stems</div></th>
-                        <th class="table-header"><div class="resize-header w-[120px]">Variety</div></th>
-                        <th class="table-header"><div class="resize-header w-[220px]">Descripcion</div></th>
-                        <th class="table-header"><div class="resize-header w-[110px]">Delivery</div></th>
-                        <th class="table-header"><div class="resize-header w-[70px] text-center">Arrival</div></th>
-                        <th class="table-header"><div class="resize-header w-[80px]">Cost</div></th>
-                        <th class="table-header"><div class="resize-header w-[80px]">Markup</div></th>
-                        <th class="table-header"><div class="resize-header w-[80px]">Price</div></th>
-                        <th class="table-header"><div class="resize-header w-[160px]">Inventory</div></th>
-                        <th class="table-header"><div class="resize-header w-[50px] text-center">Send</div></th>
-                        <th class="table-header w-[30px]"></th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Filas -->
-                </tbody>
-            </table>
-        </div>
-
-        <div class="px-6 py-4 border-t bg-gray-50 flex justify-between items-center shrink-0 w-full shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-            <button onclick="addRow()" class="notion-btn btn-ghost"><i class="ri-add-line"></i> New Row</button>
-            <button onclick="exportExcel()" class="notion-btn btn-primary shadow-sm"><i class="ri-file-excel-2-line"></i> Export to Excel</button>
-        </div>
-    </div>
-
-    <!-- Contenido: Tab Calculo -->
-    <div id="Calculo" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6 items-center">
-        
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px] mb-8">
-            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="ri-calculator-line text-blue-500"></i> Tabla de Cálculo</h3>
-            <table class="w-full text-sm border-collapse" id="calc-table">
-                <thead>
-                    <tr>
-                        <th class="table-header w-[120px]">Box Type</th>
-                        <th class="table-header w-[80px]">Stems</th>
-                        <th class="table-header w-[100px]">Cost</th>
-                        <th class="table-header w-[100px]">Markup</th>
-                        <th class="table-header w-[100px]">Price</th>
-                        <th class="table-header w-[40px]"></th>
-                    </tr>
-                </thead>
-                <tbody id="calc-table-body">
-                    <!-- Fila -->
-                </tbody>
-            </table>
-            <button onclick="addCalcTableRow()" class="notion-btn btn-ghost mt-2"><i class="ri-add-line"></i> Agregar Fila</button>
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-[900px]">
-            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Desglose de Caja</h3>
-            <table class="w-full text-sm text-left mb-2">
-                <thead>
-                    <tr class="text-gray-500 text-xs border-b">
-                        <th class="pb-2 w-[40%]">Nombre Variedad</th>
-                        <th class="pb-2 w-[30%] text-center">Cantidad Tallos</th>
-                        <th class="pb-2 w-[30%]">Precio x Tallo</th>
-                    </tr>
-                </thead>
-                <tbody id="calc-breakdown-body">
-                    <!-- Filas init -->
-                </tbody>
-            </table>
-            <button class="notion-btn btn-ghost text-xs mb-6" onclick="addBreakdownRow()"><i class="ri-add-line"></i> Más Filas</button>
-            
-            <div class="border-t pt-4 grid grid-cols-10 gap-4 font-bold text-gray-700 items-center">
-                <div class="col-span-4 text-right">TOTALES:</div>
-                <div class="col-span-3 text-center" id="calc-tot-stems">0</div>
-                <div class="col-span-3 flex items-center gap-3">
-                    <span class="text-lg">$<span id="calc-tot-price">0.00</span></span>
-                    <input type="checkbox" id="chk-tot-price" class="w-4 h-4 cursor-pointer" onchange="syncCalcCheck('total')">
-                </div>
-            </div>
-            <div class="grid grid-cols-10 gap-4 mt-2 font-bold text-blue-700 items-center">
-                <div class="col-span-4 text-right">PRECIO PROMEDIO:</div>
-                <div class="col-span-3"></div>
-                <div class="col-span-3 flex items-center gap-3">
-                    <span class="text-lg">$<span id="calc-avg-price">0.00</span></span>
-                    <input type="checkbox" id="chk-avg-price" class="w-4 h-4 cursor-pointer" onchange="syncCalcCheck('avg')">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenido: Tab Cajas (Sheet1) -->
-    <div id="Cajas" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6">
-        <div id="boxes-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div>
-    </div>
-
-    <!-- Contenido: Tab Guias -->
-    <div id="Guias" class="tab-content flex-col flex-grow min-h-0 w-full overflow-auto bg-[#f7f7f5] px-6 py-6 items-center">
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm w-full max-w-[1000px]">
-            <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Fecha</th>
-                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Día Vuelo</th>
-                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Ecuador</th>
-                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs">Colombia</th>
-                        <th class="p-4 font-semibold text-gray-600 uppercase text-xs text-center">Llegada Cliente</th>
-                    </tr>
-                </thead>
-                <tbody id="vuelos-body" class="divide-y divide-gray-100"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        // Check Login
-        if(localStorage.getItem('auth') === 'true') {
-            document.getElementById('login-overlay').style.display = 'none';
-        }
-        function checkLogin() {
-            let pwd = document.getElementById('sys-pwd').value;
-            if(pwd === '1980') {
-                localStorage.setItem('auth', 'true');
-                document.getElementById('login-overlay').style.opacity = '0';
-                setTimeout(() => document.getElementById('login-overlay').style.display = 'none', 300);
-            } else {
-                document.getElementById('pwd-error').classList.remove('hidden');
-            }
-        }
-
-        // --- Datos Base Actualizados ---
-        const fincasList = [
-            "Florana", "Ceres", "Bellarosa", "Agroprim", "Holex", "Plazoleta", "Rose Conection", "Lupita Flowers", "Petaloz", "Calla Flowers",
-            "Florecot", "Sande Flowers", "US Greens", "Hanna Gardens", "Welyflor", "Bloomhaus", "Floraroma", "Hoja Verde", "Valleflor", "Magic Flowers",
-            "Flowers Party", "Nelpo", "Flor Eterna", "Neumann", "ECUADORUNIQUE", "Olimpo Flowers", "Bloomlink", "Merinoroses", "Florequisa", "Mystic Flowers",
-            "Hydra Farms", "Feel Flowers", "Florecal", "GalaxyTrade Corp", "Flower Village", "Loma Linda", "FLORSEL", "Co-op Farms", "Agroflora", "Stampsybox",
-            "Flormare", "Kiara Preserved", "Agrinag", "Agrocoex", "Ecoador Floral", "Betel", "Joysgarden", "Agrirose", "Benitflor", "La Toscana Farms",
-            "Montebello Roses", "Finca la Abuela", "Florisol", "Vabagro", "Aj Flowers", "Tumbabiro", "Christopher Flowers", "Clarivel", "Jardin Piaveri", "Sunrite Farms",
-            "Florsani", "Alinatura", "Angosacha Flowers", "Lavender World", "Latina Farms", "Flowers and Co", "Flores Verdes", "Summer Bouquet S.A.S", "Flodecol", "Campos de Aroma",
-            "Star Roses", "Agrogana", "Ikebana", "St Monica", "Anthonela", "High Garden", "Optimum Flowers", "San Luis", "Rosas del Corazón", "Treasure Flowers",
-            "HydranFlowers", "Alexandra Farms", "Coordinación", "Circasia S.A.S.", "Vuelven S.A.S.", "Matina", "Naranjo", "Cultivos del Norte", "Casageo", "La Conchita",
-            "Megaflor", "Agrivaldani", "Dummen Orange", "Luxus"
-        ];
-
-        const llegadaMap = {
-            "Agrivaldani": "y", "Ceres": "n", "Hoja Verde": "n", "Latina Farms": "n", 
-            "Lulu": "", "Luxus": "n", "Naranjo": "n", "Florisol": "-", "Florecal": "n", 
-            "Flores Verdes": "y", "Florecot": "n", "Florsani": "y", "Flower Village": "", 
-            "High Garden": "-", "Ikebana": "y", "Star Roses": "n", "Tumbabiro": "y", 
-            "Plazoleta": "y", "Flowers Party": "y", "HydranFlowers": "y", "Alexandra Farms": "", 
-            "Circasia S.A.S.": "", "Vuelven S.A.S.": "", "La Conchita": "-", "Bellarosa": "", 
-            "Agroprim": "n", "Holex": "", "Petaloz": "", "Bloomhaus": "", "Agrinag": "", 
-            "Anthonela": "n", "Agrogana": "y", "Alinatura": "", "Betel": "n", "Casageo": "n", 
-            "Cultivos del Norte": "y", "Dummen Orange": "n", "San Luis": "n"
-        };
-        
-        const vendorsData = {
-            "Ana": "amiranda", "Andres": "abaquero", "Ben": "baspiazu", "Cesar": "caguilar",
-            "Daniel": "dvalencia", "Daniela": "dcordova", "Estefany": "eorces", "Fausto": "fparamo",
-            "John": "jochoa", "Joss": "cmera", "Kevin": "kruiz", "Majo": "mcabrera",
-            "Paul": "pbodley", "Ralph": "rbaquero", "Roberto": "ralvarez"
-        };
-        const vendorNames = Object.keys(vendorsData);
-        
-        const vuelosData = [
-            { fecha: '2026-07-15', diaStr: 'Mie. 15 de julio de 2026', vueloDay: '***Error de Fecha***', ecuador: '16803', colombia: '16805', llegada: 'Mon/Tue' },
-            { fecha: '2026-07-16', diaStr: 'Jue. 16 de julio de 2026', vueloDay: 'Sabado', ecuador: '16802', colombia: '16806', llegada: 'Tue/Wed' },
-            { fecha: '2026-07-17', diaStr: 'Vie. 17 de julio de 2026', vueloDay: 'Domingo', ecuador: '16804', colombia: '16807', llegada: 'Wed/Thu' },
-            { fecha: '2026-07-18', diaStr: 'Sab. 18 de julio de 2026', vueloDay: 'Domingo', ecuador: '16804', colombia: '16807', llegada: 'Wed/Thu' },
-            { fecha: '2026-07-20', diaStr: 'Lun. 20 de julio de 2026', vueloDay: 'Martes', ecuador: '16808', colombia: '16809', llegada: 'Thu/Fri' },
-            { fecha: '2026-07-21', diaStr: 'Mar. 21 de julio de 2026', vueloDay: 'Miercoles', ecuador: '16810', colombia: '-', llegada: 'Fri' } 
-        ];
-
-        const boxesData = [
-            { name: "QB", l: 99, w: 35, h: 16, f: "Estandar" },
-            { name: "EB", l: 105, w: 17, h: 17, f: "Estandar" },
-            { name: "HB", l: 105, w: 35, h: 33, f: "Estandar" },
-            { name: "QB2", l: 85, w: 30, h: 28, f: "Estandar" },
-            { name: "EB2", l: 39, w: 30, h: 30, f: "Estandar" },
-            { name: "SB", l: 90, w: 15, h: 10, f: "Estandar" },
-            
-            { name: "Anthonela EB 5K", l: 90, w: 26, h: 12.5, f: "Anthonela" },
-            { name: "Anthonela EB 9K", l: 90, w: 26, h: 15, f: "Anthonela" },
-            { name: "Anthonela QB 13K", l: 104.4, w: 25, h: 15, f: "Anthonela" },
-            { name: "Anthonela QB 15K", l: 103, w: 30, h: 20, f: "Anthonela" },
-            { name: "Anthonela HB 24K", l: 103.6, w: 35, h: 25, f: "Anthonela" },
-
-            { name: "Agrivaldani HB F1", l: 120, w: 35, h: 35, f: "Agrivaldani" },
-            { name: "Agrivaldani HB F2", l: 105, w: 35, h: 35, f: "Agrivaldani" },
-            { name: "Agrivaldani HB F3", l: 105, w: 30, h: 30, f: "Agrivaldani" },
-            { name: "Agrivaldani QB F4", l: 106, w: 31, h: 15, f: "Agrivaldani" },
-            { name: "Agrivaldani QB F5", l: 70, w: 31, h: 16, f: "Agrivaldani" },
-            { name: "Agrivaldani QB C1", l: 105, w: 34, h: 16, f: "Agrivaldani" },
-            { name: "Agrivaldani HB C2", l: 140, w: 35, h: 35, f: "Agrivaldani" },
-
-            { name: "Alinatura Roses + Stem", l: 39, w: 59, h: 31, f: "Alinatura" },
-            
-            { name: "Betel QB", l: 104, w: 18, h: 14, f: "Betel" },
-            { name: "Casageo EB", l: 104, w: 12.5, h: 12, f: "Casageo" },
-            { name: "Casageo QB", l: 104, w: 25, h: 15, f: "Casageo" },
-            { name: "Casageo HB", l: 104, w: 35, h: 35, f: "Casageo" },
-            { name: "Casageo HB Grande", l: 120, w: 35, h: 35, f: "Casageo" },
-
-            { name: "Ceres EB", l: 75, w: 18, h: 15, f: "Ceres" },
-            { name: "Ceres QB Pequeño", l: 82.5, w: 32.5, h: 18, f: "Ceres" },
-            { name: "Ceres Jumbo", l: 100, w: 32, h: 30.8, f: "Ceres" },
-            { name: "Ceres Extra Jumbo", l: 108, w: 32, h: 30.8, f: "Ceres" },
-            { name: "Ceres Super Jumbo", l: 120, w: 35, h: 35, f: "Ceres" },
-            { name: "Ceres Mega Jumbo", l: 150, w: 40, h: 35, f: "Ceres" },
-            
-            { name: "Hoja Verde EB", l: 80, w: 18, h: 20, f: "Hoja Verde" },
-            { name: "Hoja Verde QB96", l: 96, w: 32, h: 20, f: "Hoja Verde" },
-            { name: "Hoja Verde QB104", l: 104, w: 30, h: 15, f: "Hoja Verde" },
-            { name: "Hoja Verde QB120", l: 120, w: 32, h: 30, f: "Hoja Verde" },
-            { name: "Hoja Verde HB25", l: 104, w: 25, h: 25, f: "Hoja Verde" },
-            { name: "Hoja Verde HB30", l: 104, w: 30, h: 30, f: "Hoja Verde" },
-            { name: "Hoja Verde HB35", l: 120, w: 35, h: 35, f: "Hoja Verde" },
-            { name: "Hoja Verde HB40", l: 120, w: 40, h: 40, f: "Hoja Verde" },
-            { name: "Hoja Verde HB120", l: 120, w: 30, h: 30, f: "Hoja Verde" },
-
-            { name: "Latina Farms QB", l: 101, w: 30, h: 20, f: "Latina Farms" },
-            { name: "Latina Farms HB 100", l: 100, w: 35, h: 35, f: "Latina Farms" },
-            { name: "Latina Farms HB 110", l: 110, w: 25, h: 25, f: "Latina Farms" },
-            { name: "Latina Farms HB 120", l: 120, w: 35, h: 35, f: "Latina Farms" },
-            { name: "Latina Farms HB 130", l: 130, w: 35, h: 35, f: "Latina Farms" },
-            
-            { name: "Cultivos del Norte QB", l: 102, w: 16, h: 30, f: "Cultivos del Norte" },
-            { name: "Cultivos del Norte HB", l: 101, w: 29, h: 33, f: "Cultivos del Norte" },
-            { name: "Dummen Orange QB", l: 104.5, w: 24, h: 15, f: "Dummen Orange" },
-            { name: "La Conchita QB Alto", l: 104, w: 24, h: 16, f: "La Conchita" },
-            { name: "La Conchita QB Normal", l: 104, w: 24, h: 12, f: "La Conchita" },
-            
-            { name: "Florisol EB", l: 86, w: 14.5, h: 12.5, f: "Florisol" },
-            { name: "Florisol EB Grande", l: 90, w: 15, h: 15, f: "Florisol" },
-            { name: "Florisol QB", l: 105, w: 29, h: 15, f: "Florisol" },
-            { name: "Florisol HB", l: 104.6, w: 25.1, h: 25.4, f: "Florisol" },
-            { name: "Florisol HB2", l: 105, w: 30, h: 30, f: "Florisol" },
-
-            { name: "Florecal EB", l: 86.8, w: 16.5, h: 13, f: "Florecal" },
-            { name: "Florecal QB", l: 88, w: 29.2, h: 17.7, f: "Florecal" },
-            { name: "Florecal HB", l: 99, w: 31.3, h: 35.5, f: "Florecal" },
-            { name: "Florecal Jumbo", l: 121, w: 36, h: 36.5, f: "Florecal" },
-            
-            { name: "Flores Verdes EB", l: 86, w: 14.5, h: 12.5, f: "Flores Verdes" },
-            { name: "Flores Verdes QB Corta", l: 87, w: 27.5, h: 17, f: "Flores Verdes" },
-            { name: "Flores Verdes QB Larga", l: 104.2, w: 27.4, h: 14.7, f: "Flores Verdes" },
-            { name: "Flores Verdes HB", l: 98, w: 29.5, h: 25.8, f: "Flores Verdes" },
-            { name: "Flores Verdes Jumbo", l: 120, w: 34, h: 34, f: "Flores Verdes" },
-            
-            { name: "Florsani EB", l: 88, w: 18, h: 14, f: "Florsani" },
-            { name: "Florsani QB", l: 105, w: 27, h: 13, f: "Florsani" },
-            { name: "Florsani QBJ", l: 105, w: 26, h: 15, f: "Florsani" },
-            { name: "Florsani HB", l: 105, w: 27, h: 21, f: "Florsani" },
-            { name: "Florsani HE", l: 105, w: 27, h: 28, f: "Florsani" },
-            { name: "Florsani HJ", l: 120, w: 30, h: 30, f: "Florsani" },
-
-            { name: "Luxus QB 104", l: 104, w: 30, h: 17, f: "Luxus" },
-            { name: "Luxus QB 105", l: 105, w: 26, h: 25, f: "Luxus" },
-            { name: "Luxus HB USA 112", l: 112, w: 30, h: 28, f: "Luxus" },
-            { name: "Luxus HB Jumbo 120", l: 120, w: 33, h: 32, f: "Luxus" },
-            { name: "Luxus HB Super Jumbo 130", l: 130, w: 36, h: 36, f: "Luxus" },
-
-            { name: "Naranjo EB", l: 15, w: 25, h: 91, f: "Naranjo" },
-            { name: "Naranjo QB Pequeño", l: 18, w: 30, h: 85, f: "Naranjo" },
-            { name: "Naranjo QB Grande", l: 18, w: 30, h: 100, f: "Naranjo" },
-            { name: "Naranjo HB Extra Grande", l: 40, w: 40, h: 120, f: "Naranjo" },
-
-            { name: "San Luis EB Pequeño", l: 78, w: 17, h: 19, f: "San Luis" },
-            { name: "San Luis EB Grande", l: 79, w: 24, h: 21, f: "San Luis" },
-            { name: "San Luis QB Pequeño", l: 90, w: 18, h: 30, f: "San Luis" },
-            { name: "San Luis QB Grande", l: 90, w: 22, h: 30, f: "San Luis" },
-            { name: "San Luis HB1", l: 110, w: 30, h: 30, f: "San Luis" },
-            { name: "San Luis HB2", l: 120, w: 35, h: 35, f: "San Luis" },
-            { name: "San Luis HB3", l: 130, w: 40, h: 40, f: "San Luis" },
-            
-            { name: "Star Roses EB", l: 95, w: 17, h: 18, f: "Star Roses" },
-            { name: "Star Roses QB Kraft", l: 95, w: 28, h: 17, f: "Star Roses" },
-            { name: "Star Roses QB Grande", l: 95, w: 40, h: 20, f: "Star Roses" },
-            { name: "Star Roses HB USA", l: 95, w: 33, h: 30, f: "Star Roses" },
-            { name: "Star Roses HB Rusa Corta", l: 105, w: 35, h: 35, f: "Star Roses" },
-
-            { name: "Tumbabiro EB", l: 105, w: 15, h: 12.5, f: "Tumbabiro" },
-            { name: "Tumbabiro QB", l: 105, w: 27, h: 12.5, f: "Tumbabiro" }
-        ];
-
-        let rowCount = 0;
-        let calcRowCount = 0;
-
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(element) element.classList.add('active');
-        }
-
-        // --- Render Cajas (Sheet1) ---
-        function renderSheet1() {
-            const container = document.getElementById('boxes-container');
-            container.innerHTML = '';
-            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 0;
-
-            let estandarHtml = `<div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div class="px-4 py-3 border-b border-gray-200/60 bg-gray-50 flex justify-between items-center shrink-0">
-                    <h3 class="text-[15px] font-bold text-gray-800 m-0 flex items-center gap-2"><i class="ri-box-3-fill text-gray-500"></i> Estandar</h3>
-                </div>
-                <div class="p-4 flex-grow overflow-auto"><table class="w-full text-xs text-left">
-                    <thead><tr class="text-gray-400"><th class="pb-2 font-medium">Nombre</th><th class="pb-2 font-medium">L</th><th class="pb-2 font-medium">W</th><th class="pb-2 font-medium">H</th><th class="pb-2 font-medium">Peso</th></tr></thead>
-                    <tbody class="divide-y divide-gray-50/50">`;
-            boxesData.filter(b => b.f === "Estandar").forEach(box => {
-                let weight = (box.l * box.w * box.h) / 6000;
-                estandarHtml += `<tr><td class="py-1.5 font-bold text-gray-700">${box.name}</td><td class="text-gray-500">${box.l}</td><td class="text-gray-500">${box.w}</td><td class="text-gray-500">${box.h}</td><td class="font-bold text-gray-800">${weight.toFixed(2)}</td></tr>`;
-            });
-            estandarHtml += `</tbody></table></div></div>`;
-            container.innerHTML += estandarHtml;
-
-            const grouped = {};
-            boxesData.filter(b => b.f !== "Estandar").forEach(b => {
-                if(!grouped[b.f]) grouped[b.f] = [];
-                grouped[b.f].push(b);
-            });
-
-            Object.keys(grouped).sort().forEach(finca => {
-                let flag = llegadaMap[finca] || "";
-                let bgClass = "bg-white";
-                let titleColor = "text-gray-800";
-                let iconHtml = `<i class="ri-truck-line text-gray-500"></i>`; 
-
-                if(flag === "y") {
-                    bgClass = "bg-green-50";
-                    titleColor = "text-green-800";
-                    iconHtml = `<i class="ri-checkbox-circle-fill text-green-600" title="Llega temprano"></i>`;
-                } else if(flag === "n") {
-                    bgClass = "bg-red-50";
-                    titleColor = "text-red-800";
-                    iconHtml = `<i class="ri-close-circle-fill text-red-500" title="No llega temprano"></i>`;
-                } else if(flag === "-") {
-                    bgClass = "bg-orange-50";
-                    titleColor = "text-orange-800";
-                    iconHtml = `<i class="ri-error-warning-fill text-orange-500" title="Puede variar"></i>`;
-                }
-
-                let html = `<div class="${bgClass} border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                    <div class="px-4 py-3 border-b border-gray-200/60 bg-white/50 backdrop-blur-sm flex justify-between items-center shrink-0">
-                        <h3 class="text-[15px] font-bold ${titleColor} m-0 flex items-center gap-2">${iconHtml} ${finca}</h3>
-                    </div>
-                    <div class="p-4 flex-grow overflow-auto">
-                        <table class="w-full text-xs text-left">
-                            <thead><tr class="text-gray-400"><th class="pb-2 font-medium">Nombre</th><th class="pb-2 font-medium">L</th><th class="pb-2 font-medium">W</th><th class="pb-2 font-medium">H</th><th class="pb-2 font-medium">Peso</th></tr></thead>
-                            <tbody class="divide-y divide-gray-50/50">`;
-                
-                grouped[finca].forEach(box => {
-                    let weight = ((box.l + baseVol) * (box.w + baseVol) * (box.h + baseVol)) / 6000;
-                    html += `<tr><td class="py-1.5 font-medium text-gray-700">${box.name}</td><td class="text-gray-500">${box.l}</td><td class="text-gray-500">${box.w}</td><td class="text-gray-500">${box.h}</td><td class="font-bold text-gray-800">${weight.toFixed(2)}</td></tr>`;
-                });
-                html += `</tbody></table></div></div>`;
-                container.innerHTML += html;
-            });
-        }
-
-        function updateBaseVol() { renderSheet1(); }
-
-        // --- Render Guias ---
-        function renderGuias() {
-            const body = document.getElementById('vuelos-body');
-            let html = '';
-            vuelosData.forEach(v => {
-                let vDayDisplay = v.vueloDay;
-                if(vDayDisplay === '***Error de Fecha***') {
-                    vDayDisplay = `<span class="text-[#800020] font-bold">Guia Cerrada</span>`;
-                }
-                html += `
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="p-4 font-medium text-gray-800">${v.diaStr}</td>
-                        <td class="p-4 font-bold text-gray-600">${vDayDisplay}</td>
-                        <td class="p-4 text-gray-600">${v.ecuador}</td>
-                        <td class="p-4 text-gray-600">${v.colombia}</td>
-                        <td class="p-4 font-bold text-gray-700 text-center">${v.llegada}</td>
-                    </tr>
-                `;
-            });
-            body.innerHTML = html;
-        }
-
-        // --- Highlight Helper para Menus con Flechas ---
-        function highlight(items, index) {
-            for(let i=0; i<items.length; i++) {
-                items[i].classList.remove('active-item', 'bg-gray-100');
-                if(i === index) items[i].classList.add('active-item', 'bg-gray-100');
-            }
-        }
-
-        // --- Autocompletado Fincas con Flechas ---
-        function createAutocompleteFinca(input, list) {
-            let div = document.createElement('div');
-            div.className = 'autocomplete-list';
-            input.parentElement.appendChild(div);
-            let activeIdx = -1;
-
-            input.addEventListener('input', function() {
-                let val = this.value;
-                div.innerHTML = '';
-                activeIdx = -1;
-                if (!val) { div.style.display = 'none'; return; }
-                
-                let matches = list.filter(item => item.toLowerCase().includes(val.toLowerCase()));
-                if (matches.length > 0) {
-                    div.style.display = 'block';
-                    matches.forEach((match, index) => {
-                        let divItem = document.createElement('div');
-                        divItem.className = 'autocomplete-item';
-                        divItem.innerHTML = match;
-                        divItem.dataset.index = index;
-                        divItem.onmousedown = function(e) {
-                            e.preventDefault(); 
-                            input.value = match;
-                            div.style.display = 'none';
-                        };
-                        div.appendChild(divItem);
-                    });
-                } else { div.style.display = 'none'; }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                let items = div.getElementsByClassName('autocomplete-item');
-                if(!items.length) return;
-                
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    activeIdx++;
-                    if(activeIdx >= items.length) activeIdx = 0;
-                    highlight(items, activeIdx);
-                    items[activeIdx].scrollIntoView({ block: "nearest" });
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    activeIdx--;
-                    if(activeIdx < 0) activeIdx = items.length - 1;
-                    highlight(items, activeIdx);
-                    items[activeIdx].scrollIntoView({ block: "nearest" });
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if(activeIdx > -1) {
-                        input.value = items[activeIdx].innerText;
-                        div.style.display = 'none';
-                    }
-                }
-            });
-
-            input.addEventListener('blur', function() { div.style.display = 'none'; });
-            input.addEventListener('focus', function() { if(this.value && div.children.length > 0) div.style.display = 'block'; });
-        }
-
-        // --- Custom Dropdown "Box Type" ---
-        function toggleBoxDropdown(elem) {
-            let list = elem.nextElementSibling;
-            document.querySelectorAll('.custom-select-options').forEach(el => { if(el !== list) el.style.display = 'none'; });
-            list.style.display = list.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function selectBoxItem(item, val) {
-            let wrap = item.closest('.custom-select-wrap');
-            wrap.querySelector('.sel-value').innerText = val;
-            wrap.querySelector('.inp-boxtype').value = val;
-            wrap.querySelector('.custom-select-options').style.display = 'none';
-            interactiveCalc(wrap.closest('tr'), 'cost');
-        }
-
-        function expandBoxList(btn, e) {
-            e.stopPropagation();
-            let listDiv = btn.parentElement;
-            let existingOptionsHtml = "";
-            let grouped = {};
-            boxesData.forEach(b => {
-                if(b.f !== "Estandar") {
-                    if(!grouped[b.f]) grouped[b.f] = [];
-                    grouped[b.f].push(b);
-                }
-            });
-            Object.keys(grouped).forEach(finca => {
-                existingOptionsHtml += `<div class="opt-group">${finca}</div>`;
-                grouped[finca].forEach(box => {
-                    existingOptionsHtml += `<div class="opt-item" onmousedown="selectBoxItem(this, '${box.name}')">${box.name}</div>`;
-                });
-            });
-            btn.outerHTML = existingOptionsHtml;
-        }
-
-        // --- Delivery Date Selection Custom ---
-        function toggleDateDropdown(elem) {
-            let list = elem.nextElementSibling;
-            document.querySelectorAll('.custom-select-options').forEach(el => { if(el !== list) el.style.display = 'none'; });
-            list.style.display = list.style.display === 'block' ? 'none' : 'block';
-        }
-        function selectDateItem(item, fecha, diaStr, llegada) {
-            let wrap = item.closest('.custom-select-wrap');
-            wrap.querySelector('.sel-value').innerText = fecha; // Visual 2026-07-15
-            wrap.querySelector('.inp-date-hidden').value = fecha; // Export 2026-07-15
-            wrap.querySelector('.custom-select-options').style.display = 'none';
-            wrap.closest('tr').querySelector('.arr-span').innerText = llegada;
-        }
-
-        // --- Cálculos Matemáticos ---
-        function interactiveCalc(row, source) {
-            const costInp = row.querySelector('.inp-cost');
-            const priceInp = row.querySelector('.inp-price');
-            const markupInp = row.querySelector('.inp-markup');
-            
-            const cost = parseFloat(costInp.value) || 0;
-            const type = row.querySelector('.inp-boxtype') ? row.querySelector('.inp-boxtype').value : row.querySelector('select').value;
-            const stems = parseFloat(row.querySelector('.inp-stems').value) || 1;
-            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 2;
-            
-            let dims = boxesData.find(b => b.name === type) || {l:100, w:30, h:20}; 
-            let vol = 0;
-            if (['QB','EB','HB','QB2','EB2','SB'].includes(type)) {
-                vol = (dims.l * dims.w * dims.h) / 6000;
-            } else {
-                vol = ((dims.l+baseVol)*(dims.w+baseVol)*(dims.h+baseVol))/6000;
-            }
-            
-            const duties = cost * 0.1586;
-            const transp2 = (vol * 5.25) * 1.36;
-            const transp = stems > 0 ? transp2 / stems : 0;
-            const totalBase = cost + duties + transp;
-
-            if(source === 'cost' && row.closest('#calc-table-body')) {
-                let totChk = document.getElementById('chk-tot-price');
-                let avgChk = document.getElementById('chk-avg-price');
-                if(totChk) totChk.checked = false;
-                if(avgChk) avgChk.checked = false;
-            }
-
-            if (source === 'cost' || source === 'auto-cost' || source === 'price') {
-                const p = parseFloat(priceInp.value);
-                if (p && p > 0) {
-                    let m = 1 - (totalBase / (p * 0.96));
-                    markupInp.value = (m * 100).toFixed(2);
-                }
-            }
-            if (source === 'markup') {
-                let mVal = markupInp.value;
-                let m = parseFloat(mVal) / 100;
-                if (!isNaN(m)) {
-                    let p = totalBase / ((1 - m) * 0.96);
-                    priceInp.value = p.toFixed(2);
-                }
-            }
-        }
-        function interactiveCalcAllRows() {
-            document.querySelectorAll('#table-body tr, #calc-table-body tr').forEach(tr => interactiveCalc(tr, 'cost'));
-        }
-
-        // --- Inventario (Un solo nivel con Flechas) ---
-        function setupInventoryAutocomplete(input) {
-            let div = input.nextElementSibling;
-            let activeIdx = -1;
-
-            input.addEventListener('input', function() {
-                let val = this.value;
-                div.innerHTML = '';
-                activeIdx = -1;
-                
-                if (!val.trim()) { div.style.display = 'none'; return; }
-
-                let matchRegex = val.match(/^(\d+)\s*(.*)$/);
-                if (matchRegex) {
-                    let num = matchRegex[1];
-                    let text = matchRegex[2].toLowerCase();
-                    let matches = vendorNames.filter(v => v.toLowerCase().includes(text));
-                    
-                    if (matches.length > 0) {
-                        div.style.display = 'block';
-                        matches.forEach((m, index) => {
-                            let divItem = document.createElement('div');
-                            divItem.className = 'autocomplete-item';
-                            divItem.innerHTML = num + ' ' + m;
-                            divItem.dataset.index = index;
-                            divItem.onmousedown = function(e) {
-                                e.preventDefault(); 
-                                processInventorySelection(input, num, m);
-                            };
-                            div.appendChild(divItem);
-                        });
-                    } else { div.style.display = 'none'; }
-                } else { div.style.display = 'none'; }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                let items = div.getElementsByClassName('autocomplete-item');
-                if(div.style.display === 'block' && items.length > 0) {
-                    if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        activeIdx++;
-                        if(activeIdx >= items.length) activeIdx = 0;
-                        highlight(items, activeIdx);
-                        items[activeIdx].scrollIntoView({ block: "nearest" });
-                    } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        activeIdx--;
-                        if(activeIdx < 0) activeIdx = items.length - 1;
-                        highlight(items, activeIdx);
-                        items[activeIdx].scrollIntoView({ block: "nearest" });
-                    } else if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if(activeIdx > -1) {
-                            let selectedText = items[activeIdx].innerText;
-                            let match = selectedText.match(/^(\d+)\s+(.+)$/);
-                            if (match) processInventorySelection(input, match[1], match[2]);
-                        } else if (items.length === 1) {
-                            let selectedText = items[0].innerText;
-                            let match = selectedText.match(/^(\d+)\s+(.+)$/);
-                            if (match) processInventorySelection(input, match[1], match[2]);
-                        }
-                    }
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                }
-            });
-
-            input.addEventListener('blur', function() { div.style.display = 'none'; activeIdx = -1; });
-            input.addEventListener('focus', function() { 
-                let event = new Event('input');
-                input.dispatchEvent(event);
-            });
-        }
-
-        function processInventorySelection(input, qStr, vStr) {
-            let q = parseFloat(qStr);
-            let v = vendorNames.find(name => name.toLowerCase() === vStr.toLowerCase());
-            if(!v) return;
-
-            let row = input.closest('tr');
-            let mainQty = parseFloat(row.querySelector('.inp-main-qty').value) || 0;
-            let container = input.closest('.inv-container');
-            
-            let currentSum = 0;
-            container.querySelectorAll('.tag').forEach(t => currentSum += parseFloat(t.dataset.qty));
-
-            if (currentSum + q > mainQty) {
-                alert(`¡Error! El inventario (${currentSum + q}) no puede superar QTY (${mainQty}).`);
-                return;
-            }
-            
-            let tag = document.createElement('span');
-            tag.className = 'tag';
-            tag.innerHTML = `${q} ${v} <i class="ri-close-line ml-1 cursor-pointer font-bold hover:text-gray-500" onclick="this.parentElement.remove(); updateInventoryData(this.closest('.inv-container'));"></i>`;
-            tag.dataset.val = `${q} ${v}`;
-            tag.dataset.qty = q;
-            
-            container.insertBefore(tag, input.parentElement);
-            input.value = '';
-            input.nextElementSibling.style.display = 'none';
-            updateInventoryData(container);
-            
-            setTimeout(() => input.focus(), 0);
-        }
-
-        function updateInventoryData(container) {
-            let tags = container.querySelectorAll('.tag');
-            let data = [];
-            tags.forEach(t => data.push(t.dataset.val));
-            container.querySelector('.hidden-inventory-data').value = data.join(';');
-        }
-
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = (textarea.scrollHeight) + 'px';
-        }
-
-        // --- Generar Filas Aumento ---
-        function addRow() {
-            rowCount++;
-            const tr = document.createElement('tr');
-            tr.className = "hover:bg-gray-50 group border-b border-gray-100 transition-colors";
-            tr.id = 'row-' + rowCount;
-
-            let dateOptsHtml = '';
-            vuelosData.forEach(v => {
-                dateOptsHtml += `<div class="opt-item border-b border-gray-50 last:border-0" onmousedown="selectDateItem(this, '${v.fecha}', '${v.diaStr}', '${v.llegada}')">${v.diaStr}</div>`;
-            });
-
-            tr.innerHTML = `
-                <td class="table-cell align-top">
-                    <div class="relative w-full h-full">
-                        <input type="text" class="notion-input font-medium" placeholder="Finca">
-                    </div>
-                </td>
-                <td class="table-cell align-top"><input type="number" class="notion-input inp-main-qty font-bold text-center" placeholder="0"></td>
-                <td class="table-cell align-top">
-                    <div class="custom-select-wrap" tabindex="0" onblur="this.querySelector('.custom-select-options').style.display='none'">
-                        <div class="notion-input custom-select-box bg-gray-50" onclick="toggleBoxDropdown(this)">
-                            <span class="sel-value font-bold text-xs text-gray-700">EB</span><i class="ri-arrow-down-s-line text-gray-400"></i>
-                        </div>
-                        <div class="custom-select-options">
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'EB')">EB</div>
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'QB')">QB</div>
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'HB')">HB</div>
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'EB2')">EB2</div>
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'QB2')">QB2</div>
-                            <div class="opt-item font-bold" onmousedown="selectBoxItem(this, 'SB')">SB</div>
-                            <div class="p-1 text-blue-600 font-bold text-xs cursor-pointer text-center hover:bg-gray-100" onmousedown="expandBoxList(this, event)">Ver más...</div>
-                        </div>
-                        <input type="hidden" class="inp-boxtype" value="EB">
-                    </div>
-                </td>
-                <td class="table-cell align-top"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
-                <td class="table-cell align-top"><input type="text" class="notion-input" placeholder="Variety"></td>
-                <td class="table-cell align-top">
-                    <textarea class="notion-input resize-none overflow-hidden w-full min-h-[30px]" rows="1" placeholder="Descripción..." oninput="autoResizeTextarea(this)"></textarea>
-                </td>
-                <td class="table-cell align-top pt-[6px]">
-                    <div class="custom-select-wrap text-xs" tabindex="0" onblur="this.querySelector('.custom-select-options').style.display='none'">
-                        <div class="notion-input custom-select-box bg-gray-50 text-gray-700" onclick="toggleDateDropdown(this)">
-                            <span class="sel-value font-medium text-gray-500">Fecha</span><i class="ri-arrow-down-s-line text-gray-400"></i>
-                        </div>
-                        <div class="custom-select-options">${dateOptsHtml}</div>
-                        <input type="hidden" class="inp-date-hidden" value="">
-                    </div>
-                </td>
-                <td class="table-cell align-top text-center text-xs font-bold text-gray-700 pt-[12px]"><span class="arr-span"></span></td>
-                <td class="table-cell align-top">
-                    <div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')"></div>
-                </td>
-                <td class="table-cell align-top">
-                    <div class="flex items-center gap-1"><input type="number" step="0.1" class="notion-input inp-markup font-medium" placeholder="0.0" oninput="interactiveCalc(this.closest('tr'), 'markup')"><span class="text-gray-400 text-xs">%</span></div>
-                </td>
-                <td class="table-cell align-top">
-                    <div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-price font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')"></div>
-                </td>
-                <td class="table-cell align-top">
-                    <div class="inv-container" onclick="this.querySelector('.inv-input-field').focus()">
-                        <input type="hidden" class="hidden-inventory-data" value="">
-                        <div class="relative flex-grow min-w-[50px] shrink-0">
-                            <input type="text" class="w-full outline-none text-xs bg-transparent font-medium text-gray-700 inv-input-field" placeholder="Ej: 1 Ben">
-                            <div class="autocomplete-list"></div>
-                        </div>
-                    </div>
-                </td>
-                <td class="table-cell align-top text-center pt-[12px]"><input type="checkbox" checked class="w-4 h-4 cursor-pointer"></td>
-                <td class="table-cell align-top text-center pt-[12px]">
-                    <button class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button>
-                </td>
-            `;
-            document.getElementById('table-body').appendChild(tr);
-            createAutocompleteFinca(tr.querySelector('td:nth-child(1) input[type=text]'), fincasList);
-            setupInventoryAutocomplete(tr.querySelector('.inv-input-field'));
-        }
-
-        // --- Generar Fila Cálculo ---
-        function addCalcTableRow() {
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-gray-100";
-            tr.innerHTML = `
-                <td class="table-cell">
-                    <select class="notion-input inp-boxtype text-xs bg-gray-50" onchange="interactiveCalc(this.closest('tr'), 'cost')">
-                        <option value="EB">EB</option><option value="QB">QB</option><option value="HB">HB</option>
-                        <option value="EB2">EB2</option><option value="QB2">QB2</option><option value="SB">SB</option>
-                    </select>
-                </td>
-                <td class="table-cell"><input type="number" class="notion-input inp-stems text-center" placeholder="0" oninput="interactiveCalc(this.closest('tr'), 'cost')"></td>
-                <td class="table-cell"><div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-cost font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'cost')"></div></td>
-                <td class="table-cell"><div class="flex items-center gap-1"><input type="number" step="0.1" class="notion-input inp-markup font-medium" placeholder="0.0" oninput="interactiveCalc(this.closest('tr'), 'markup')"><span class="text-gray-400 text-xs">%</span></div></td>
-                <td class="table-cell"><div class="flex items-center gap-1"><span class="text-gray-400 text-xs">$</span><input type="number" step="0.01" class="notion-input inp-price font-medium" placeholder="0.00" oninput="interactiveCalc(this.closest('tr'), 'price')"></div></td>
-                <td class="table-cell text-center"><button class="text-gray-300 hover:text-red-500" onclick="this.closest('tr').remove()"><i class="ri-delete-bin-line"></i></button></td>
-            `;
-            document.getElementById('calc-table-body').appendChild(tr);
-        }
-
-        // --- Calculadora Lógica ---
-        function addBreakdownRow() {
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-gray-50";
-            tr.innerHTML = `
-                <td class="py-1"><input type="text" class="notion-input w-full text-xs font-medium text-gray-500 placeholder:font-normal" placeholder="Variedad..."></td>
-                <td class="py-1"><input type="number" class="notion-input w-full text-center text-xs font-medium text-gray-500" placeholder="0" oninput="calcBreakdown()"></td>
-                <td class="py-1">
-                    <div class="flex items-center gap-1 text-gray-400 focus-within:text-blue-500 transition-colors">
-                        <span class="text-xs">$</span>
-                        <input type="number" step="0.01" class="notion-input w-full bg-transparent text-xs outline-none font-medium text-gray-500" placeholder="0.00" oninput="calcBreakdown()">
-                    </div>
-                </td>
-            `;
-            document.getElementById('calc-breakdown-body').appendChild(tr);
-        }
-
-        function calcBreakdown() {
-            let sumStems = 0;
-            let sumPrice = 0;
-            document.querySelectorAll('#calc-breakdown-body tr').forEach(row => {
-                let s = parseFloat(row.querySelectorAll('input[type=number]')[0].value) || 0;
-                let p = parseFloat(row.querySelectorAll('input[type=number]')[1].value) || 0;
-                sumStems += s;
-                sumPrice += (s * p);
-            });
-            let avg = sumStems > 0 ? sumPrice / sumStems : 0;
-
-            document.getElementById('calc-tot-stems').innerText = sumStems;
-            document.getElementById('calc-tot-price').innerText = sumPrice.toFixed(2);
-            document.getElementById('calc-avg-price').innerText = avg.toFixed(2);
-
-            if(document.getElementById('chk-tot-price').checked) { applyCostToCalcTable(sumPrice.toFixed(2)); }
-            if(document.getElementById('chk-avg-price').checked) { applyCostToCalcTable(avg.toFixed(2)); }
-        }
-
-        function syncCalcCheck(source) {
-            let totChk = document.getElementById('chk-tot-price');
-            let avgChk = document.getElementById('chk-avg-price');
-            if(source === 'total' && totChk.checked) {
-                avgChk.checked = false;
-                applyCostToCalcTable(document.getElementById('calc-tot-price').innerText);
-            } else if (source === 'avg' && avgChk.checked) {
-                totChk.checked = false;
-                applyCostToCalcTable(document.getElementById('calc-avg-price').innerText);
-            }
-        }
-
-        function applyCostToCalcTable(val) {
-            document.querySelectorAll('#calc-table-body .inp-cost').forEach(inp => {
-                inp.value = val;
-                interactiveCalc(inp.closest('tr'), 'auto-cost');
-            });
-        }
-
-        // --- Exportación Plana Estricta ---
-        function exportExcel() {
-            const wb = XLSX.utils.book_new();
-            const rows = document.querySelectorAll('#table-body tr');
-            const baseVol = parseFloat(document.getElementById('global-base-vol').value) || 2;
-            
-            const ws_data = [
-                ["Finca", "Qty", "Type of Box", "Cantidad_Min", "Cantidad_QB", "Variedad", "Nombre", "Color", "Cost", "Markup", "Precio", "Guia", "FechaEntrega", "Duties", "Origen", "Box", "img", "Transport", "Largo2", "Ancho", "Alto", "Volumen", "Transport2", "Import Duties", "Total", "FincaID", "Inventarios", "SendEmail", "Comments", "Standing Orders"]
-            ];
-
-            rows.forEach((tr) => {
-                const cells = tr.querySelectorAll('td');
-                const Finca = cells[0].querySelector('input[type=text]').value;
-                const Qty = parseFloat(cells[1].querySelector('input').value) || 0;
-                const Type = cells[2].querySelector('.inp-boxtype').value;
-                const Stems = parseFloat(cells[3].querySelector('input').value) || 0;
-                const Variety = cells[4].querySelector('input').value;
-                const Name = cells[5].querySelector('textarea').value;
-                const DateVal = cells[6].querySelector('.inp-date-hidden').value; // Puro YYYY-MM-DD
-                const Cost = parseFloat(cells[8].querySelector('input').value) || 0;
-                const Price = parseFloat(cells[10].querySelector('input').value) || 0;
-                const Standings = cells[11].querySelector('.hidden-inventory-data').value;
-                const Send = cells[12].querySelector('input').checked ? 'Y' : 'N';
-
-                let vData = vuelosData.find(v => v.fecha === DateVal);
-                let GuiaStr = "ERROR F";
-                if(vData) {
-                    if (['QB2','EB2'].includes(Type)) { GuiaStr = vData.colombia; } 
-                    else { GuiaStr = vData.ecuador; }
-                }
-
-                let dims = boxesData.find(b => b.name === Type) || {l:100, w:30, h:20, f:"Estandar"}; 
-                let Vol = 0;
-                if (['QB','EB','HB','QB2','EB2','SB'].includes(Type)) { Vol = (dims.l * dims.w * dims.h) / 6000; } 
-                else { Vol = ((dims.l+baseVol)*(dims.w+baseVol)*(dims.h+baseVol))/6000; }
-                
-                let Duties = Math.ceil((Cost * 0.1586) * 100) / 100;
-                let Transport2 = Math.ceil(((Vol * 5.25) * 1.36) * 100) / 100;
-                let Transport = Stems > 0 ? Math.ceil((Transport2 / Stems) * 100) / 100 : 0;
-                let Total = Stems * Price * Qty;
-                
-                let FincaIDStr = (fincasList.indexOf(Finca) + 1).toString();
-                if(FincaIDStr === "0") FincaIDStr = ""; 
-
-                let MarkupVal = 0;
-                if (Price > 0) { MarkupVal = 1 - ((Cost + Duties + Transport) / (Price * 0.96)); }
-                let MarkupOut = (MarkupVal * 100).toFixed(2) + "%";
-                if (MarkupVal < 0) MarkupOut = "BAJO";
-                if (MarkupVal > 1) MarkupOut = "ALTO";
-
-                let InventariosStr = "";
-                if(Standings) {
-                    let stArray = Standings.split(';');
-                    stArray.forEach(t => {
-                        let matchRegex = t.trim().match(/^(\d+)\s+(.+)$/);
-                        if(matchRegex) {
-                            let invQty = parseInt(matchRegex[1]);
-                            let invName = matchRegex[2];
-                            let mappedID = vendorsData[invName];
-                            if(mappedID && !isNaN(invQty)) {
-                                InventariosStr += (mappedID + ",").repeat(invQty);
-                            }
-                        }
-                    });
-                }
-
-                ws_data.push([
-                    Finca, Qty, Type, Stems, Stems, Variety, Name, "", Cost, MarkupOut, Price, GuiaStr, DateVal, 
-                    Duties, 0, 1, 0, Transport, dims.l, dims.w, dims.h, Vol, Transport2, 0.1586, Total, 
-                    FincaIDStr, InventariosStr, Send, "", Standings.replace(/;/g, "; ")
-                ]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "test");
-            XLSX.writeFile(wb, "ECF_Aumento.xlsx");
-        }
-
-        window.onload = function() {
-            renderSheet1();
-            renderGuias();
-            addRow();
-            addCalcTableRow();
-            for(let i=0; i<5; i++) addBreakdownRow();
-        };
-    </script>
+    <div class="guidesPane" id="guidesPane"><div class="toolbar"><div><b>Tabla Guias</b></div><div class="hint">Vuelos, códigos Ecuador/Colombia y entrega.</div></div><div class="guidesWrap"><table class="guidesTable"><thead><tr><th>Vuelos</th><th>Ecuador</th><th>Colombia</th><th>Entrega</th></tr></thead><tbody id="guidesBody"></tbody></table></div></div>
+  </div>
+</div>
+
+<div class="modalback" id="modal"><div class="modal"><div class="modalTitle" id="modalTitle">Seleccionar</div><div class="search"><i class="fi fi-rr-search"></i><input id="search" placeholder="Buscar…" autocomplete="off"></div><div class="options" id="options"></div><div class="modalhint">↑ ↓ selecciona · Enter confirma y vuelve a la celda · Tab confirma y avanza · Esc cancela</div></div></div>
+<div class="modalback" id="standingModal"><div class="modal standingModal"><div class="modalTitle">Standing Orders</div><div class="standingSummary" id="standingSummary">0 / 0 cajas asignadas</div><div class="chips" id="standingChips"></div><div class="standingInputWrap"><input id="standingInput" placeholder="Ej. 1 Daniel" autocomplete="off"><div class="standingError" id="standingError"></div></div><div class="sellerOptions" id="sellerOptions"></div><div class="standingFooter"><span>Escribe cantidad + espacio para ver fragmentos. <span class="kbd">↑</span> <span class="kbd">↓</span> <span class="kbd">Enter</span></span><button id="standingDone"><i class="fi fi-rr-check"></i>Listo</button></div></div></div>
+<div class="modalback" id="validationModal"><div class="modal validation"><h3>Falta información</h3><p>Completa estos campos antes de descargar:</p><div class="missing" id="missingText"></div><div class="closebar"><button id="closeValidation"><i class="fi fi-rr-cross-small"></i>Cerrar</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PYODIDE_BASE_URL='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+let PYODIDE=null;
+async function initBrowserEngine(){
+  if(typeof loadPyodide!=='function') throw new Error('No se pudo cargar el motor Excel. Revisa tu conexión a Internet.');
+  $('#status').textContent='Cargando plantilla…';
+  const [tplRes, engRes]=await Promise.all([
+    fetch('./template.xlsx',{cache:'no-store'}),
+    fetch('./engine.py',{cache:'no-store'})
+  ]);
+  if(!tplRes.ok) throw new Error('No se encontró template.xlsx en el repositorio.');
+  if(!engRes.ok) throw new Error('No se encontró engine.py en el repositorio.');
+  const [tplBuf, engText]=await Promise.all([tplRes.arrayBuffer(),engRes.text()]);
+  $('#status').textContent='Cargando motor Excel…';
+  PYODIDE=await loadPyodide({indexURL:PYODIDE_BASE_URL});
+  PYODIDE.FS.writeFile('/template.xlsx',new Uint8Array(tplBuf));
+  PYODIDE.FS.writeFile('/engine.py',new TextEncoder().encode(engText));
+  PYODIDE.runPython("import sys; sys.path.insert(0,'/'); import engine");
+  const cfgJson=PYODIDE.runPython('engine.load_config_json()');
+  return JSON.parse(String(cfgJson));
+}
+async function buildExcelBlobBrowser(rowsData,boxExtra){
+  if(!PYODIDE) throw new Error('El motor Excel todavía no está listo.');
+  PYODIDE.globals.set('rows_json_js',JSON.stringify(rowsData));
+  PYODIDE.globals.set('box_extra_js',Number(boxExtra));
+  try{
+    PYODIDE.runPython("engine.build_xlsx_to_file(rows_json_js, box_extra_js, '/output.xlsx')");
+    const bytes=PYODIDE.FS.readFile('/output.xlsx');
+    return new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }finally{
+    try{PYODIDE.globals.delete('rows_json_js');PYODIDE.globals.delete('box_extra_js')}catch{}
+  }
+}
+let CFG={farms:[],boxes:[],guias:[],sellers:[],guideWeek:null,firstDate:null,lastDate:null,importDuty:.1586,boxExtra:2,baseCodes:['SB','EB','QB','HB','EB2','QB2'],baseNoExtra:[]};
+let rows=[],modalCtx=null,modalOptions=[],activeOption=0,standingCtx=null,sellerOptions=[],activeSeller=0;
+const $=s=>document.querySelector(s),body=$('#body');
+const DEFAULT_WIDTHS={num:42,finca:220,qty:58,box:150,cantidadMin:112,variedad:245,nombre:300,cost:86,markup:96,precio:92,fecha:160,guia:105,standing:116,sendEmail:92,menu:42};
+const ARRIVALS=['(M/T)','(T/W)','(W/T)','(T/F)','(F)'];
+const roundUp=(n,d=2)=>Math.ceil((Number(n)||0)*10**d-1e-10)/10**d;
+function serialDate(n){return new Date(Date.UTC(1899,11,30)+Number(n)*86400000)}
+function fmtDate(n){if(!n)return '';let d=serialDate(n);return new Intl.DateTimeFormat('es',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'}).format(d)}
+function fmtShort(n){if(!n)return '—';let d=serialDate(n);return new Intl.DateTimeFormat('es',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'}).format(d)}
+function boolYN(v){if(v===false||v===0)return false;let s=String(v??'').trim().toUpperCase();return !['N','NO','FALSE','0','OFF'].includes(s)}
+function stripArrival(s){let out=String(s??'').trim();for(const a of ARRIVALS){if(out.toUpperCase().endsWith(a)){out=out.slice(0,-a.length).trim();break}}return out}
+function parseStandingLegacy(v){if(Array.isArray(v))return v.map(x=>({qty:Number(x.qty)||0,fragment:String(x.fragment||'').trim()})).filter(x=>x.qty>0&&x.fragment);if(!v)return[];return String(v).split(';').map(p=>{let m=p.trim().match(/^(\d+(?:\.\d+)?)\s+(.+)$/);if(!m)return null;let rest=m[2].split('[',1)[0].split('(',1)[0].trim();return {qty:Number(m[1])||0,fragment:rest}}).filter(Boolean)}
+function rowDefault(){return {finca:'',qty:'',box:'',cantidadMin:'',variedad:'',nombre:'',cost:'',markup:'',precio:'',fecha:'',standingOrders:[],sendEmail:true,pricingMode:'price'}}
+function normalizeRow(r){let n={...rowDefault(),...r,nombre:stripArrival(r?.nombre||''),pricingMode:r?.pricingMode||'price'};n.sendEmail=r?.sendEmail===undefined?true:boolYN(r.sendEmail);n.standingOrders=parseStandingLegacy(r?.standingOrders);return n}
+function boxObj(name){return CFG.boxes.find(x=>String(x.name).trim()===String(name||'').trim())}
+function guiaObj(fecha){return CFG.guias.find(x=>Number(x.fecha)===Number(fecha))}
+function arrivalFor(r){return guiaObj(r.fecha)?.llegada||''}
+function fullName(r){let base=stripArrival(r.nombre),a=arrivalFor(r);return (base+(a?' '+a:'')).trim()}
+function weightForBox(b){if(!b)return 0;let l=Number(b.largo)||0,a=Number(b.ancho)||0,h=Number(b.alto)||0;let noExtra=(CFG.baseNoExtra||[]).includes(String(b.name).trim());let e=Number(CFG.boxExtra)||0;return noExtra?(l*a*h)/6000:((l+e)*(a+e)*(h+e))/6000}
+function baseCosts(r){let b=boxObj(r.box),cm=Number(r.cantidadMin)||0,cost=Number(r.cost)||0,volumen=weightForBox(b);let transport2=b?roundUp(volumen*5.25*1.36,2):0,transport=cm?roundUp(transport2/cm,2):0,duties=roundUp(cost*CFG.importDuty,2);return {transport,duties,base:cost+duties+transport}}
+function isoWeekFromSerial(serial){let d=serialDate(Number(serial)-2),date=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7));let yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));return Math.ceil((((date-yearStart)/86400000)+1)/7)}
+function calcGuide(r){if(!r.fecha||!r.box)return '';let ds=serialDate(r.fecha).getUTCDay(),wd=ds===0?7:ds,ec=['QB','EB','HB','SB'].includes(r.box),co=['QB2','EB2'].includes(r.box),esTF=fullName(r).toUpperCase().includes('T/F'),colF=['Plazoleta','Flowers Party','HydranFlowers','Alexandra Farms','Circasia S.A.S.','Vuelven S.A.S.','Cultivos del Norte','La Conchita'].includes(r.finca),dia='';if(wd===1&&ec)dia='Lunes';else if(wd===1&&co)dia='Lunes';else if(wd===2&&ec)dia='Martes';else if(wd===2&&co)dia='Lunes';else if(wd===3)dia='Miercoles';else if(wd===4&&ec)dia='Jueves';else if(wd===4&&co)dia='Miercoles';else if(wd===5&&ec)dia='Viernes';else if(wd===5&&co)dia='Jueves';else if(wd===6&&ec&&esTF)dia='Lunes';else if(wd===6&&ec)dia='Viernes';else if(wd===6&&co)dia='Viernes';if(CFG.guideWeek!=null&&isoWeekFromSerial(r.fecha)!==Number(CFG.guideWeek))return 'ERROR S';if(!guiaObj(r.fecha))return 'ERROR F';if(Boolean(colF)!==Boolean(co))return 'ERROR P';if(!dia)return '';let hit=CFG.guias.find(x=>x.dia===dia);if(!hit)return '';if(hit.vuelos==='***Error de Fecha***')return 'ERROR V';if(wd===3)return hit.ecuador;return co?hit.colombia:hit.ecuador}
+function syncPricing(r,source){let {base}=baseCosts(r);if(source==='markup'){r.pricingMode='markup';let m=Number(r.markup);if(r.markup!==''&&Number.isFinite(m)&&m<100&&base>0)r.precio=(base/(.96*(1-m/100))).toFixed(2);else if(r.markup==='')r.precio=''}else{r.pricingMode='price';let p=Number(r.precio);if(r.precio!==''&&Number.isFinite(p)&&p!==0)r.markup=((1-(base/(p*.96)))*100).toFixed(2);else if(r.precio==='')r.markup=''}}
+function recalcDependent(r){syncPricing(r,r.pricingMode==='markup'?'markup':'price')}
+function calc(r){let {transport,duties}=baseCosts(r);return {markup:r.markup,precio:r.precio,guia:calcGuide(r),transport,duties}}
+function standingTotal(r){return (r.standingOrders||[]).reduce((s,x)=>s+(Number(x.qty)||0),0)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function save(){localStorage.setItem('testBuilderRows',JSON.stringify(rows))}
+function missingForRow(r){let c=calc(r),miss=[];if(!String(r.finca).trim())miss.push('Finca');if(String(r.qty).trim()==='')miss.push('Qty');if(!String(r.box).trim())miss.push('Type of Box');if(String(r.cantidadMin).trim()==='')miss.push('Cantidad_Min');if(!String(r.variedad).trim())miss.push('Variedad');if(!String(stripArrival(r.nombre)).trim())miss.push('Nombre');if(String(r.cost).trim()==='')miss.push('Cost');if(String(r.markup).trim()===''||!Number.isFinite(Number(r.markup))||Number(r.markup)<0||Number(r.markup)>=100)miss.push('Markup válido (0–99.99%)');if(String(r.precio).trim()===''||!Number.isFinite(Number(r.precio)))miss.push('Precio');if(String(r.fecha).trim()==='')miss.push('Fecha Entrega');if(!String(c.guia).trim())miss.push('Guia');if(standingTotal(r)>Number(r.qty||0))miss.push('Standing Orders ≤ Qty');return miss}
+function allMissing(){let out=[];rows.forEach((r,i)=>{let m=missingForRow(r);if(m.length)out.push({row:i+1,fields:m})});return out}
+function updateDownloadState(){let missing=allMissing(),btn=$('#export');btn.classList.toggle('ready',rows.length>0&&missing.length===0);btn.title=missing.length?'Falta información para descargar':'Todo completo: listo para descargar'}
+function codeForName(name){let u=String(name||'').toUpperCase();for(const c of ['QB2','EB2','QB','EB','HB','SB'])if(u.includes(c))return c;return ''}
+function isBaseBox(name){return (CFG.baseCodes||[]).includes(String(name||'').trim())}
+function approvedForBox(b){if(!b)return '';let code=b.code||codeForName(b.name),base=boxObj(code);if(!code||!base)return '';return weightForBox(b)<=weightForBox(base)+1e-10?'y':'n'}
+function boxAssessment(farm,code){let base=boxObj(code),matches=CFG.boxes.filter(b=>b.farm===farm&&b.code===code&&!isBaseBox(b.name));if(!farm||!code||!base||!matches.length)return {status:'gray',matches,base,text:'Sin caja específica de la finca'};let checks=matches.map(b=>({b,approved:approvedForBox(b),w:weightForBox(b)}));let yes=checks.filter(x=>x.approved==='y').length,no=checks.filter(x=>x.approved==='n').length;let status=yes&&no?'orange':yes?'green':no?'red':'gray';let text=status==='green'?'Todas tienen Aprobado = y':status==='red'?'Todas tienen Aprobado = n':status==='orange'?'Hay cajas con Aprobado = y y otras = n':'Sin comparación disponible';return {status,matches,checks,base,text}}
+function assessmentTitle(a,code){if(!a.matches.length)return `${code}: sin medidas específicas para esta finca`;let lines=[`${code}: ${a.text}`];for(const x of a.checks)lines.push(`${x.b.name.trim()} · Peso ${x.w.toFixed(2)} · Aprobado ${x.approved}`);return lines.join('\n')}
+function customBoxTitle(name){let b=boxObj(name);if(!b)return String(name||'');return `${b.name.trim()}\n${b.largo} × ${b.ancho} × ${b.alto} cm · Peso ${weightForBox(b).toFixed(2)}`}
+function cellAt(r,c){return body.querySelector(`[data-r="${r}"][data-c="${c}"]`)}
+function focusCell(r,c,select=true){let el=cellAt(r,c);if(!el)return false;el.focus();if(select&&typeof el.select==='function'&&el.tagName!=='SELECT'&&el.type!=='checkbox')el.select();return true}
+function moveHorizontal(r,c,dir=1){let nc=c+dir,nr=r;if(nc>12){nc=0;nr=r+1}if(nc<0){nr=r-1;nc=12}if(nr<0)return;if(nr>=rows.length&&dir>0){rows.push(rowDefault());render();setTimeout(()=>focusCell(rows.length-1,0,false),0);return}focusCell(nr,nc,true)}
+function render(){body.innerHTML='';rows.forEach((r,i)=>{let c=calc(r),arr=arrivalFor(r),baseSelected=isBaseBox(r.box),ass=baseSelected?boxAssessment(r.finca,r.box):null,st=standingTotal(r),tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td>
+<td><button class="cellbtn ${r.finca?'':'placeholder'}" data-cell data-r="${i}" data-c="0" data-pick="farm"><span>${esc(r.finca||'Seleccionar finca…')}</span><i class="fi fi-rr-angle-small-down dropicon"></i></button></td>
+<td><input data-cell data-r="${i}" data-c="1" data-k="qty" type="number" step="1" min="0" value="${esc(r.qty)}"></td>
+<td><button class="cellbtn boxbtn ${r.box?'':'placeholder'}" data-cell data-r="${i}" data-c="2" data-pick="box" title="${esc(baseSelected?assessmentTitle(ass,r.box):customBoxTitle(r.box||'Caja'))}">${baseSelected?`<span class="light ${ass.status}"></span>`:''}<span class="label">${esc(r.box||'Seleccionar caja…')}</span><i class="fi fi-rr-angle-small-down dropicon"></i></button></td>
+<td><input data-cell data-r="${i}" data-c="3" data-k="cantidadMin" type="number" step="1" value="${esc(r.cantidadMin)}"></td>
+<td><input data-cell data-r="${i}" data-c="4" data-k="variedad" value="${esc(r.variedad)}"></td>
+<td><div class="namecell"><input data-cell data-r="${i}" data-c="5" data-k="nombre" value="${esc(stripArrival(r.nombre))}">${arr?`<span class="arrival">${esc(arr)}</span>`:''}</div></td>
+<td><input data-cell data-r="${i}" data-c="6" data-k="cost" type="number" step="0.001" value="${esc(r.cost)}"></td>
+<td><div class="pctwrap"><input data-cell data-r="${i}" data-c="7" data-k="markup" type="number" step="0.01" value="${esc(c.markup)}"></div></td>
+<td><input data-cell data-r="${i}" data-c="8" data-k="precio" type="number" step="0.01" value="${esc(c.precio)}"></td>
+<td><select data-cell data-r="${i}" data-c="9" data-k="fecha"><option value="">Seleccionar fecha…</option>${CFG.guias.map(g=>`<option value="${g.fecha}" ${Number(g.fecha)===Number(r.fecha)?'selected':''}>${esc(fmtDate(g.fecha))}</option>`).join('')}</select></td>
+<td><div class="readonlycell" tabindex="0" data-cell data-r="${i}" data-c="10" data-guide-r="${i}" aria-label="Guia solo lectura"><strong>${esc(c.guia)}</strong></div></td>
+<td><button class="cellbtn standingbtn ${st?'has':''}" data-cell data-r="${i}" data-c="11" data-pick="standing" title="Abrir Standing Orders">${st||0}</button></td>
+<td class="checkcell"><input class="sendcheck" data-cell data-r="${i}" data-c="12" data-k="sendEmail" type="checkbox" ${r.sendEmail?'checked':''} aria-label="SendEmail Y o N" title="Marcado = Y · desmarcado = N"></td>
+<td><button class="rowmenu danger" data-del="${i}" tabindex="-1" title="Eliminar fila"><i class="fi fi-rr-trash"></i></button></td>`;body.appendChild(tr)});$('#count').textContent=`${rows.length} fila${rows.length===1?'':'s'}`;save();updateDownloadState()}
+function updateRowComputedDOM(i){let r=rows[i],m=body.querySelector(`[data-r="${i}"][data-k="markup"]`),p=body.querySelector(`[data-r="${i}"][data-k="precio"]`),g=body.querySelector(`[data-guide-r="${i}"] strong`);if(m&&document.activeElement!==m)m.value=r.markup;if(p&&document.activeElement!==p)p.value=r.precio;if(g)g.textContent=calcGuide(r)}
+body.addEventListener('input',e=>{let k=e.target.dataset.k;if(k==null||k==='sendEmail')return;let i=+e.target.dataset.r,r=rows[i];r[k]=e.target.value;if(k==='nombre')r.nombre=stripArrival(r.nombre);if(k==='markup')syncPricing(r,'markup');else if(k==='precio')syncPricing(r,'price');else if(['cost','cantidadMin'].includes(k))recalcDependent(r);save();updateRowComputedDOM(i);updateDownloadState()});
+body.addEventListener('change',e=>{let k=e.target.dataset.k;if(k==null)return;let i=+e.target.dataset.r;if(k==='sendEmail'){rows[i].sendEmail=e.target.checked;save();updateDownloadState();return}rows[i][k]=e.target.value;if(k==='fecha'){recalcDependent(rows[i]);render();setTimeout(()=>focusCell(i,+e.target.dataset.c,false),0)}else{save();updateDownloadState()}});
+body.addEventListener('click',e=>{let pick=e.target.closest('[data-pick]');if(pick){let type=pick.dataset.pick;if(type==='standing')openStanding(+pick.dataset.r,+pick.dataset.c);else openModal(type,+pick.dataset.r,pick)}let del=e.target.closest('[data-del]');if(del){rows.splice(+del.dataset.del,1);if(!rows.length)rows=[rowDefault()];render()}});
+function openModal(type,row,anchor,initial=''){modalCtx={type,row,col:+anchor.dataset.c};$('#modalTitle').textContent=type==='farm'?'Seleccionar finca':'Seleccionar Type of Box';$('#search').value=initial;$('#search').placeholder=type==='farm'?'Buscar finca…':'Buscar cualquier caja…';$('#modal').classList.add('show');drawOptions();setTimeout(()=>{$('#search').focus();$('#search').setSelectionRange($('#search').value.length,$('#search').value.length)},10)}
+function sourceOptions(){
+  if(modalCtx.type==='farm')return CFG.farms.map(x=>({v:x.name,meta:x.id?`ID ${x.id}`:'',status:null,group:''}));
+  let farm=rows[modalCtx.row]?.finca||'',out=[];
+  // Las seis cajas base siempre van primero y son las únicas que muestran semáforo.
+  for(const code of (CFG.baseCodes||[])){let b=boxObj(code),a=boxAssessment(farm,code),meta=b?`${b.largo} × ${b.ancho} × ${b.alto} cm · Peso ${weightForBox(b).toFixed(2)} · ${a.matches.length?`${a.matches.length} caja${a.matches.length===1?'':'s'} de ${farm||'la finca'}`:'sin caja de la finca'}`:'';out.push({v:code,meta,status:a.status,title:assessmentTitle(a,code),group:'Cajas base',base:true})}
+  // Después, todas las demás cajas de Sheet1/Cajas, agrupadas por finca/familia.
+  let seen=new Set(),special=[];
+  for(const b of CFG.boxes){let name=String(b.name||'').trim();if(!name||isBaseBox(name)||seen.has(name))continue;seen.add(name);special.push({b,group:String(b.group||b.farm||'Otros').trim()||'Otros'})}
+  special.sort((a,b)=>{let ap=a.b.farm===farm?0:1,bp=b.b.farm===farm?0:1;if(ap!==bp)return ap-bp;let g=a.group.localeCompare(b.group,'es',{sensitivity:'base'});if(g)return g;return a.b.name.localeCompare(b.b.name,'es',{numeric:true,sensitivity:'base'})});
+  for(const x of special){let b=x.b;out.push({v:String(b.name).trim(),group:x.group,selectedFarm:b.farm===farm,meta:`${b.largo} × ${b.ancho} × ${b.alto} cm · Peso ${weightForBox(b).toFixed(2)}`,status:null,title:customBoxTitle(b.name),base:false})}
+  return out
+}
+function drawOptions(){
+  let q=$('#search').value.trim().toLowerCase();
+  modalOptions=sourceOptions().filter(x=>!q||x.v.toLowerCase().includes(q)||String(x.group||'').toLowerCase().includes(q));
+  activeOption=0;
+  if(!modalOptions.length){$('#options').innerHTML='<div class="option"><span>Sin resultados</span></div>';return}
+  if(modalCtx.type==='farm'){$('#options').innerHTML=modalOptions.map((x,i)=>`<div class="option ${i===0?'active':''}" data-i="${i}"><div class="optionMain"><span>${esc(x.v)}</span></div><small>${esc(x.meta)}</small></div>`).join('');return}
+  let html='',lastGroup=null;
+  modalOptions.forEach((x,i)=>{if(x.group!==lastGroup){let hint=x.group==='Cajas base'?'Semáforo según finca seleccionada':x.selectedFarm?'Finca seleccionada':'';html+=`<div class="optionGroup ${x.selectedFarm?'selectedFarm':''}">${esc(x.group)}${hint?`<span class="groupHint">${esc(hint)}</span>`:''}</div>`;lastGroup=x.group}html+=`<div class="option ${i===0?'active':''}" data-i="${i}" title="${esc(x.title||'')}"><div class="optionMain">${x.base?`<span class="light ${x.status}"></span>`:''}<span>${esc(x.v)}</span></div><small>${esc(x.meta)}</small></div>`});
+  $('#options').innerHTML=html
+}
+function paintActive(){document.querySelectorAll('#options .option[data-i]').forEach((el,i)=>el.classList.toggle('active',i===activeOption));let el=document.querySelector(`#options .option[data-i="${activeOption}"]`);el?.scrollIntoView({block:'nearest'})}
+function commitModal(moveAfter=false,index=activeOption){if(!modalCtx||!modalOptions[index])return;let {row,col,type}=modalCtx,v=modalOptions[index].v,r=rows[row];r[type==='farm'?'finca':'box']=v;recalcDependent(r);$('#modal').classList.remove('show');modalCtx=null;render();setTimeout(()=>moveAfter?moveHorizontal(row,col,1):focusCell(row,col,false),0)}
+function closeModal(){if(!modalCtx)return;let {row,col}=modalCtx;$('#modal').classList.remove('show');modalCtx=null;setTimeout(()=>focusCell(row,col,false),0)}
+$('#search').addEventListener('input',drawOptions);$('#search').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();if(modalOptions.length){activeOption=Math.min(modalOptions.length-1,activeOption+1);paintActive()}}else if(e.key==='ArrowUp'){e.preventDefault();if(modalOptions.length){activeOption=Math.max(0,activeOption-1);paintActive()}}else if(e.key==='Enter'){e.preventDefault();commitModal(false)}else if(e.key==='Tab'){e.preventDefault();if(modalOptions.length)commitModal(true);else{let {row,col}=modalCtx;$('#modal').classList.remove('show');modalCtx=null;setTimeout(()=>moveHorizontal(row,col,e.shiftKey?-1:1),0)}}else if(e.key==='Escape'){e.preventDefault();closeModal()}});
+$('#options').addEventListener('mousemove',e=>{let o=e.target.closest('[data-i]');if(!o)return;activeOption=+o.dataset.i;paintActive()});$('#options').addEventListener('click',e=>{let o=e.target.closest('[data-i]');if(o)commitModal(false,+o.dataset.i)});$('#modal').addEventListener('mousedown',e=>{if(e.target===$('#modal'))closeModal()});
+function openStanding(row,col){standingCtx={row,col};$('#standingModal').classList.add('show');$('#standingInput').value='';$('#standingError').textContent='';drawStanding();drawSellerOptions();setTimeout(()=>$('#standingInput').focus(),20)}
+function closeStanding(move=0){if(!standingCtx)return;let {row,col}=standingCtx;$('#standingModal').classList.remove('show');standingCtx=null;render();setTimeout(()=>move?moveHorizontal(row,col,move):focusCell(row,col,false),0)}
+function drawStanding(){if(!standingCtx)return;let r=rows[standingCtx.row],total=standingTotal(r),qty=Number(r.qty)||0;$('#standingSummary').textContent=`${total} / ${qty||0} cajas asignadas`;$('#standingChips').innerHTML=(r.standingOrders||[]).length?(r.standingOrders||[]).map((x,i)=>`<span class="chip"><b>${esc(x.qty)}</b> ${esc(x.fragment)}<button data-chipdel="${i}" tabindex="-1" title="Eliminar"><i class="fi fi-rr-cross-small"></i></button></span>`).join(''):'<span style="color:#aaa;font-size:12px;padding:5px 2px">Sin Standing Orders</span>'}
+function draftStanding(){let v=$('#standingInput').value,m=v.match(/^\s*(\d+)\s+(.*)$/);if(!m)return null;return {qty:Number(m[1])||0,q:m[2].trim().toLowerCase()}}
+function drawSellerOptions(){let d=draftStanding();if(!d){sellerOptions=[];$('#sellerOptions').classList.remove('show');$('#sellerOptions').innerHTML='';return}sellerOptions=CFG.sellers.filter(s=>String(s.fragment).toLowerCase().includes(d.q)||String(s.name).toLowerCase().includes(d.q)).slice(0,50);activeSeller=Math.min(activeSeller,Math.max(0,sellerOptions.length-1));$('#sellerOptions').classList.toggle('show',true);$('#sellerOptions').innerHTML=sellerOptions.length?sellerOptions.map((s,i)=>`<div class="sellerOption ${i===activeSeller?'active':''}" data-si="${i}"><span><b>${esc(s.fragment)}</b></span><small>${esc(s.name)}</small></div>`).join(''):'<div class="sellerOption"><span>Sin fragmentos coincidentes</span></div>'}
+function paintSeller(){document.querySelectorAll('#sellerOptions .sellerOption[data-si]').forEach((el,i)=>el.classList.toggle('active',i===activeSeller));document.querySelector(`#sellerOptions .sellerOption[data-si="${activeSeller}"]`)?.scrollIntoView({block:'nearest'})}
+function addStandingFromActive(){if(!standingCtx)return false;let d=draftStanding();if(!d||d.qty<=0){$('#standingError').textContent='Escribe una cantidad y luego un fragmento, por ejemplo: 1 Daniel';return false}let s=sellerOptions[activeSeller];if(!s){s=CFG.sellers.find(x=>String(x.fragment).toLowerCase()===d.q)}if(!s){$('#standingError').textContent='Selecciona un fragmento de la tabla Vendedores.';return false}let r=rows[standingCtx.row],qty=Number(r.qty)||0,newTotal=standingTotal(r)+d.qty;if(newTotal>qty){$('#standingError').textContent=`No puedes asignar ${newTotal} cajas: Qty es ${qty}.`;return false}r.standingOrders.push({qty:d.qty,fragment:s.fragment});$('#standingInput').value='';$('#standingError').textContent='';save();drawStanding();drawSellerOptions();setTimeout(()=>$('#standingInput').focus(),0);return true}
+$('#standingInput').addEventListener('input',()=>{activeSeller=0;$('#standingError').textContent='';drawSellerOptions()});
+$('#standingInput').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){if(sellerOptions.length){e.preventDefault();activeSeller=Math.min(sellerOptions.length-1,activeSeller+1);paintSeller()}}else if(e.key==='ArrowUp'){if(sellerOptions.length){e.preventDefault();activeSeller=Math.max(0,activeSeller-1);paintSeller()}}else if(e.key==='Enter'){e.preventDefault();if($('#standingInput').value.trim())addStandingFromActive();else closeStanding(0)}else if(e.key==='Tab'){e.preventDefault();if(e.shiftKey){closeStanding(-1)}else if($('#standingInput').value.trim()){addStandingFromActive()}else closeStanding(1)}else if(e.key==='Backspace'&&!$('#standingInput').value){let r=rows[standingCtx.row];if(r.standingOrders.length){e.preventDefault();r.standingOrders.pop();save();drawStanding()}}else if(e.key==='Escape'){e.preventDefault();closeStanding(0)}});
+$('#sellerOptions').addEventListener('mousemove',e=>{let o=e.target.closest('[data-si]');if(o){activeSeller=+o.dataset.si;paintSeller()}});$('#sellerOptions').addEventListener('click',e=>{let o=e.target.closest('[data-si]');if(o){activeSeller=+o.dataset.si;addStandingFromActive()}});$('#standingChips').addEventListener('click',e=>{let b=e.target.closest('[data-chipdel]');if(!b||!standingCtx)return;rows[standingCtx.row].standingOrders.splice(+b.dataset.chipdel,1);save();drawStanding();$('#standingInput').focus()});$('#standingDone').onclick=()=>closeStanding(0);$('#standingModal').addEventListener('mousedown',e=>{if(e.target===$('#standingModal'))closeStanding(0)});
+document.addEventListener('keydown',e=>{if($('#validationModal').classList.contains('show')){if(e.key==='Escape')$('#validationModal').classList.remove('show');return}if($('#standingModal').classList.contains('show')||$('#modal').classList.contains('show'))return;let el=document.activeElement;if(!el.matches('[data-cell]'))return;let r=+el.dataset.r,c=+el.dataset.c,pick=el.dataset.pick;
+  if(e.key==='Tab'){e.preventDefault();moveHorizontal(r,c,e.shiftKey?-1:1);return}
+  if(pick&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(pick==='standing')openStanding(r,c);else openModal(pick,r,el);return}
+  if(pick&&e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();if(pick!=='standing')openModal(pick,r,el,e.key);return}
+  if(el.tagName==='SELECT'&&(e.key==='ArrowUp'||e.key==='ArrowDown'))return;
+  if(el.type==='checkbox'&&e.key===' ')return;
+  let target=null;if(e.key==='ArrowLeft')target=cellAt(r,c-1);else if(e.key==='ArrowRight')target=cellAt(r,c+1);else if(e.key==='Enter')target=cellAt(r,c+1)||cellAt(r+1,0);else if(e.key==='ArrowUp')target=cellAt(r-1,c);else if(e.key==='ArrowDown')target=cellAt(r+1,c);if(target){e.preventDefault();target.focus();if(typeof target.select==='function'&&target.tagName!=='SELECT'&&target.type!=='checkbox')target.select()}
+});
+$('#add').onclick=()=>{rows.push(rowDefault());render();setTimeout(()=>focusCell(rows.length-1,0,false),10)};$('#clear').onclick=()=>{if(confirm('¿Borrar las filas actuales?')){rows=[rowDefault()];render();setTimeout(()=>focusCell(0,0,false),0)}};
+function toast(t){$('#toast').textContent=t;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),2500)}
+function showMissing(missing){$('#missingText').textContent=missing.map(x=>`Fila ${x.row}: ${x.fields.join(', ')}`).join('\n');$('#validationModal').classList.add('show')}$('#closeValidation').onclick=()=>$('#validationModal').classList.remove('show');$('#validationModal').addEventListener('mousedown',e=>{if(e.target===$('#validationModal'))$('#validationModal').classList.remove('show')});
+function fileName(){let d=new Date(),p=n=>String(n).padStart(2,'0');return `ECF_Aumento_${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.xlsx`}
+async function saveExcelBlob(blob,name){if(window.showSaveFilePicker){let handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:'Excel Workbook',accept:{'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':['.xlsx']}}]});let w=await handle.createWritable();await w.write(blob);await w.close();return}let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$('#export').onclick=async()=>{let missing=allMissing();if(missing.length){showMissing(missing);return}$('#status').textContent='Generando Excel…';try{let blob=await buildExcelBlobBrowser(rows,CFG.boxExtra),name=fileName();await saveExcelBlob(blob,name);toast(`${name} guardado`);$('#status').textContent='Listo'}catch(err){if(err?.name==='AbortError'){$('#status').textContent='Listo';return}toast(err.message||String(err));$('#status').textContent='Error'}};
+function applyWidths(){let saved={};try{saved=JSON.parse(localStorage.getItem('testBuilderColWidths')||'{}')}catch{};document.querySelectorAll('col[data-colkey]').forEach(col=>{let k=col.dataset.colkey,w=Number(saved[k]||DEFAULT_WIDTHS[k]||100);col.style.width=`${w}px`})}
+function initResize(){document.querySelectorAll('th[data-resize] .resizer').forEach(h=>h.addEventListener('pointerdown',e=>{e.preventDefault();let th=h.parentElement,key=th.dataset.resize,col=document.querySelector(`col[data-colkey="${key}"]`),startX=e.clientX,startW=col.getBoundingClientRect().width;h.classList.add('dragging');h.setPointerCapture(e.pointerId);let move=ev=>{let w=Math.max(55,Math.round(startW+ev.clientX-startX));col.style.width=`${w}px`};let up=ev=>{h.classList.remove('dragging');h.releasePointerCapture(ev.pointerId);h.removeEventListener('pointermove',move);h.removeEventListener('pointerup',up);let saved={};try{saved=JSON.parse(localStorage.getItem('testBuilderColWidths')||'{}')}catch{};saved[key]=Math.round(col.getBoundingClientRect().width);localStorage.setItem('testBuilderColWidths',JSON.stringify(saved))};h.addEventListener('pointermove',move);h.addEventListener('pointerup',up)}))}
+function renderGuides(){let tbody=$('#guidesBody');tbody.innerHTML=CFG.guias.map(g=>`<tr><td>${esc(g.vuelos)}</td><td class="guideCode">${esc(g.ecuador)}</td><td class="guideCode">${esc(g.colombia)}</td><td>${esc(g.entrega)}</td></tr>`).join('')}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));let guides=b.dataset.tab==='guides';$('#editorPane').classList.toggle('hide',guides);$('#guidesPane').classList.toggle('show',guides)}));
+$('#boxExtra').addEventListener('input',e=>{let v=Number(e.target.value);if(!Number.isFinite(v)||v<0)return;CFG.boxExtra=v;localStorage.setItem('testBuilderBoxExtra',String(v));rows.forEach(recalcDependent);render()});
+(async()=>{try{CFG=await initBrowserEngine();if(CFG.error)throw Error(CFG.error);let savedExtra=localStorage.getItem('testBuilderBoxExtra');if(savedExtra!==null&&Number.isFinite(Number(savedExtra))&&Number(savedExtra)>=0)CFG.boxExtra=Number(savedExtra);$('#boxExtra').value=CFG.boxExtra;$('#weekNum').textContent=CFG.guideWeek??'—';$('#dateFrom').textContent=fmtShort(CFG.firstDate);$('#dateTo').textContent=fmtShort(CFG.lastDate);renderGuides();let saved=localStorage.getItem('testBuilderRows');rows=saved?JSON.parse(saved).map(normalizeRow):[rowDefault()];if(!rows.length)rows=[rowDefault()];rows.forEach(recalcDependent);applyWidths();initResize();render();$('#status').textContent='Listo · GitHub Pages';setTimeout(()=>focusCell(0,0,false),50)}catch(e){$('#status').textContent='Error al cargar';toast(e.message||String(e))}})();
+</script>
 </body>
 </html>
