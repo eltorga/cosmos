@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Calculadora de Precios US / UK</title>
+<title>Calculadora de Precios · Week 41</title>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 
 <!-- UIcons by Flaticon -->
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -41,7 +43,7 @@ button{touch-action:manipulation}
 .fi{line-height:1}
 
 .app{
-  width:min(1200px,calc(100% - 32px));
+  width:min(1420px,calc(100% - 32px));
   margin:0 auto;
   padding:46px 0 80px;
 }
@@ -473,27 +475,108 @@ h1{
   font-size:11px;
 }
 
-@media(max-width:800px){
-  .app{width:calc(100% - 20px);padding-top:28px}
+/* Header status + traffic-light emphasis */
+.head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.week-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:#fff;border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px;font-weight:650;white-space:nowrap}
+.week-badge.ready{color:#2f6f52;background:var(--green-bg);border-color:#cfe9da}
+.week-badge.error{color:#9d3f3f;background:var(--red-bg);border-color:#f3caca}
+.traffic-guide{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.traffic-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:11px;color:var(--muted);background:#fff}
+.status-dot{width:11px;height:11px;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--line)}
+.status-dot.y{background:var(--green)}
+.status-dot.n{background:var(--red)}
+.status-dot.none{background:#c7c7c4}
+.calc-table tbody tr.traffic-y td:first-child{box-shadow:inset 4px 0 0 var(--green)}
+.calc-table tbody tr.traffic-n td:first-child{box-shadow:inset 4px 0 0 var(--red)}
+.calc-table tbody tr.traffic-none td:first-child{box-shadow:inset 4px 0 0 #c7c7c4}
+.status-text{font-size:10px;font-weight:700;letter-spacing:.01em;text-transform:uppercase}
+.status-text.y{color:var(--green)}
+.status-text.n{color:var(--red)}
+.status-text.none{color:var(--faint)}
+
+/* Row add controls */
+.row-adders{display:flex;align-items:center;gap:0;border-top:1px solid var(--line);background:#fff}
+.add-row{width:auto;flex:1;border-top:0;justify-content:center;font-weight:600}
+.add-row + .add-row{border-left:1px solid var(--line)}
+.add-row.five{color:var(--blue)}
+
+/* Stem summary redesigned to match the database visual language */
+.stem-summary{margin-top:14px;border:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.summary-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px 16px;min-height:90px;display:flex;flex-direction:column;justify-content:space-between}
+.summary-card .summary-kicker{font-size:11px;color:var(--muted);font-weight:600}
+.summary-card .summary-number{font-size:24px;letter-spacing:-.035em;font-weight:750;margin-top:10px}
+.summary-card.primary{border-color:#cfe0f4;background:#f7fbff}
+.summary-card.primary .summary-kicker,.summary-card.primary .summary-number{color:#185fa7}
+
+/* Loading state */
+.loading-note{display:none;margin:0 0 18px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--muted);font-size:12px}
+.loading-note.show{display:flex;align-items:center;gap:8px}
+
+@media(max-width:1024px){
+  .app{width:calc(100% - 24px);padding-top:30px}
+  .calc-table col.box{width:35%}
+  .section-caption{align-items:flex-start;flex-direction:column}
+  .caption-actions{justify-content:flex-start}
+}
+
+@media(max-width:760px){
+  body{font-size:14px}
+  .app{width:100%;padding:18px 12px 48px}
+  .head-row{flex-direction:column;gap:12px}
   h1{font-size:28px}
-  .tabs{overflow:auto}
-  .database-wrap{overflow-x:auto}
-  .calc-table{min-width:830px}
-  .add-row{min-width:830px}
-  .stem-summary{min-width:830px}
-  .box-columns,.box-option{
-    grid-template-columns:minmax(220px,2fr) repeat(3,minmax(70px,.7fr));
-  }
-  .box-columns>:last-child,.box-option>:last-child{display:none}
+  .week-badge{align-self:flex-start}
+  .tabs{overflow-x:auto;position:sticky;top:0;z-index:20;background:rgba(251,251,250,.96);backdrop-filter:blur(8px);margin-left:-12px;margin-right:-12px;padding:0 8px}
+  .tab{min-width:max-content;height:46px}
+  .database-wrap{overflow:visible;border:0;background:transparent}
+  .calc-table,.calc-table tbody,.calc-table tr,.calc-table td{display:block;width:100%}
+  .calc-table colgroup,.calc-table thead{display:none}
+  .calc-table tbody{display:grid;gap:10px}
+  .calc-table tbody tr{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(15,15,15,.025)}
+  .calc-table tbody tr.traffic-y{border-left:4px solid var(--green)}
+  .calc-table tbody tr.traffic-n{border-left:4px solid var(--red)}
+  .calc-table tbody tr.traffic-none{border-left:4px solid #c7c7c4}
+  .calc-table tbody tr.traffic-y td:first-child,.calc-table tbody tr.traffic-n td:first-child,.calc-table tbody tr.traffic-none td:first-child{box-shadow:none}
+  .calc-table td{height:auto;border:0;border-bottom:1px solid #f1f1ef;padding:0;display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;min-height:52px}
+  .calc-table td:last-child{border-bottom:0}
+  .calc-table td::before{content:attr(data-label);padding:0 10px;color:var(--muted);font-size:11px;font-weight:600}
+  .calc-table:not(.stem-table) td:first-child{grid-template-columns:1fr}
+  .calc-table:not(.stem-table) td:first-child::before{display:none}
+  .cell-input,.money-wrap,.percent-wrap,.box-btn{height:52px}
+  .money-symbol,.percent-symbol{height:52px}
+  .box-btn{padding:8px 11px}
+  .action-cell{display:flex!important;justify-content:flex-end!important;min-height:44px!important}
+  .action-cell::before{display:none}
+  .icon-btn{width:46px;height:44px}
+  .row-adders{margin-top:8px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .add-row{min-width:0;height:46px}
+  .stem-summary{grid-template-columns:1fr}
+  .summary-card{min-height:78px}
+  .summary-card .summary-number{font-size:22px}
+  .modal{width:100%;max-height:92vh;border-radius:14px 14px 0 0;align-self:flex-end}
+  .overlay{padding:0;align-items:flex-end}
+  .box-columns,.box-option{grid-template-columns:minmax(0,1fr) 82px}
+  .box-columns>:nth-child(2),.box-columns>:nth-child(3),.box-columns>:nth-child(4),
+  .box-option>:nth-child(2),.box-option>:nth-child(3),.box-option>:nth-child(4){display:none}
+  .box-option{min-height:54px}
+  .modal-foot{align-items:flex-start;flex-direction:column}
+  .padding-control{width:100%;justify-content:space-between}
+  .caption-actions{width:100%}
 }
 </style>
 </head>
 <body>
 <main class="app">
   <header class="page-head">
-    <div class="eyebrow"><span class="eyebrow-dot"></span> Price tools</div>
-    <h1>Calculadora de precios</h1>
+    <div class="head-row">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> Price tools</div>
+        <h1>Calculadora de precios</h1>
+        <p class="subtitle">Precios US, US 48H y UK calculados con la información del Excel de la semana activa.</p>
+      </div>
+      <div id="weekBadge" class="week-badge"><i class="fi fi-rr-calendar"></i><span id="weekText">Cargando semana…</span></div>
+    </div>
   </header>
+  <div id="loadingNote" class="loading-note show"><i class="fi fi-rr-spinner"></i> Leyendo US_WEEK_ACTIVE.xlsx con Python…</div>
 
   <nav class="tabs" aria-label="Pestañas">
     <button class="tab active" data-tab="us" type="button"><i class="fi fi-rr-dollar"></i> US</button>
@@ -517,6 +600,11 @@ h1{
         <span class="soft-badge">Markup inicial 25%</span>
       </div>
     </div>
+    <div class="traffic-guide" aria-label="Semáforo de cajas">
+      <span class="traffic-chip"><span class="status-dot y"></span> Aprobada / dentro de la base</span>
+      <span class="traffic-chip"><span class="status-dot n"></span> Supera la caja base</span>
+      <span class="traffic-chip"><span class="status-dot none"></span> Sin comparación</span>
+    </div>
 
     <div class="database-wrap">
       <table class="calc-table">
@@ -535,7 +623,7 @@ h1{
         </thead>
         <tbody id="usRows"></tbody>
       </table>
-      <button class="add-row" data-add="us" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+      <div class="row-adders"><button class="add-row" data-add="us" data-count="1" type="button"><i class="fi fi-rr-plus"></i> +1 fila</button><button class="add-row five" data-add="us" data-count="5" type="button"><i class="fi fi-rr-plus"></i> +5 filas</button></div>
     </div>
   </section>
 
@@ -555,6 +643,11 @@ h1{
         <span class="soft-badge">Markup inicial 25%</span>
       </div>
     </div>
+    <div class="traffic-guide" aria-label="Semáforo de cajas">
+      <span class="traffic-chip"><span class="status-dot y"></span> Aprobada / dentro de la base</span>
+      <span class="traffic-chip"><span class="status-dot n"></span> Supera la caja base</span>
+      <span class="traffic-chip"><span class="status-dot none"></span> Sin comparación</span>
+    </div>
 
     <div class="database-wrap">
       <table class="calc-table">
@@ -573,7 +666,7 @@ h1{
         </thead>
         <tbody id="us48Rows"></tbody>
       </table>
-      <button class="add-row" data-add="us48" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+      <div class="row-adders"><button class="add-row" data-add="us48" data-count="1" type="button"><i class="fi fi-rr-plus"></i> +1 fila</button><button class="add-row five" data-add="us48" data-count="5" type="button"><i class="fi fi-rr-plus"></i> +5 filas</button></div>
     </div>
   </section>
 
@@ -593,6 +686,11 @@ h1{
         <span class="soft-badge">Markup inicial 25%</span>
       </div>
     </div>
+    <div class="traffic-guide" aria-label="Semáforo de cajas">
+      <span class="traffic-chip"><span class="status-dot y"></span> Aprobada / dentro de la base</span>
+      <span class="traffic-chip"><span class="status-dot n"></span> Supera la caja base</span>
+      <span class="traffic-chip"><span class="status-dot none"></span> Sin comparación</span>
+    </div>
 
     <div class="database-wrap">
       <table class="calc-table">
@@ -611,7 +709,7 @@ h1{
         </thead>
         <tbody id="ukRows"></tbody>
       </table>
-      <button class="add-row" data-add="uk" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+      <div class="row-adders"><button class="add-row" data-add="uk" data-count="1" type="button"><i class="fi fi-rr-plus"></i> +1 fila</button><button class="add-row five" data-add="uk" data-count="5" type="button"><i class="fi fi-rr-plus"></i> +5 filas</button></div>
     </div>
   </section>
 
@@ -639,19 +737,13 @@ h1{
         </thead>
         <tbody id="stemRows"></tbody>
       </table>
-      <button class="add-row" data-add="stem" type="button"><i class="fi fi-rr-plus"></i> Más filas</button>
+      <div class="row-adders"><button class="add-row" data-add="stem" data-count="1" type="button"><i class="fi fi-rr-plus"></i> +1 fila</button><button class="add-row five" data-add="stem" data-count="5" type="button"><i class="fi fi-rr-plus"></i> +5 filas</button></div>
     </div>
 
     <div class="stem-summary">
-      <div class="summary-label">TOTALES:</div>
-      <div id="stemTotalQty" class="summary-value">0</div>
-      <div id="stemTotalPrice" class="summary-price">$0,00</div>
-      <div></div>
-
-      <div class="summary-label summary-blue">PRECIO POR TALLO:</div>
-      <div></div>
-      <div id="stemAverage" class="summary-price summary-blue">$0,00</div>
-      <div></div>
+      <div class="summary-card"><span class="summary-kicker">Total de tallos</span><strong id="stemTotalQty" class="summary-number">0</strong></div>
+      <div class="summary-card"><span class="summary-kicker">Valor total</span><strong id="stemTotalPrice" class="summary-number">$0,00</strong></div>
+      <div class="summary-card primary"><span class="summary-kicker">Precio promedio por tallo</span><strong id="stemAverage" class="summary-number">$0,00</strong></div>
     </div>
   </section>
 </main>
@@ -679,14 +771,15 @@ h1{
     <div id="boxList" class="box-list"></div>
 
     <div class="modal-foot">
-      <span><span class="status-dot y"></span> Aprobado &nbsp;&nbsp; <span class="status-dot n"></span> No aprobado</span>
+      <span><span class="status-dot y"></span> Aprobada &nbsp;&nbsp; <span class="status-dot n"></span> Supera caja base &nbsp;&nbsp; <span class="status-dot none"></span> Sin comparación</span>
       <span id="boxCount"></span>
     </div>
   </section>
 </div>
 
 <script>
-const BOXES = [{"id":"b2","sheetRow":2,"name":"SB","largo":90,"ancho":15,"alto":10,"peso":2.25,"approved":"y","group":"","kind":"SB"},{"id":"b3","sheetRow":3,"name":"EB","largo":105,"ancho":17,"alto":17,"peso":5.0575,"approved":"y","group":"","kind":"EB"},{"id":"b4","sheetRow":4,"name":"QB","largo":99,"ancho":35,"alto":16,"peso":9.24,"approved":"y","group":"","kind":"QB"},{"id":"b5","sheetRow":5,"name":"HB","largo":105,"ancho":35,"alto":33,"peso":20.2125,"approved":"y","group":"","kind":"HB"},{"id":"b6","sheetRow":6,"name":"EB2","largo":39,"ancho":30,"alto":30,"peso":5.85,"approved":"y","group":"","kind":"EB2"},{"id":"b7","sheetRow":7,"name":"QB2","largo":85,"ancho":30,"alto":28,"peso":11.9,"approved":"y","group":"","kind":"QB2"},{"id":"b8","sheetRow":8,"name":"SB UK","largo":90,"ancho":15,"alto":10,"peso":3.128,"approved":"n","group":"","kind":"SB"},{"id":"b9","sheetRow":9,"name":"EB UK","largo":105,"ancho":17,"alto":16,"peso":6.099,"approved":"n","group":"","kind":"EB"},{"id":"b10","sheetRow":10,"name":"QB UK","largo":105,"ancho":32,"alto":18,"peso":12.126666666666667,"approved":"n","group":"","kind":"QB"},{"id":"b11","sheetRow":11,"name":"HB UK","largo":105,"ancho":35,"alto":33,"peso":23.094166666666666,"approved":"n","group":"","kind":"HB"},{"id":"b12","sheetRow":12,"name":"EB2 UK","largo":55,"ancho":30,"alto":30,"peso":9.728,"approved":"n","group":"","kind":"EB2"},{"id":"b13","sheetRow":13,"name":"QB2 UK","largo":110,"ancho":30,"alto":28,"peso":17.92,"approved":"n","group":"","kind":"QB2"},{"id":"b14","sheetRow":14,"name":"EC QB 1","largo":71,"ancho":35,"alto":17,"peso":8.553166666666666,"approved":"y","group":"EC","kind":"QB"},{"id":"b15","sheetRow":15,"name":"EC QB 2","largo":80,"ancho":35,"alto":15,"peso":8.596333333333334,"approved":"y","group":"EC","kind":"QB"},{"id":"b16","sheetRow":16,"name":"Anthonela EB 5K","largo":90,"ancho":26,"alto":12.5,"peso":6.225333333333333,"approved":"n","group":"Anthonela","kind":"EB"},{"id":"b17","sheetRow":17,"name":"Anthonela EB 9K","largo":90,"ancho":26,"alto":15,"peso":7.298666666666667,"approved":"n","group":"Anthonela","kind":"EB"},{"id":"b18","sheetRow":18,"name":"Anthonela QB 13K","largo":104.4,"ancho":25,"alto":15,"peso":8.139600000000002,"approved":"y","group":"Anthonela","kind":"QB"},{"id":"b19","sheetRow":19,"name":"Anthonela QB 15K","largo":103,"ancho":30,"alto":20,"peso":12.32,"approved":"n","group":"Anthonela","kind":"QB"},{"id":"b20","sheetRow":20,"name":"Anthonela HB 24K","largo":103.6,"ancho":35,"alto":25,"peso":17.5824,"approved":"y","group":"Anthonela","kind":"HB"},{"id":"b21","sheetRow":21,"name":"Agrivaldani HB F1","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b22","sheetRow":22,"name":"Agrivaldani HB F2","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b23","sheetRow":23,"name":"Agrivaldani HB F3","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Agrivaldani","kind":"HB"},{"id":"b24","sheetRow":24,"name":"Agrivaldani QB F4","largo":106,"ancho":31,"alto":15,"peso":10.098,"approved":"n","group":"Agrivaldani","kind":"QB"},{"id":"b25","sheetRow":25,"name":"Agrivaldani QB F5","largo":70,"ancho":31,"alto":16,"peso":7.128,"approved":"y","group":"Agrivaldani","kind":"QB"},{"id":"b26","sheetRow":26,"name":"Agrivaldani QB C1","largo":105,"ancho":34,"alto":16,"peso":11.556,"approved":"n","group":"Agrivaldani","kind":"QB"},{"id":"b27","sheetRow":27,"name":"Agrivaldani HB C2","largo":140,"ancho":35,"alto":35,"peso":32.39966666666667,"approved":"n","group":"Agrivaldani","kind":"HB"},{"id":"b28","sheetRow":28,"name":"Agrogana SB","largo":58,"ancho":17.5,"alto":13,"peso":2.925,"approved":"n","group":"Agrogana","kind":"SB"},{"id":"b29","sheetRow":29,"name":"Agrogana EB Auto","largo":64.5,"ancho":26.5,"alto":16.5,"peso":5.8436875,"approved":"n","group":"Agrogana","kind":"EB"},{"id":"b30","sheetRow":30,"name":"Agrogana EB Ceja","largo":73,"ancho":13,"alto":23,"peso":4.6875,"approved":"y","group":"Agrogana","kind":"EB"},{"id":"b31","sheetRow":31,"name":"Agrogana EB Grande","largo":75,"ancho":28,"alto":19,"peso":8.085,"approved":"n","group":"Agrogana","kind":"EB"},{"id":"b32","sheetRow":32,"name":"Agrogana QB Corto","largo":75,"ancho":34,"alto":16,"peso":8.316,"approved":"y","group":"Agrogana","kind":"QB"},{"id":"b33","sheetRow":33,"name":"Agrogana QB Largo","largo":104,"ancho":30,"alto":18,"peso":11.306666666666667,"approved":"n","group":"Agrogana","kind":"QB"},{"id":"b34","sheetRow":34,"name":"Agrogana HB Corto","largo":85,"ancho":30,"alto":30,"peso":14.848,"approved":"y","group":"Agrogana","kind":"HB"},{"id":"b35","sheetRow":35,"name":"Agrogana HB Largo","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Agrogana","kind":"HB"},{"id":"b36","sheetRow":36,"name":"Agroprim EB","largo":103,"ancho":18.6,"alto":14.1,"peso":5.80405,"approved":"n","group":"Agroprim","kind":"EB"},{"id":"b37","sheetRow":37,"name":"Agroprim QB Pequeño","largo":104.4,"ancho":25.2,"alto":12.1,"peso":6.801088,"approved":"y","group":"Agroprim","kind":"QB"},{"id":"b38","sheetRow":38,"name":"Agroprim QB Mediano","largo":99.4,"ancho":26,"alto":15.7,"peso":8.37564,"approved":"y","group":"Agroprim","kind":"QB"},{"id":"b39","sheetRow":39,"name":"Agroprim QB Grande","largo":104.4,"ancho":25.2,"alto":20.6,"peso":10.901034666666668,"approved":"n","group":"Agroprim","kind":"QB"},{"id":"b40","sheetRow":40,"name":"Agroprim HB","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Agroprim","kind":"HB"},{"id":"b41","sheetRow":41,"name":"Alinatura QB Roses + Stem","largo":39,"ancho":59,"alto":31,"peso":13.7555,"approved":"n","group":"Alinatura","kind":"QB"},{"id":"b42","sheetRow":42,"name":"Alinatura HB Preservadas","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Alinatura","kind":"HB"},{"id":"b43","sheetRow":43,"name":"Betel EB","largo":104,"ancho":14,"alto":25,"peso":7.632,"approved":"n","group":"Betel","kind":"EB"},{"id":"b44","sheetRow":44,"name":"Betel QB","largo":104,"ancho":18,"alto":25,"peso":9.54,"approved":"n","group":"Betel","kind":"QB"},{"id":"b45","sheetRow":45,"name":"Casageo EB","largo":104,"ancho":12.5,"alto":12,"peso":3.586333333333333,"approved":"y","group":"Casageo","kind":"EB"},{"id":"b46","sheetRow":46,"name":"Casageo QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"Casageo","kind":"QB"},{"id":"b47","sheetRow":47,"name":"Casageo HB","largo":104,"ancho":35,"alto":35,"peso":24.185666666666666,"approved":"n","group":"Casageo","kind":"HB"},{"id":"b48","sheetRow":48,"name":"Casageo HB Grande","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Casageo","kind":"HB"},{"id":"b49","sheetRow":49,"name":"Christopher Flowers EB","largo":104,"ancho":13,"alto":12,"peso":3.71,"approved":"y","group":"Christopher Flowers","kind":"EB"},{"id":"b50","sheetRow":50,"name":"Christopher Flowers QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Christopher Flowers","kind":"QB"},{"id":"b51","sheetRow":51,"name":"Cultivos del Norte QB2","largo":102,"ancho":16,"alto":30,"peso":9.984,"approved":"y","group":"Cultivos del Norte","kind":"QB2"},{"id":"b52","sheetRow":52,"name":"Cultivos del Norte HB2 1","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Cultivos del Norte","kind":"HB"},{"id":"b53","sheetRow":53,"name":"Cultivos del Norte HB2 1 Ruso","largo":118,"ancho":30,"alto":30,"peso":20.48,"approved":"n","group":"Cultivos del Norte","kind":"HB"},{"id":"b54","sheetRow":54,"name":"Ceres EB","largo":75,"ancho":18,"alto":15,"peso":4.363333333333333,"approved":"y","group":"Ceres","kind":"EB"},{"id":"b55","sheetRow":55,"name":"Ceres QB Pequeño","largo":82.5,"ancho":32.5,"alto":18,"peso":9.7175,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b56","sheetRow":56,"name":"Ceres QB Mediano","largo":92.5,"ancho":32.5,"alto":20,"peso":11.95425,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b57","sheetRow":57,"name":"Ceres QB Grande","largo":113.5,"ancho":32.5,"alto":20,"peso":14.61075,"approved":"n","group":"Ceres","kind":"QB"},{"id":"b58","sheetRow":58,"name":"Ceres HB 1 Jumbo","largo":100,"ancho":32,"alto":30.8,"peso":18.958399999999997,"approved":"y","group":"Ceres","kind":"HB"},{"id":"b59","sheetRow":59,"name":"Ceres HB 2 Extra Jumbo","largo":108,"ancho":32,"alto":30.8,"peso":20.44533333333333,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b60","sheetRow":60,"name":"Ceres HB 3 Super Jumbo","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b61","sheetRow":61,"name":"Ceres HB 4 Mega Jumbo","largo":150,"ancho":40,"alto":35,"peso":39.368,"approved":"n","group":"Ceres","kind":"HB"},{"id":"b62","sheetRow":62,"name":"Coop EB","largo":104,"ancho":13,"alto":12,"peso":3.71,"approved":"y","group":"Coop","kind":"EB"},{"id":"b63","sheetRow":63,"name":"Coop QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Coop","kind":"QB"},{"id":"b64","sheetRow":64,"name":"Coop HB","largo":104,"ancho":25.5,"alto":19,"peso":10.2025,"approved":"y","group":"Coop","kind":"HB"},{"id":"b65","sheetRow":65,"name":"Cultivos del Norte QB2","largo":102,"ancho":16,"alto":30,"peso":9.984,"approved":"y","group":"Cultivos del Norte","kind":"QB2"},{"id":"b66","sheetRow":66,"name":"Cultivos del Norte HB2","largo":101,"ancho":29,"alto":33,"peso":18.625833333333333,"approved":"y","group":"Cultivos del Norte","kind":"HB"},{"id":"b67","sheetRow":67,"name":"Dummen Orange QB","largo":104.5,"ancho":24,"alto":15,"peso":7.8455,"approved":"y","group":"Dummen Orange","kind":"QB"},{"id":"b68","sheetRow":68,"name":"Eden QB 1","largo":85,"ancho":30,"alto":17,"peso":8.816,"approved":"y","group":"Eden","kind":"QB"},{"id":"b69","sheetRow":69,"name":"Eden QB 2","largo":104,"ancho":30,"alto":17,"peso":10.741333333333333,"approved":"n","group":"Eden","kind":"QB"},{"id":"b70","sheetRow":70,"name":"Eden HB E","largo":85,"ancho":35,"alto":35,"peso":19.8505,"approved":"y","group":"Eden","kind":"HB"},{"id":"b71","sheetRow":71,"name":"Eden HB A","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Eden","kind":"HB"},{"id":"b72","sheetRow":72,"name":"Eden HB J","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Eden","kind":"HB"},{"id":"b73","sheetRow":73,"name":"La Conchita QB2 Alto","largo":104,"ancho":24,"alto":16,"peso":8.268,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b74","sheetRow":74,"name":"La Conchita QB2 Normal","largo":104,"ancho":24,"alto":12,"peso":6.430666666666666,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b75","sheetRow":75,"name":"La Conchita EB2","largo":103,"ancho":15,"alto":12,"peso":4.165,"approved":"y","group":"La Conchita","kind":"EB2"},{"id":"b76","sheetRow":76,"name":"Floraroma QB","largo":94.4,"ancho":30.1,"alto":15.5,"peso":9.025450000000001,"approved":"y","group":"Floraroma","kind":"QB"},{"id":"b77","sheetRow":77,"name":"Floraroma HB Normal","largo":103.2,"ancho":31.3,"alto":30.6,"peso":19.033836,"approved":"y","group":"Floraroma","kind":"HB"},{"id":"b78","sheetRow":78,"name":"Florisol EB","largo":86,"ancho":14.5,"alto":12.5,"peso":3.509,"approved":"y","group":"Florisol","kind":"EB"},{"id":"b79","sheetRow":79,"name":"Florisol EB Grande","largo":90,"ancho":15,"alto":15,"peso":4.431333333333333,"approved":"y","group":"Florisol","kind":"EB"},{"id":"b80","sheetRow":80,"name":"Florisol QB Fillers","largo":105,"ancho":29,"alto":15,"peso":9.398166666666667,"approved":"n","group":"Florisol","kind":"QB"},{"id":"b81","sheetRow":81,"name":"Florisol QB Roses","largo":null,"ancho":null,"alto":null,"peso":0.0013333333333333333,"approved":"y","group":"Florisol","kind":"QB"},{"id":"b82","sheetRow":82,"name":"Florisol HB","largo":104.6,"ancho":25.1,"alto":25.4,"peso":13.192460666666666,"approved":"y","group":"Florisol","kind":"HB"},{"id":"b83","sheetRow":83,"name":"Florisol HB2","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Florisol","kind":"HB"},{"id":"b84","sheetRow":84,"name":"Florecal EB Pequeño","largo":87,"ancho":17,"alto":12.5,"peso":4.0865833333333335,"approved":"y","group":"Florecal","kind":"EB"},{"id":"b85","sheetRow":85,"name":"Florecal EB Grande","largo":95,"ancho":17.8,"alto":18.6,"peso":6.594060000000002,"approved":"n","group":"Florecal","kind":"EB"},{"id":"b86","sheetRow":86,"name":"Florecal QB Pequeño","largo":88,"ancho":30,"alto":16.8,"peso":9.024,"approved":"y","group":"Florecal","kind":"QB"},{"id":"b87","sheetRow":87,"name":"Florecal QB Grande","largo":99,"ancho":30.4,"alto":17,"peso":10.362599999999999,"approved":"n","group":"Florecal","kind":"QB"},{"id":"b88","sheetRow":88,"name":"Florecal HB 1","largo":99.2,"ancho":32.5,"alto":26.1,"peso":16.351390000000002,"approved":"y","group":"Florecal","kind":"HB"},{"id":"b89","sheetRow":89,"name":"Florecal HB 2 Jumbo","largo":120.7,"ancho":37.5,"alto":35.4,"peso":30.210785000000005,"approved":"n","group":"Florecal","kind":"HB"},{"id":"b90","sheetRow":90,"name":"Flores Verdes EB","largo":86,"ancho":14.5,"alto":12.5,"peso":3.509,"approved":"y","group":"Flores Verdes","kind":"EB"},{"id":"b91","sheetRow":91,"name":"Flores Verdes QB Corta","largo":87,"ancho":27.5,"alto":17,"peso":8.314083333333333,"approved":"y","group":"Flores Verdes","kind":"QB"},{"id":"b92","sheetRow":92,"name":"Flores Verdes QB Larga","largo":104.2,"ancho":27.4,"alto":14.7,"peso":8.690345999999998,"approved":"y","group":"Flores Verdes","kind":"QB"},{"id":"b93","sheetRow":93,"name":"Flores Verdes HB 1","largo":98,"ancho":29.5,"alto":25.8,"peso":14.595,"approved":"y","group":"Flores Verdes","kind":"HB"},{"id":"b94","sheetRow":94,"name":"Flores Verdes HB 2 Jumbo","largo":120,"ancho":34,"alto":34,"peso":26.352,"approved":"n","group":"Flores Verdes","kind":"HB"},{"id":"b95","sheetRow":95,"name":"Florecot EB","largo":104,"ancho":14,"alto":12,"peso":3.957333333333333,"approved":"y","group":"Florecot","kind":"EB"},{"id":"b96","sheetRow":96,"name":"Florecot QB","largo":104,"ancho":25,"alto":12,"peso":6.678,"approved":"y","group":"Florecot","kind":"QB"},{"id":"b97","sheetRow":97,"name":"Florsani EB","largo":88,"ancho":18,"alto":14,"peso":4.8,"approved":"y","group":"Florsani","kind":"EB"},{"id":"b98","sheetRow":98,"name":"Florsani QB","largo":105,"ancho":27,"alto":13,"peso":7.7575,"approved":"y","group":"Florsani","kind":"QB"},{"id":"b99","sheetRow":99,"name":"Florsani QBJ","largo":105,"ancho":26,"alto":15,"peso":8.488666666666667,"approved":"y","group":"Florsani","kind":"QB"},{"id":"b100","sheetRow":100,"name":"Florsani HB","largo":105,"ancho":27,"alto":21,"peso":11.894833333333333,"approved":"y","group":"Florsani","kind":"HB"},{"id":"b101","sheetRow":101,"name":"Florsani HB HE","largo":105,"ancho":27,"alto":28,"peso":15.515,"approved":"y","group":"Florsani","kind":"HB"},{"id":"b102","sheetRow":102,"name":"Florsani HB HJ","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Florsani","kind":"HB"},{"id":"b103","sheetRow":103,"name":"Flower Village EB","largo":105,"ancho":16,"alto":13,"peso":4.815,"approved":"y","group":"Flower Village","kind":"EB"},{"id":"b104","sheetRow":104,"name":"Flower Village QB Pequeño","largo":94,"ancho":28,"alto":14,"peso":7.68,"approved":"y","group":"Flower Village","kind":"QB"},{"id":"b105","sheetRow":105,"name":"Flower Village QB Grande","largo":97,"ancho":30,"alto":17,"peso":10.032,"approved":"n","group":"Flower Village","kind":"QB"},{"id":"b106","sheetRow":106,"name":"Flower Village HB Pequeño","largo":90,"ancho":30,"alto":28,"peso":14.72,"approved":"y","group":"Flower Village","kind":"HB"},{"id":"b107","sheetRow":107,"name":"Flower Village HB Pequeño","largo":97,"ancho":30,"alto":30,"peso":16.896,"approved":"y","group":"Flower Village","kind":"HB"},{"id":"b108","sheetRow":108,"name":"Flower Village HB Mediano","largo":120,"ancho":33,"alto":33,"peso":24.908333333333335,"approved":"n","group":"Flower Village","kind":"HB"},{"id":"b109","sheetRow":109,"name":"Flower Village HB Grande","largo":130,"ancho":33,"alto":33,"peso":26.95,"approved":"n","group":"Flower Village","kind":"HB"},{"id":"b110","sheetRow":110,"name":"Flower Party EB","largo":100,"ancho":14,"alto":12,"peso":3.808,"approved":"y","group":"Flowers Party","kind":"EB"},{"id":"b111","sheetRow":111,"name":"Flowers Party QB","largo":103,"ancho":30,"alto":14,"peso":8.96,"approved":"y","group":"Flowers Party","kind":"QB"},{"id":"b112","sheetRow":112,"name":"High Garden EB","largo":104,"ancho":15,"alto":15,"peso":5.105666666666667,"approved":"n","group":"High Garden","kind":"EB"},{"id":"b113","sheetRow":113,"name":"High Garden QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"High Garden","kind":"QB"},{"id":"b114","sheetRow":114,"name":"Hoja Verde EB","largo":80,"ancho":18,"alto":20,"peso":6.013333333333334,"approved":"n","group":"Hoja Verde","kind":"EB"},{"id":"b115","sheetRow":115,"name":"Hoja Verde QB 96","largo":96,"ancho":32,"alto":20,"peso":12.217333333333332,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b116","sheetRow":116,"name":"Hoja Verde QB 104","largo":104,"ancho":30,"alto":15,"peso":9.610666666666667,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b117","sheetRow":117,"name":"Hoja Verde QB 120","largo":120,"ancho":32,"alto":30,"peso":22.122666666666667,"approved":"n","group":"Hoja Verde","kind":"QB"},{"id":"b118","sheetRow":118,"name":"Hoja Verde HB 25","largo":104,"ancho":25,"alto":25,"peso":12.879,"approved":"y","group":"Hoja Verde","kind":"HB"},{"id":"b119","sheetRow":119,"name":"Hoja Verde HB 30","largo":104,"ancho":30,"alto":30,"peso":18.090666666666667,"approved":"y","group":"Hoja Verde","kind":"HB"},{"id":"b120","sheetRow":120,"name":"Hoja Verde HB 35","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b121","sheetRow":121,"name":"Hoja Verde HB 40","largo":120,"ancho":40,"alto":40,"peso":35.868,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b122","sheetRow":122,"name":"Hoja Verde HB 120","largo":120,"ancho":30,"alto":30,"peso":20.82133333333333,"approved":"n","group":"Hoja Verde","kind":"HB"},{"id":"b123","sheetRow":123,"name":"Ikebana EB","largo":102.11,"ancho":17.02,"alto":13,"peso":4.9504304999999995,"approved":"y","group":"Ikebana","kind":"EB"},{"id":"b124","sheetRow":124,"name":"La Conchita EB2","largo":103,"ancho":15,"alto":12,"peso":4.165,"approved":"y","group":"La Conchita","kind":"EB2"},{"id":"b125","sheetRow":125,"name":"La Conchita QB2 Normal","largo":104,"ancho":25.5,"alto":12,"peso":6.801666666666667,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b126","sheetRow":126,"name":"La Conchita QB2 Alto","largo":104,"ancho":24,"alto":16,"peso":8.268,"approved":"y","group":"La Conchita","kind":"QB2"},{"id":"b127","sheetRow":127,"name":"La Conchita HB2","largo":105,"ancho":25.5,"alto":25,"peso":13.24125,"approved":"y","group":"La Conchita","kind":"HB"},{"id":"b128","sheetRow":128,"name":"La Conchita HB2 Telestropic","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"La Conchita","kind":"HB"},{"id":"b129","sheetRow":129,"name":"Latina Farms QB","largo":101,"ancho":30,"alto":20,"peso":12.085333333333333,"approved":"n","group":"Latina Farms","kind":"QB"},{"id":"b130","sheetRow":130,"name":"Latina Farms HB 100","largo":100,"ancho":35,"alto":35,"peso":23.273,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b131","sheetRow":131,"name":"Latina Farms HB 110","largo":110,"ancho":25,"alto":25,"peso":13.608,"approved":"y","group":"Latina Farms","kind":"HB"},{"id":"b132","sheetRow":132,"name":"Latina Farms HB 120","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b133","sheetRow":133,"name":"Latina Farms HB 130","largo":130,"ancho":35,"alto":35,"peso":30.118,"approved":"n","group":"Latina Farms","kind":"HB"},{"id":"b134","sheetRow":134,"name":"Lulu Display QB","largo":58,"ancho":31.8,"alto":40,"peso":14.195999999999998,"approved":"n","group":"Lulu","kind":"QB"},{"id":"b135","sheetRow":135,"name":"Lulu Master Box HB","largo":69.6,"ancho":36,"alto":47.3,"peso":22.355906666666662,"approved":"n","group":"Lulu","kind":"HB"},{"id":"b136","sheetRow":136,"name":"Lulu EB","largo":70,"ancho":22.5,"alto":15,"peso":4.998,"approved":"y","group":"Lulu","kind":"EB"},{"id":"b137","sheetRow":137,"name":"Lulu QB","largo":90,"ancho":17,"alto":28,"peso":8.74,"approved":"y","group":"Lulu","kind":"QB"},{"id":"b138","sheetRow":138,"name":"Lulu HB","largo":105,"ancho":30,"alto":30,"peso":18.261333333333333,"approved":"y","group":"Lulu","kind":"HB"},{"id":"b139","sheetRow":139,"name":"Luxus QB 104","largo":104,"ancho":30,"alto":17,"peso":10.741333333333333,"approved":"n","group":"Luxus","kind":"QB"},{"id":"b140","sheetRow":140,"name":"Luxus QB 105","largo":105,"ancho":26,"alto":25,"peso":13.482,"approved":"n","group":"Luxus","kind":"QB"},{"id":"b141","sheetRow":141,"name":"Luxus HB USA 112","largo":112,"ancho":30,"alto":28,"peso":18.24,"approved":"y","group":"Luxus","kind":"HB"},{"id":"b142","sheetRow":142,"name":"Luxus HB Jumbo 120","largo":120,"ancho":33,"alto":32,"peso":24.196666666666665,"approved":"n","group":"Luxus","kind":"HB"},{"id":"b143","sheetRow":143,"name":"Luxus HB Super Jumbo 130","largo":130,"ancho":36,"alto":36,"peso":31.768,"approved":"n","group":"Luxus","kind":"HB"},{"id":"b144","sheetRow":144,"name":"Naranjo Preserved QB","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b145","sheetRow":145,"name":"Naranjo EB","largo":15,"ancho":25,"alto":91,"peso":7.1145,"approved":"n","group":"Naranjo","kind":"EB"},{"id":"b146","sheetRow":146,"name":"Naranjo QB Angeflor","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b147","sheetRow":147,"name":"Naranjo QB Pequeño","largo":18,"ancho":30,"alto":85,"peso":9.28,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b148","sheetRow":148,"name":"Naranjo QB Grande","largo":18,"ancho":30,"alto":100,"peso":10.88,"approved":"n","group":"Naranjo","kind":"QB"},{"id":"b149","sheetRow":149,"name":"Naranjo HB P Angeflor","largo":30,"ancho":30,"alto":90,"peso":15.701333333333332,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b150","sheetRow":150,"name":"Naranjo HB M Angeflor","largo":30,"ancho":30,"alto":105,"peso":18.261333333333333,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b151","sheetRow":151,"name":"Naranjo HB Pequeña","largo":30,"ancho":30,"alto":90,"peso":15.701333333333332,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b152","sheetRow":152,"name":"Naranjo HB Mediana","largo":30,"ancho":30,"alto":105,"peso":18.261333333333333,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b153","sheetRow":153,"name":"Nranajo HB Grande","largo":35,"ancho":35,"alto":120,"peso":27.836333333333332,"approved":"n","group":"Naranjo","kind":"HB"},{"id":"b154","sheetRow":154,"name":"Naranjo HB Extra Grande","largo":40,"ancho":40,"alto":120,"peso":35.868,"approved":"n","group":"Naranjo","kind":"HB"},{"id":"b155","sheetRow":155,"name":"Naranjo HB Preserved 2","largo":82,"ancho":32,"alto":20,"peso":10.472,"approved":"y","group":"Naranjo","kind":"HB"},{"id":"b156","sheetRow":156,"name":"Nivalia QB","largo":98,"ancho":28,"alto":17,"peso":9.5,"approved":"n","group":"Nivalia","kind":"QB"},{"id":"b157","sheetRow":157,"name":"Nivalia HB","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Nivalia","kind":"HB"},{"id":"b158","sheetRow":158,"name":"Nivalia HB J","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"Nivalia","kind":"HB"},{"id":"b159","sheetRow":159,"name":"Optimum Roses + Stem QB","largo":40,"ancho":32,"alto":56,"peso":13.804,"approved":"n","group":"Optimum","kind":"QB"},{"id":"b160","sheetRow":160,"name":"Proteas Sol Andino QB","largo":92,"ancho":29,"alto":12,"peso":6.799333333333333,"approved":"y","group":"Proteas Sol Andino","kind":"QB"},{"id":"b161","sheetRow":161,"name":"Proteas Sol Andino HB","largo":92,"ancho":29,"alto":20,"peso":10.684666666666667,"approved":"y","group":"Proteas Sol Andino","kind":"HB"},{"id":"b162","sheetRow":162,"name":"San Luis EB Pequeño","largo":78,"ancho":17,"alto":19,"peso":5.32,"approved":"n","group":"San Luis","kind":"EB"},{"id":"b163","sheetRow":163,"name":"San Luis EB Grande","largo":79,"ancho":24,"alto":21,"peso":8.073,"approved":"n","group":"San Luis","kind":"EB"},{"id":"b164","sheetRow":164,"name":"San Luis QB Pequeño","largo":90,"ancho":18,"alto":30,"peso":9.813333333333333,"approved":"n","group":"San Luis","kind":"QB"},{"id":"b165","sheetRow":165,"name":"San Luis QB Grande","largo":90,"ancho":22,"alto":30,"peso":11.776,"approved":"n","group":"San Luis","kind":"QB"},{"id":"b166","sheetRow":166,"name":"San Luis HB 1","largo":110,"ancho":30,"alto":30,"peso":19.11466666666667,"approved":"y","group":"San Luis","kind":"HB"},{"id":"b167","sheetRow":167,"name":"San Luis HB 2","largo":120,"ancho":35,"alto":35,"peso":27.836333333333332,"approved":"n","group":"San Luis","kind":"HB"},{"id":"b168","sheetRow":168,"name":"San Luis HB 3","largo":130,"ancho":40,"alto":40,"peso":38.808,"approved":"n","group":"San Luis","kind":"HB"},{"id":"b169","sheetRow":169,"name":"Star Roses EB","largo":95,"ancho":17,"alto":18,"peso":6.1433333333333335,"approved":"n","group":"Star Roses","kind":"EB"},{"id":"b170","sheetRow":170,"name":"Star Roses QB Kraft","largo":95,"ancho":28,"alto":17,"peso":9.215,"approved":"y","group":"Star Roses","kind":"QB"},{"id":"b171","sheetRow":171,"name":"Star Roses QB Grande","largo":95,"ancho":40,"alto":20,"peso":14.938,"approved":"n","group":"Star Roses","kind":"QB"},{"id":"b172","sheetRow":172,"name":"Star Roses HB USA","largo":95,"ancho":33,"alto":30,"peso":18.106666666666666,"approved":"y","group":"Star Roses","kind":"HB"},{"id":"b173","sheetRow":173,"name":"Star Roses HB Rusa Corta","largo":105,"ancho":35,"alto":35,"peso":24.413833333333333,"approved":"n","group":"Star Roses","kind":"HB"},{"id":"b174","sheetRow":174,"name":"Treasure Flowers QB","largo":104,"ancho":25,"alto":15,"peso":8.109,"approved":"y","group":"Treasure Flowers","kind":"QB"},{"id":"b175","sheetRow":175,"name":"Tumbabiro EB","largo":105,"ancho":15,"alto":12.5,"peso":4.3959166666666665,"approved":"y","group":"Tumbabiro","kind":"EB"},{"id":"b176","sheetRow":176,"name":"Tumbabiro QB","largo":105,"ancho":27,"alto":12.5,"peso":7.498916666666666,"approved":"y","group":"Tumbabiro","kind":"QB"}];
+let BOXES = [];
+let EXCEL_META = {week:"", u2:2};
 
 const BASE_US = new Set(["SB","EB","QB","HB","EB2","QB2"]);
 const BASE_UK = new Set(["SB UK","EB UK","QB UK","HB UK","EB2 UK","QB2 UK"]);
@@ -813,9 +906,16 @@ function approvalTitle(box,market){
 function refreshBoxRowStatus(tr){
   const box=getBox(tr.dataset.boxId);
   const dot=tr.querySelector('[data-role="status"]');
-  if(!box){dot.className="status-dot none";dot.title="Sin caja seleccionada";return;}
-  dot.className=`status-dot ${approvalClass(box,tr.dataset.market)}`;
+  tr.classList.remove("traffic-y","traffic-n","traffic-none");
+  if(!box){
+    dot.className="status-dot none"; dot.title="Sin caja seleccionada";
+    tr.classList.add("traffic-none");
+    return;
+  }
+  const state=approvalClass(box,tr.dataset.market);
+  dot.className=`status-dot ${state}`;
   dot.title=approvalTitle(box,tr.dataset.market);
+  tr.classList.add(`traffic-${state}`);
   tr.querySelector('[data-role="box"]').title=dot.title;
 }
 
@@ -955,7 +1055,7 @@ function createCalcRow(market){
   const priceSymbol = market === "uk" ? "£" : "$";
 
   tr.innerHTML = `
-    <td>
+    <td data-label="Tipo de caja">
       <button class="box-btn" type="button" data-role="box">
         <span class="box-info">
           <span class="status-dot none" data-role="status" title="Sin caja seleccionada"></span>
@@ -967,26 +1067,26 @@ function createCalcRow(market){
         <i class="fi fi-rr-angle-small-down box-arrow"></i>
       </button>
     </td>
-    <td><input class="cell-input" data-role="qty" inputmode="numeric" placeholder="125"></td>
-    <td>
+    <td data-label="Cantidad"><input class="cell-input" data-role="qty" inputmode="numeric" placeholder="125"></td>
+    <td data-label="${market === "uk" ? "Costo (USD)" : "Costo"}">
       <div class="money-wrap">
         <span class="money-symbol">$</span>
         <input class="cell-input" data-role="cost" inputmode="decimal" placeholder="0,00">
       </div>
     </td>
-    <td>
+    <td data-label="Markup">
       <div class="percent-wrap">
         <input class="cell-input" data-role="markup" inputmode="decimal" value="25,00">
         <span class="percent-symbol">%</span>
       </div>
     </td>
-    <td class="price-cell">
+    <td class="price-cell" data-label="${market === "uk" ? "Precio (GBP)" : "Precio"}">
       <div class="money-wrap">
         <span class="money-symbol">${priceSymbol}</span>
         <input class="cell-input" data-role="price" inputmode="decimal" placeholder="0,00">
       </div>
     </td>
-    <td class="action-cell">
+    <td class="action-cell" data-label="Acciones">
       <button class="icon-btn" type="button" data-role="delete" title="Eliminar fila" aria-label="Eliminar fila">
         <i class="fi fi-rr-trash"></i>
       </button>
@@ -1023,6 +1123,7 @@ function createCalcRow(market){
   });
 
   updateDeleteButtons(market);
+  refreshBoxRowStatus(tr);
   return tr;
 }
 
@@ -1062,7 +1163,7 @@ function getUkComponents(box, qty, cost){
   const L=Number(base.largo), A=Number(base.ancho), H=Number(base.alto);
   if(![L,A,H].every(Number.isFinite)) return null;
 
-  // UK follows the formula in US_WEEK_39.xlsx, Catalogo[Markup UK].
+  // UK follows the formula in US_WEEK_ACTIVE.xlsx, Catalogo[Markup UK].
   // The user's Cost input is in USD (Compra UK); the sales price is in GBP.
   const costGBP = cost / UK_USD_PER_GBP;
   const volume = (L*A*H)/6000;
@@ -1125,13 +1226,16 @@ function recalculateRow(tr){
     const base = box ? getUkBaseBox(box) : null;
     if(box && base){
       tr.querySelector('[data-role="boxMeta"]').textContent =
-        `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm · Base UK: ${base.name}`;
+        `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm · Base UK: ${base.name} · ${approvalFor(box,"uk")==="y"?"APROBADA":"SUPERA BASE"}`;
     }
   }
 }
 
 document.querySelectorAll('[data-add="us"],[data-add="us48"],[data-add="uk"]').forEach(btn=>{
-  btn.addEventListener("click",()=>createCalcRow(btn.dataset.add));
+  btn.addEventListener("click",()=>{
+    const count=Number(btn.dataset.count||1);
+    for(let i=0;i<count;i++) createCalcRow(btn.dataset.add);
+  });
 });
 
 /* ---------------- BOX MODAL ---------------- */
@@ -1251,10 +1355,10 @@ function chooseBox(boxId){
     const base=getUkBaseBox(box);
     tr.querySelector('[data-role="boxMeta"]').textContent =
       `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm` +
-      (base ? ` · Base UK: ${base.name}` : "");
+      (base ? ` · Base UK: ${base.name}` : "") + ` · ${approvalFor(box,"uk")==="y"?"APROBADA":"SUPERA BASE"}`;
   }else{
     tr.querySelector('[data-role="boxMeta"]').textContent =
-      `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm`;
+      `${formatMeasure(box.largo)} × ${formatMeasure(box.ancho)} × ${formatMeasure(box.alto)} cm · ${approvalFor(box,tr.dataset.market)==="y"?"APROBADA":approvalFor(box,tr.dataset.market)==="n"?"SUPERA BASE":"SIN COMPARACIÓN"}`;
   }
 
   closeBoxModal();
@@ -1318,15 +1422,15 @@ function createStemRow(){
   const tr=document.createElement("tr");
   tr.dataset.stemId=stemCounter;
   tr.innerHTML=`
-    <td><input class="cell-input" data-role="name" placeholder="Variedad…"></td>
-    <td><input class="cell-input" data-role="stems" inputmode="numeric" placeholder="0"></td>
-    <td>
+    <td data-label="Variedad"><input class="cell-input" data-role="name" placeholder="Variedad…"></td>
+    <td data-label="Cantidad tallos"><input class="cell-input" data-role="stems" inputmode="numeric" placeholder="0"></td>
+    <td data-label="Precio x tallo">
       <div class="money-wrap">
         <span class="money-symbol">$</span>
         <input class="cell-input" data-role="unitPrice" inputmode="decimal" placeholder="0,00">
       </div>
     </td>
-    <td class="action-cell">
+    <td class="action-cell" data-label="Acciones">
       <button class="icon-btn" type="button" data-role="deleteStem" title="Eliminar fila" aria-label="Eliminar fila">
         <i class="fi fi-rr-trash"></i>
       </button>
@@ -1373,18 +1477,55 @@ function recalcStem(){
   $("stemAverage").textContent=moneyEs(avg,"$");
 }
 
-document.querySelector('[data-add="stem"]').addEventListener("click",createStemRow);
+document.querySelectorAll('[data-add="stem"]').forEach(btn=>btn.addEventListener("click",()=>{
+  const count=Number(btn.dataset.count||1);
+  for(let i=0;i<count;i++) createStemRow();
+}));
 
-/* ---------------- INITIAL STATE ---------------- */
+/* ---------------- EXCEL / PYTHON BOOT ---------------- */
+async function loadExcelWithPython(){
+  const loading=$("loadingNote");
+  const badge=$("weekBadge");
+  try{
+    const pyodide=await loadPyodide();
+    const [excelResp,engineResp]=await Promise.all([
+      fetch("US_WEEK_ACTIVE.xlsx",{cache:"no-store"}),
+      fetch("engine.py",{cache:"no-store"})
+    ]);
+    if(!excelResp.ok) throw new Error("No se pudo cargar US_WEEK_ACTIVE.xlsx");
+    if(!engineResp.ok) throw new Error("No se pudo cargar engine.py");
+    const bytes=new Uint8Array(await excelResp.arrayBuffer());
+    pyodide.FS.writeFile("/tmp/US_WEEK_ACTIVE.xlsx",bytes);
+    await pyodide.runPythonAsync(await engineResp.text());
+    const raw=await pyodide.runPythonAsync("load_excel('/tmp/US_WEEK_ACTIVE.xlsx')");
+    const data=JSON.parse(String(raw));
+    BOXES=data.boxes||[];
+    EXCEL_META=data;
+    const startU2=Number.isFinite(Number(data.u2))?Number(data.u2):2;
+    paddingByMarket.us=startU2;
+    paddingByMarket.uk=startU2;
+    ["usPadding","us48Padding","ukPadding"].forEach(id=>{const el=$(id);if(el)el.value=String(startU2).replace(".",",");});
+    $("weekText").textContent=`Actualizado hasta la semana ${data.week ?? "—"}`;
+    badge.classList.add("ready");
+    loading.classList.remove("show");
+  }catch(err){
+    console.error(err);
+    $("weekText").textContent="No se pudo leer la semana";
+    badge.classList.add("error");
+    loading.innerHTML=`<i class="fi fi-rr-triangle-warning"></i> ${escapeHtml(err.message||String(err))}`;
+    loading.classList.add("show");
+    throw err;
+  }
+}
 
-createCalcRow("us");
-createCalcRow("us");
-createCalcRow("us48");
-createCalcRow("us48");
-createCalcRow("uk");
-createCalcRow("uk");
-createStemRow();
-createStemRow();
+async function boot(){
+  await loadExcelWithPython();
+  createCalcRow("us"); createCalcRow("us");
+  createCalcRow("us48"); createCalcRow("us48");
+  createCalcRow("uk"); createCalcRow("uk");
+  createStemRow(); createStemRow();
+}
+boot();
 </script>
 </body>
 </html>
