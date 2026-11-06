@@ -1,0 +1,3 @@
+# Only docs/ is public and should be deployed to GitHub Pages.
+/private/
+/start.bat

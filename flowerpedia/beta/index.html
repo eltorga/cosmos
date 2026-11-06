@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BloomDesk v0.2.2</title>
+  <style>
+    :root{color-scheme:light;--green:#335c45;--line:#e3e8e1;--muted:#788078}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:#f5f7f4;color:#202720;font:15px/1.55 Inter,Segoe UI,sans-serif}
+    main{width:min(760px,100%);padding:clamp(22px,5vw,42px);background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 14px 40px #24362612}
+    .top{display:flex;align-items:center;gap:13px}.mark{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#e9f1e7;color:var(--green);font-size:28px}
+    h1{letter-spacing:-.05em;margin:0;font-size:clamp(1.7rem,4vw,2.3rem)}.version{font-size:.72rem;color:var(--green);font-weight:800}
+    p{color:var(--muted)}h2{font-size:1rem;margin:25px 0 8px}
+    .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+    a{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border-radius:9px;text-decoration:none;font-weight:750;font-size:.84rem}
+    .primary{background:var(--green);color:#fff}.secondary{border:1px solid var(--line);color:var(--green);background:#fff}
+    ul{padding-left:20px;margin:8px 0;color:#536053}li{margin:5px 0}
+    .note{margin-top:22px;padding:12px 14px;border-radius:10px;background:#f1f6f0;color:#526552;font-size:.8rem}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="top"><div class="mark">✿</div><div><h1>BloomDesk</h1><span class="version">VERSIÓN 0.2.2</span></div></div>
+    <p>Catálogo de flores y administración local sincronizada con Excel. Esta página resume los cambios y abre la web lista para GitHub Pages.</p>
+    <div class="actions">
+      <a class="primary" href="docs/index.html">Ver catálogo</a>
+    </div>
+    <h2>Novedades de v0.2.2</h2>
+    <ul>
+      <li>Header móvil compacto con iconos y filtros agrupados.</li>
+      <li>Selector de productos por fila en lugar de estadísticas.</li>
+      <li>Composición compacta: precios y totales solo para administradores locales.</li>
+      <li>Información comercial más compacta con scroll interno cuando es necesario.</li>
+      <li>Usuarios: aparece la cuenta administradora actual.</li>
+      <li>Cajas: U2 individual con previsualización del peso y semáforo.</li>
+      <li>Sin medidas en pulgadas ni botón manual para preparar el catálogo público.</li>
+      <li>Compra UK colocada junto a Caja UK / OP UK en el formulario.</li>
+      <li>Inicio más estable: el navegador abre cuando el servidor responde.</li>
+      <li>Publicación de imágenes sin borrar la carpeta completa.</li>
+      <li>Excel activo: private/data/current_week.xlsx; sincronización automática cada 2,5 segundos.</li>
+      <li>GitHub Desktop publica los cambios de docs/; no se conecta a Drive.</li>
+    </ul>
+    <div class="note">Para administrar, ejecuta <strong>start.bat</strong> en Windows. GitHub Pages debe publicar desde <strong>/docs</strong>. La carpeta <strong>private/</strong> y el BAT están excluidos del repositorio público por .gitignore. Mantén abierta la ventana del servidor mientras trabajas.</div>
+  </main>
+</body>
+</html>

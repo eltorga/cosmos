@@ -1,0 +1,3789 @@
+{
+  "app": "BloomDesk",
+  "version": "0.2.2",
+  "generated_at": "2026-11-06T09:28:56",
+  "products": [
+    {
+      "id": "e376d7139206716b",
+      "productKey": "bells-of-ireland--molucella--80b56ea0",
+      "Categoría": "Bells of Ireland",
+      "Producto": "Molucella",
+      "Composición": null,
+      "Color 1": "Green",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "80cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "7992fab6b1a2a9d7",
+      "productKey": "button--bumble-bee--e73e3437",
+      "Categoría": "Button",
+      "Producto": "Bumble Bee",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8efeefb739b34ae0",
+      "productKey": "button--celia-pink--b0095ca1",
+      "Categoría": "Button",
+      "Producto": "Celia pink",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "cc50dde3b7362e8d",
+      "productKey": "button--lexy--f6978b46",
+      "Categoría": "Button",
+      "Producto": "Lexy",
+      "Composición": null,
+      "Color 1": "Bronze",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "1e3f992b1dae4f1a",
+      "productKey": "button--olaf--3c01fd72",
+      "Categoría": "Button",
+      "Producto": "Olaf",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "31dfbcca224b7b12",
+      "productKey": "button--peptalk--46b8437d",
+      "Categoría": "Button",
+      "Producto": "Peptalk",
+      "Composición": null,
+      "Color 1": "Green",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c2a28a351a8d2864",
+      "productKey": "button--red-lexy--a8a8c77a",
+      "Categoría": "Button",
+      "Producto": "Red Lexy",
+      "Composición": null,
+      "Color 1": "Burgundy",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "e34be9a770a821b0",
+      "productKey": "button--whatsapp--575dd5d8",
+      "Categoría": "Button",
+      "Producto": "Whatsapp",
+      "Composición": null,
+      "Color 1": "Green",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "7519c305d8dfb1cb",
+      "productKey": "combo-box--lilies-mix--1e17234c",
+      "Categoría": "Combo Box",
+      "Producto": "Lilies Mix",
+      "Composición": "40 LA Lilies/20 Oriental Lilies/20 Roselilies",
+      "Color 1": "Assorted Colors",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Mystic Flowers"
+      ],
+      "Tamaños": [],
+      "farmStatus": {
+        "Mystic Flowers": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2eaaf031fc892e41",
+      "productKey": "combo-box--monochromatic-fall--a216ca71",
+      "Categoría": "Combo Box",
+      "Producto": "Monochromatic Fall",
+      "Composición": "20 Gerbera Hot Pink/20 Gerbera Orange/20 Gerbera Red // 10 Pompom Bronze/10 Pompom Yellow // 10 Hypericum Peach/10 Hypericum Gold Pink // 10 LA Lily Yellow/10 La Lily Orange x 120",
+      "Color 1": "Fall",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Mystic Flowers"
+      ],
+      "Tamaños": [],
+      "farmStatus": {
+        "Mystic Flowers": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "147cd6da2e677b84",
+      "productKey": "combo-box--woodland-mix--74fbfb85",
+      "Categoría": "Combo Box",
+      "Producto": "Woodland Mix",
+      "Composición": "30 Spray Roses 10 Hot Pink - 10 Orange - 10 Romance // 10 Hypericum Red/10 Hypericum Green // 20 Solidago // 10 Sunflowers // 20 Coculus x 100",
+      "Color 1": "Assorted Colors",
+      "Color 2": "",
+      "Season": "",
+      "Fincas": [
+        "Agroprim"
+      ],
+      "Tamaños": [],
+      "farmStatus": {
+        "Agroprim": "n"
+      },
+      "images": [
+        {
+          "path": "combo-box/woodland-mix/03-woodland-mix-4f51b617-AMMI-MAJUS-RED-Photoroom.png",
+          "src": "assets/images/combo-box/woodland-mix/03-woodland-mix-4f51b617-AMMI-MAJUS-RED-Photoroom.png"
+        },
+        {
+          "path": "combo-box/woodland-mix/02-woodland-mix-47d8d858-image-Photoroom_28.png",
+          "src": "assets/images/combo-box/woodland-mix/02-woodland-mix-47d8d858-image-Photoroom_28.png"
+        },
+        {
+          "path": "combo-box/woodland-mix/01-woodland-mix-79c2051c-Summer_Vibes.jpeg",
+          "src": "assets/images/combo-box/woodland-mix/01-woodland-mix-79c2051c-Summer_Vibes.jpeg"
+        }
+      ],
+      "Tabla": []
+    },
+    {
+      "id": "9962e27874b689b0",
+      "productKey": "cushion--andrea--cfd6aeee",
+      "Categoría": "Cushion",
+      "Producto": "Andrea",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5f624cf67bddf3b9",
+      "productKey": "cushion--andrea-red--232d345f",
+      "Categoría": "Cushion",
+      "Producto": "Andrea Red",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "18a0a76b9f0d5570",
+      "productKey": "cushion--cooper--68364ae2",
+      "Categoría": "Cushion",
+      "Producto": "Cooper",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2b9acdbddd320019",
+      "productKey": "cushion--gagarin--b75cd2c5",
+      "Categoría": "Cushion",
+      "Producto": "Gagarin",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d2ba912899b89e18",
+      "productKey": "cushion--georgia--2895ea9e",
+      "Categoría": "Cushion",
+      "Producto": "Georgia",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f83b1e1f99d234d5",
+      "productKey": "cushion--msigni--499c01f1",
+      "Categoría": "Cushion",
+      "Producto": "Msigni",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "1b97fe868ba77e13",
+      "productKey": "cushion--rock--38d3c111",
+      "Categoría": "Cushion",
+      "Producto": "Rock",
+      "Composición": null,
+      "Color 1": "Burgundy",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8853646ac2c506af",
+      "productKey": "cushion--superstar--0c39f552",
+      "Categoría": "Cushion",
+      "Producto": "Superstar",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "ac176978dce0814e",
+      "productKey": "cushion--veronica--34fea334",
+      "Categoría": "Cushion",
+      "Producto": "Veronica",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d1ecbbd4c78670e4",
+      "productKey": "cushion--veronica-bronce--705a26d0",
+      "Categoría": "Cushion",
+      "Producto": "Veronica Bronce",
+      "Composición": null,
+      "Color 1": "Bronze",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "44e6f23278b0cd9f",
+      "productKey": "cushion--whoopy--9f53713e",
+      "Categoría": "Cushion",
+      "Producto": "Whoopy",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "29ee011ca9f37046",
+      "productKey": "daisy--amor-light-mint--a50d0ac9",
+      "Categoría": "Daisy",
+      "Producto": "Amor Light Mint",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": "White",
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2e9736682c996586",
+      "productKey": "daisy--amor-turpial--3e382bf2",
+      "Categoría": "Daisy",
+      "Producto": "Amor Turpial",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f747072f109ba4e2",
+      "productKey": "daisy--colorado-springs--b9fd0141",
+      "Categoría": "Daisy",
+      "Producto": "Colorado Springs",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "4b11367e1854d4a5",
+      "productKey": "daisy--frescolita--56ec1674",
+      "Categoría": "Daisy",
+      "Producto": "Frescolita",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "632c6f5e63cb41a4",
+      "productKey": "daisy--ribbon--034049cb",
+      "Categoría": "Daisy",
+      "Producto": "Ribbon",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "3a94e803d08130a2",
+      "productKey": "daisy--rio--69bf948f",
+      "Categoría": "Daisy",
+      "Producto": "Rio",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "b1d505b0266645f4",
+      "productKey": "daisy--show--6cc60a38",
+      "Categoría": "Daisy",
+      "Producto": "Show",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "3aeb363f47c2709f",
+      "productKey": "daisy--show-red--e8e35146",
+      "Categoría": "Daisy",
+      "Producto": "Show Red",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6d4bf8b7d55d6a36",
+      "productKey": "lisianthus--open-cut-misty-blue--4501ffda",
+      "Categoría": "Lisianthus",
+      "Producto": "Open Cut Misty Blue",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "11e60178ec46598e",
+      "productKey": "lisianthus--open-cut-peach--866e7624",
+      "Categoría": "Lisianthus",
+      "Producto": "Open Cut Peach",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "fa69d1a6b39881f1",
+      "productKey": "lisianthus--open-cut-purple--95b8a8c7",
+      "Categoría": "Lisianthus",
+      "Producto": "Open Cut Purple",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "525493bb8e250615",
+      "productKey": "lisianthus--open-cut-white--bfa3ea37",
+      "Categoría": "Lisianthus",
+      "Producto": "Open Cut White",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "7027616b2475c2c6",
+      "productKey": "lisianthus--open-cut-yellow--ff883175",
+      "Categoría": "Lisianthus",
+      "Producto": "Open Cut Yellow",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "877b00da866cd5a8",
+      "productKey": "lisianthus--regular-cut-light-pink--3caee1de",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut Light Pink",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a8569a70168424d1",
+      "productKey": "lisianthus--regular-cut-misty-blue--66c2a0f1",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut Misty Blue",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "e9caa61fc92c5935",
+      "productKey": "lisianthus--regular-cut-peach--e3e80ff6",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut Peach",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5aba8372f909db0a",
+      "productKey": "lisianthus--regular-cut-purple--12b698e5",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut Purple",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "9280ff79a30f1077",
+      "productKey": "lisianthus--regular-cut-white--56e5c1b6",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut White",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "7b096c2201f8be18",
+      "productKey": "lisianthus--regular-cut-yellow--5521bf5f",
+      "Categoría": "Lisianthus",
+      "Producto": "Regular Cut Yellow",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Tumbabirro"
+      ],
+      "Tamaños": [
+        "60cm",
+        "70cm"
+      ],
+      "farmStatus": {
+        "Tumbabirro": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8c81f4aa67a5c9c8",
+      "productKey": "novelty--adele--c74d7548",
+      "Categoría": "Novelty",
+      "Producto": "Adele",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "72f1731b5f75ce46",
+      "productKey": "novelty--adele-bronze--96e56d03",
+      "Categoría": "Novelty",
+      "Producto": "Adele Bronze",
+      "Composición": null,
+      "Color 1": "Bronze",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "b80b3ee85374cdb8",
+      "productKey": "novelty--monserrate--93b8b422",
+      "Categoría": "Novelty",
+      "Producto": "Monserrate",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c1548047b2ea1e6d",
+      "productKey": "novelty--savannah--a0c05e27",
+      "Categoría": "Novelty",
+      "Producto": "Savannah",
+      "Composición": null,
+      "Color 1": "Bronze",
+      "Color 2": null,
+      "Season": "Fall",
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "3764ca32f11a9e9b",
+      "productKey": "novelty--smashing--66f354d7",
+      "Categoría": "Novelty",
+      "Producto": "Smashing",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": "Hot Pink",
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "9ff30a6de6d87579",
+      "productKey": "novelty--solaris--511d7ca2",
+      "Categoría": "Novelty",
+      "Producto": "Solaris",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f1c034e4c716ea51",
+      "productKey": "novelty--white-secret--6c8d1788",
+      "Categoría": "Novelty",
+      "Producto": "White Secret",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Cultivos del Norte"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Cultivos del Norte": "y"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "cd31e8919480cbc3",
+      "productKey": "standard-rose--absolute-in-pink--4ee6eb92",
+      "Categoría": "Standard Rose",
+      "Producto": "Absolute in Pink",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c018b68d5b89dd0c",
+      "productKey": "standard-rose--aloha--a1aad06b",
+      "Categoría": "Standard Rose",
+      "Producto": "Aloha",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "3f33d0309e1f5aec",
+      "productKey": "standard-rose--ascot--0b2093f8",
+      "Categoría": "Standard Rose",
+      "Producto": "Ascot",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d86a5f0f9d17c66a",
+      "productKey": "standard-rose--atlas--7699d180",
+      "Categoría": "Standard Rose",
+      "Producto": "Atlas",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "346308c04ae54e38",
+      "productKey": "standard-rose--barista--38b02916",
+      "Categoría": "Standard Rose",
+      "Producto": "Barista",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "cdfb03f4b4c90f48",
+      "productKey": "standard-rose--black-baccara--7562ff40",
+      "Categoría": "Standard Rose",
+      "Producto": "Black Baccara",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "234f90ecb7b13bdb",
+      "productKey": "standard-rose--blueberry--5a5fd080",
+      "Categoría": "Standard Rose",
+      "Producto": "Blueberry",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6a61af5d40044293",
+      "productKey": "standard-rose--bone--00388be3",
+      "Categoría": "Standard Rose",
+      "Producto": "Bone",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "228005e3d23f789e",
+      "productKey": "standard-rose--breathless--b071c514",
+      "Categoría": "Standard Rose",
+      "Producto": "Breathless",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2fc1cbb687bf83f1",
+      "productKey": "standard-rose--brighton--37475d21",
+      "Categoría": "Standard Rose",
+      "Producto": "Brighton",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "49bafb5081782e3f",
+      "productKey": "standard-rose--bromo--ad42696a",
+      "Categoría": "Standard Rose",
+      "Producto": "Bromo",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6f5956ed7d1f3bae",
+      "productKey": "standard-rose--cabaret--077058e3",
+      "Categoría": "Standard Rose",
+      "Producto": "Cabaret",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": "White",
+      "Season": null,
+      "Fincas": [
+        "Ceres Farms",
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm",
+        "70cm",
+        "80cm",
+        "90cm"
+      ],
+      "farmStatus": {
+        "Ceres Farms": "n",
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "65d4a1029484d5c5",
+      "productKey": "standard-rose--cadillac--f482ac00",
+      "Categoría": "Standard Rose",
+      "Producto": "Cadillac",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "13ac611e8f42a89d",
+      "productKey": "standard-rose--carezza--803c98d0",
+      "Categoría": "Standard Rose",
+      "Producto": "Carezza",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "7e7d246b9b417001",
+      "productKey": "standard-rose--carnelian--f5250c13",
+      "Categoría": "Standard Rose",
+      "Producto": "Carnelian",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d131757421ed6101",
+      "productKey": "standard-rose--champagner--d6ee4933",
+      "Categoría": "Standard Rose",
+      "Producto": "Champagner",
+      "Composición": null,
+      "Color 1": "Sand",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "14f3c897c35df7a3",
+      "productKey": "standard-rose--cold-brew--7d4e362b",
+      "Categoría": "Standard Rose",
+      "Producto": "Cold Brew",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": "Light Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5b48d5422bc2a7a3",
+      "productKey": "standard-rose--deep-purple--96745f77",
+      "Categoría": "Standard Rose",
+      "Producto": "Deep Purple",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "067c4a58d4b30405",
+      "productKey": "standard-rose--enjoy--a6c21f35",
+      "Categoría": "Standard Rose",
+      "Producto": "Enjoy",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "91fad4aef2a2522f",
+      "productKey": "standard-rose--escimo--44852f1f",
+      "Categoría": "Standard Rose",
+      "Producto": "Escimo",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "fb6c8f4d3fb0be91",
+      "productKey": "standard-rose--esperance--723d114d",
+      "Categoría": "Standard Rose",
+      "Producto": "Esperance",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": "White",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d5b199b62f4dede6",
+      "productKey": "standard-rose--explorer--b5f82bcd",
+      "Categoría": "Standard Rose",
+      "Producto": "Explorer",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "b19d255f3683666c",
+      "productKey": "standard-rose--faith--11976677",
+      "Categoría": "Standard Rose",
+      "Producto": "Faith",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5d998dcb4c5be48f",
+      "productKey": "standard-rose--faith-baccara--6503a3d6",
+      "Categoría": "Standard Rose",
+      "Producto": "Faith Baccara",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "be209771bdb19cf7",
+      "productKey": "standard-rose--fortune--5f144e0e",
+      "Categoría": "Standard Rose",
+      "Producto": "Fortune",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8edc40119ec7389f",
+      "productKey": "standard-rose--free-spirit--4d0268d6",
+      "Categoría": "Standard Rose",
+      "Producto": "Free Spirit",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": "Medium Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c874e47284a352ea",
+      "productKey": "standard-rose--freedom--b128c6f2",
+      "Categoría": "Standard Rose",
+      "Producto": "Freedom",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "90f6bb51b51e972e",
+      "productKey": "standard-rose--frutteto--b299fa70",
+      "Categoría": "Standard Rose",
+      "Producto": "Frutteto",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f13d8c4528ec0dff",
+      "productKey": "standard-rose--geraldine--9202321a",
+      "Categoría": "Standard Rose",
+      "Producto": "Geraldine",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a1c574ea1d03dfa7",
+      "productKey": "standard-rose--golden-mustard--675684b9",
+      "Categoría": "Standard Rose",
+      "Producto": "Golden Mustard",
+      "Composición": null,
+      "Color 1": "Mustard",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "e1beaea757a51074",
+      "productKey": "standard-rose--goldfinch--af118b96",
+      "Categoría": "Standard Rose",
+      "Producto": "Goldfinch",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "88f313eb7abfa46b",
+      "productKey": "standard-rose--govinda--53c489ae",
+      "Categoría": "Standard Rose",
+      "Producto": "Govinda",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "87ab95fb2ce3cea2",
+      "productKey": "standard-rose--high-and-magic--3ea7ee0e",
+      "Categoría": "Standard Rose",
+      "Producto": "High and Magic",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "28095c085cb9192e",
+      "productKey": "standard-rose--highlight--332edbaf",
+      "Categoría": "Standard Rose",
+      "Producto": "Highlight",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d53eed215882f19b",
+      "productKey": "standard-rose--hot-explorer--b532e050",
+      "Categoría": "Standard Rose",
+      "Producto": "Hot Explorer",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "947e2ec5a843f721",
+      "productKey": "standard-rose--hot-party--0f4707fe",
+      "Categoría": "Standard Rose",
+      "Producto": "Hot Party",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a0dafbd2c4ff3a45",
+      "productKey": "standard-rose--impact--abc75486",
+      "Categoría": "Standard Rose",
+      "Producto": "Impact",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2b0983b7f1d4d83f",
+      "productKey": "standard-rose--inocencia--be65ca0a",
+      "Categoría": "Standard Rose",
+      "Producto": "Inocencia",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "040d16d08f339bcc",
+      "productKey": "standard-rose--jacaranda--bef382ff",
+      "Categoría": "Standard Rose",
+      "Producto": "Jacaranda",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "07edf1d48711b668",
+      "productKey": "standard-rose--jet-set--5d2bb34f",
+      "Categoría": "Standard Rose",
+      "Producto": "Jet Set",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5a4e7b0d9d056346",
+      "productKey": "standard-rose--joy--e57123a3",
+      "Categoría": "Standard Rose",
+      "Producto": "Joy",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6880d90b979fc91e",
+      "productKey": "standard-rose--lemonade--60c2bd66",
+      "Categoría": "Standard Rose",
+      "Producto": "Lemonade",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "322f3532c78b9411",
+      "productKey": "standard-rose--lighthouse--80cf968b",
+      "Categoría": "Standard Rose",
+      "Producto": "Lighthouse",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "9810f7dcbc66139a",
+      "productKey": "standard-rose--lola--5e6662bc",
+      "Categoría": "Standard Rose",
+      "Producto": "Lola",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2e613383a6b9ff45",
+      "productKey": "standard-rose--magic-times--5502e998",
+      "Categoría": "Standard Rose",
+      "Producto": "Magic Times",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": "Medium Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f31900f23267b580",
+      "productKey": "standard-rose--martina--d8fb05ee",
+      "Categoría": "Standard Rose",
+      "Producto": "Martina",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6abcbc812fe467c6",
+      "productKey": "standard-rose--matilda--90f07f6c",
+      "Categoría": "Standard Rose",
+      "Producto": "Matilda",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a051aa5b3dbbcfc9",
+      "productKey": "standard-rose--menta--d25271f3",
+      "Categoría": "Standard Rose",
+      "Producto": "Menta",
+      "Composición": null,
+      "Color 1": "Sand",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c44082f1851bcfad",
+      "productKey": "standard-rose--momentum--8ed1f150",
+      "Categoría": "Standard Rose",
+      "Producto": "Momentum",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "058f509f3add6a78",
+      "productKey": "standard-rose--mondial--30633706",
+      "Categoría": "Standard Rose",
+      "Producto": "Mondial",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "0d9c0c96a46de592",
+      "productKey": "standard-rose--moody-blues--0a72ccb9",
+      "Categoría": "Standard Rose",
+      "Producto": "Moody Blues",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "81c6d04ddd9a3646",
+      "productKey": "standard-rose--moonstone--71b02eb0",
+      "Categoría": "Standard Rose",
+      "Producto": "Moonstone",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c352515c4c22f59f",
+      "productKey": "standard-rose--mother-of-pearl--e7830a9f",
+      "Categoría": "Standard Rose",
+      "Producto": "Mother of Pearl",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "38e41ad684afe59e",
+      "productKey": "standard-rose--nexus--63baff38",
+      "Categoría": "Standard Rose",
+      "Producto": "Nexus",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "1b2f3f51a8027c2f",
+      "productKey": "standard-rose--nina--7c8435e7",
+      "Categoría": "Standard Rose",
+      "Producto": "Nina",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a9fddba18685035a",
+      "productKey": "standard-rose--nuage--b71245ae",
+      "Categoría": "Standard Rose",
+      "Producto": "Nuage",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "e7a24d7cd9f30093",
+      "productKey": "standard-rose--orange-crush--2440daee",
+      "Categoría": "Standard Rose",
+      "Producto": "Orange Crush",
+      "Composición": null,
+      "Color 1": "Orange",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "85215402707a8c1c",
+      "productKey": "standard-rose--phoenix--a6efa05e",
+      "Categoría": "Standard Rose",
+      "Producto": "Phoenix",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "603929607c472fe2",
+      "productKey": "standard-rose--pink-amaretto--6def0aca",
+      "Categoría": "Standard Rose",
+      "Producto": "Pink Amaretto",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": "Peach",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6efb33b824c776cb",
+      "productKey": "standard-rose--pink-floyd--3edf9d2d",
+      "Categoría": "Standard Rose",
+      "Producto": "Pink Floyd",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f4409c85ceca4902",
+      "productKey": "standard-rose--pink-love--9d0ce19a",
+      "Categoría": "Standard Rose",
+      "Producto": "Pink Love",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "ba87d43eb4949d00",
+      "productKey": "standard-rose--pink-mondial--49933cd0",
+      "Categoría": "Standard Rose",
+      "Producto": "Pink Mondial",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "25dc8c394c058689",
+      "productKey": "standard-rose--pink-puma--72588e9f",
+      "Categoría": "Standard Rose",
+      "Producto": "Pink Puma",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": "Medium Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "159eab7737a61345",
+      "productKey": "standard-rose--playa-blanca--3fae442d",
+      "Categoría": "Standard Rose",
+      "Producto": "Playa Blanca",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f243b7c8d8aa79b7",
+      "productKey": "standard-rose--queenberry--630af5ba",
+      "Categoría": "Standard Rose",
+      "Producto": "Queenberry",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "98a0af2b4ad522de",
+      "productKey": "standard-rose--quicksand--c74e34d5",
+      "Categoría": "Standard Rose",
+      "Producto": "Quicksand",
+      "Composición": null,
+      "Color 1": "Sand",
+      "Color 2": "Medium Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "d7c29f9bedce8b70",
+      "productKey": "standard-rose--red-panther--c190934e",
+      "Categoría": "Standard Rose",
+      "Producto": "Red Panther",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "4176eecf2b95f4f2",
+      "productKey": "standard-rose--redvolution--a878a4bc",
+      "Categoría": "Standard Rose",
+      "Producto": "Redvolution",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "5b07928fd7e4c181",
+      "productKey": "standard-rose--remembrance--d3b45c0a",
+      "Categoría": "Standard Rose",
+      "Producto": "Remembrance",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": "Light Pink",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8da6085181df0095",
+      "productKey": "standard-rose--rise-and-shine--bb07324c",
+      "Categoría": "Standard Rose",
+      "Producto": "Rise and Shine",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "63be895047197f95",
+      "productKey": "standard-rose--scandal--78c607a8",
+      "Categoría": "Standard Rose",
+      "Producto": "Scandal",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "0f1a9b4bcc28c30f",
+      "productKey": "standard-rose--secret-garden--61918ef5",
+      "Categoría": "Standard Rose",
+      "Producto": "Secret Garden",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "cb51d91e52e12e42",
+      "productKey": "standard-rose--selfie--e61c5788",
+      "Categoría": "Standard Rose",
+      "Producto": "Selfie",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": "Yellow",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f0dcbec6ec1fefb0",
+      "productKey": "standard-rose--serenade--cc4adc5f",
+      "Categoría": "Standard Rose",
+      "Producto": "Serenade",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "56d41683ec72a3be",
+      "productKey": "standard-rose--shimmer--cb407f26",
+      "Categoría": "Standard Rose",
+      "Producto": "Shimmer",
+      "Composición": null,
+      "Color 1": "Coral",
+      "Color 2": "Peach",
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "fabd30bde319a991",
+      "productKey": "standard-rose--shocking-blue--13de0de5",
+      "Categoría": "Standard Rose",
+      "Producto": "Shocking Blue",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "80020b3b77a34e27",
+      "productKey": "standard-rose--snow-ballet--00b1872b",
+      "Categoría": "Standard Rose",
+      "Producto": "Snow Ballet",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "6d6ed87447d3c21b",
+      "productKey": "standard-rose--star-platinum--d93982f2",
+      "Categoría": "Standard Rose",
+      "Producto": "Star Platinum",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "154075825a5b28f7",
+      "productKey": "standard-rose--sweet-4-love--d4031757",
+      "Categoría": "Standard Rose",
+      "Producto": "Sweet 4 Love",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "13d7595bdf781110",
+      "productKey": "standard-rose--sweet-escimo--044055ef",
+      "Categoría": "Standard Rose",
+      "Producto": "Sweet Escimo",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "f77fa93435d43718",
+      "productKey": "standard-rose--sweet-unique--0e072ef0",
+      "Categoría": "Standard Rose",
+      "Producto": "Sweet Unique",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "c6665e683db572f6",
+      "productKey": "standard-rose--sweetness--468bd45e",
+      "Categoría": "Standard Rose",
+      "Producto": "Sweetness",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "edfec06f63b177af",
+      "productKey": "standard-rose--symbol--21833da8",
+      "Categoría": "Standard Rose",
+      "Producto": "Symbol",
+      "Composición": null,
+      "Color 1": "Mustard",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "ba8f14bc6eb32231",
+      "productKey": "standard-rose--the-pearl--0de38e93",
+      "Categoría": "Standard Rose",
+      "Producto": "The Pearl",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "ce633cad75ceb3de",
+      "productKey": "standard-rose--think-pink--7017e2a0",
+      "Categoría": "Standard Rose",
+      "Producto": "Think Pink",
+      "Composición": null,
+      "Color 1": "Medium Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "bbe2e663650d673a",
+      "productKey": "standard-rose--tibet--cabd4bde",
+      "Categoría": "Standard Rose",
+      "Producto": "Tibet",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "8e23be141e932baa",
+      "productKey": "standard-rose--tutle--aaa38489",
+      "Categoría": "Standard Rose",
+      "Producto": "Tutle",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "9638be7929adc820",
+      "productKey": "standard-rose--vendela--37b716a2",
+      "Categoría": "Standard Rose",
+      "Producto": "Vendela",
+      "Composición": null,
+      "Color 1": null,
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "a4a3738571f97633",
+      "productKey": "standard-rose--violet-hill--9fd64db2",
+      "Categoría": "Standard Rose",
+      "Producto": "Violet Hill",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "dd64e6047ecc80f6",
+      "productKey": "standard-rose--vipink--ad6efffe",
+      "Categoría": "Standard Rose",
+      "Producto": "VIPink",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Florecal"
+      ],
+      "Tamaños": [
+        "40cm",
+        "50cm",
+        "60cm"
+      ],
+      "farmStatus": {
+        "Florecal": "n"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "0498c1e816955a53",
+      "productKey": "stock-super--blue--81fcfc7e",
+      "Categoría": "Stock Super",
+      "Producto": "Blue",
+      "Composición": null,
+      "Color 1": "Blue",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "49580804e1c31f6d",
+      "productKey": "stock-super--blush--a31ad1b8",
+      "Categoría": "Stock Super",
+      "Producto": "Blush",
+      "Composición": null,
+      "Color 1": "Blush",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "654283e2d44cd7d1",
+      "productKey": "stock-super--fuchsia--981acab2",
+      "Categoría": "Stock Super",
+      "Producto": "Fuchsia",
+      "Composición": null,
+      "Color 1": "Fuchsia",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "2939d7d0005663c5",
+      "productKey": "stock-super--hot-pink--ed57099a",
+      "Categoría": "Stock Super",
+      "Producto": "Hot Pink",
+      "Composición": null,
+      "Color 1": "Hot Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "0fec0d716c69117b",
+      "productKey": "stock-super--lavender--9d721532",
+      "Categoría": "Stock Super",
+      "Producto": "Lavender",
+      "Composición": null,
+      "Color 1": "Lavender",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "89cced12dc49d4cd",
+      "productKey": "stock-super--light-pink--b55297ea",
+      "Categoría": "Stock Super",
+      "Producto": "Light Pink",
+      "Composición": null,
+      "Color 1": "Light Pink",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "efafa08db5581fa0",
+      "productKey": "stock-super--peach--75ecab52",
+      "Categoría": "Stock Super",
+      "Producto": "Peach",
+      "Composición": null,
+      "Color 1": "Peach",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "831fce883545d778",
+      "productKey": "stock-super--purple--f1793442",
+      "Categoría": "Stock Super",
+      "Producto": "Purple",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "df2acbf171b0c6b7",
+      "productKey": "stock-super--red--a60a16a7",
+      "Categoría": "Stock Super",
+      "Producto": "Red",
+      "Composición": null,
+      "Color 1": "Red",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "75245dd643c75af4",
+      "productKey": "stock-super--reddish-purple--457c4734",
+      "Categoría": "Stock Super",
+      "Producto": "Reddish Purple",
+      "Composición": null,
+      "Color 1": "Purple",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "ec690971dc263cad",
+      "productKey": "stock-super--white--5fd425ac",
+      "Categoría": "Stock Super",
+      "Producto": "White",
+      "Composición": null,
+      "Color 1": "White",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "b8c76686db6cd690",
+      "productKey": "stock-super--yellow--6f0c8e20",
+      "Categoría": "Stock Super",
+      "Producto": "Yellow",
+      "Composición": null,
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Christopher Flowers"
+      ],
+      "Tamaños": [
+        "70cm"
+      ],
+      "farmStatus": {
+        "Christopher Flowers": "-"
+      },
+      "images": [],
+      "Tabla": []
+    },
+    {
+      "id": "67a215aa322a0cb3",
+      "productKey": "sunflower--select--51670e1e",
+      "Categoría": "Sunflower",
+      "Producto": "Select",
+      "Composición": "Vincents Choice",
+      "Color 1": "Yellow",
+      "Color 2": null,
+      "Season": null,
+      "Fincas": [
+        "Agroprim"
+      ],
+      "Tamaños": [],
+      "farmStatus": {
+        "Agroprim": "n"
+      },
+      "images": [],
+      "Tabla": []
+    }
+  ],
+  "farms": [
+    {
+      "Nombre": "Agrinag",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Agrirose",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Agrivaldani",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Agrocoex",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Agroflora",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Agrogana",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Agroprim",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Aj Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Alexandra Farms",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Alinatura",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Angosacha Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Anthonela Farms",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Bellarosa",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Benitflor",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Betel Flowers",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Bloomhaus",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Bloomlink",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Calla Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Campos de Aroma",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Casageo",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Ceres Farms",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Christopher Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Circasia SAS",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Clarivel",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Coop Farms",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Coordinacion",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Cultivos del Norte",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Dummen Orange",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "ECUADORUNIQUE ",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Ecoador Floral",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Eden",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "FLORSEL",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Feel Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Finca la Abuela",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Flodecol",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Flor Eterna ",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Florana",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Floraroma",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Florecal",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Florecot",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Florequisa",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Flores Verdes",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Florisol",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Florisol Clarivel",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Florisol Piaveri",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Flormare",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Florsani",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Flower Village",
+      "Llegada": "Y"
+    },
+    {
+      "Nombre": "Flowers Party",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Flowers and Co",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "GalaxyTrade Corp",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Hanna Gardens",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "High Garden",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Hoja Verde",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Holex",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Hydra Farms",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "HydranFlowers",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Ikebana",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Jardin Piaveri",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Jet Fresh Growers",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Joysgarden",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Kiara Preserved",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "La Conchita",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "La Toscana Farms",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Latina Farms",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Lavender World",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Loma Linda",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Lupita Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Luxus Blumen",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Magic Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Matina",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Megaflor",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Merinoroses",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Montebello Roses",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Mystic Flowers",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Naranjo ",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Nelpo",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Neumann",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Nivalia",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Olimpo Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Optimum Flowers ",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Petaloz",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Plazoleta",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "Rosas del Corazon",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Rose Conection",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "San Luis",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Sande Flowers",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "St Monica",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Stampsybox",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Star Roses",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Star Roses 1",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Star Roses 2",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Star Roses 3",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Summer Bouquet",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Sunrite Farms",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Treasure Flowers",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Tumbabirro",
+      "Llegada": "y"
+    },
+    {
+      "Nombre": "US Greens",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Vabagro",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Valleflor",
+      "Llegada": "n"
+    },
+    {
+      "Nombre": "Vuelven SAS",
+      "Llegada": "-"
+    },
+    {
+      "Nombre": "Welyflor",
+      "Llegada": "-"
+    }
+  ],
+  "stats": {
+    "products": 151,
+    "rows": 928,
+    "farms": 102
+  }
+}
