@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acceso de personal · BloomDesk</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="brand-mark">✿</div><p class="eyebrow">ACCESO DE PERSONAL</p>
+    <h1>Iniciar sesión</h1><p class="muted">El personal puede consultar precios. Los administradores también pueden gestionar el catálogo.</p>
+    <div id="loginError" class="alert error hidden"></div>
+    <form id="staffLoginForm" class="stack">
+      <label>Usuario<input id="loginUsername" required autocomplete="username"></label>
+      <label>Contraseña<input id="loginPassword" type="password" required autocomplete="current-password"></label>
+      <button class="btn primary full" type="submit">Entrar</button>
+    </form>
+    <a class="text-link" href="{{ url_for('access_page') }}">Volver al acceso del catálogo</a>
+  </main>
+  <script>
+    const csrfToken = {{ csrf_token|tojson }};
+    document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const error = document.getElementById('loginError');
+      error.classList.add('hidden');
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','X-CSRF-Token':csrfToken},
+        body: JSON.stringify({
+          username: document.getElementById('loginUsername').value,
+          password: document.getElementById('loginPassword').value
+        })
+      });
+      const data = await response.json();
+      if (data.ok) location.href = data.user.role === 'admin' ? '/admin' : '/';
+      else { error.textContent = data.error || 'No se pudo iniciar sesión.'; error.classList.remove('hidden'); }
+    });
+  </script>
+</body></html>

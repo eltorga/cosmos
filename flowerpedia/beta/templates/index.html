@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>BloomDesk · Catálogo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/"><span class="brand-mark small">✿</span><span>BloomDesk</span></a>
+      <div class="header-tools">
+        <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar producto, finca, color..." autocomplete="off"></div>
+        <div class="filter-wrap" data-filter="category">
+          <button class="filter-button" type="button" id="categoryFilterButton">Categorías <span>⌄</span></button>
+          <div class="filter-panel"><input class="filter-search" placeholder="Buscar categoría..."><div class="filter-options" id="categoryFilterOptions"></div></div>
+        </div>
+        <div class="filter-wrap" data-filter="farm">
+          <button class="filter-button" type="button" id="farmFilterButton">Fincas <span>⌄</span></button>
+          <div class="filter-panel"><input class="filter-search" placeholder="Buscar finca..."><div class="filter-options" id="farmFilterOptions"></div></div>
+        </div>
+        <div class="filter-wrap" data-filter="color">
+          <button class="filter-button" type="button" id="colorFilterButton">Colores <span>⌄</span></button>
+          <div class="filter-panel"><input class="filter-search" placeholder="Buscar color..."><div class="filter-options" id="colorFilterOptions"></div></div>
+        </div>
+        <button class="btn subtle" id="clearFiltersButton" type="button">Limpiar</button>
+        <button class="btn dark" id="mixBoxButton" type="button">▦ Mix Box</button>
+        <button class="btn subtle" id="farmArrivalButton" type="button">↗ Llegadas</button>
+        <a class="btn subtle" href="https://ecflowers.net/artcanvas/" target="_blank" rel="noopener noreferrer">✧ Art Canvas</a>
+        <div class="user-area" id="userArea"><a class="btn subtle" href="/login">Acceso personal</a></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro-row">
+      <div>
+        <p class="eyebrow">CATÁLOGO DE PRODUCTOS</p>
+        <h1>Flores y variedades</h1>
+        <p class="muted">Explora productos, categorías, colores, temporadas y fincas disponibles.</p>
+      </div>
+      <div class="catalog-stats" id="catalogStats"><span>Preparando catálogo…</span></div>
+    </section>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="status-line" id="statusLine">Cargando datos del archivo Excel…</div>
+    <section id="productGrid" class="product-grid"></section>
+    <div class="load-more-wrap"><button id="loadMoreButton" class="btn subtle hidden" type="button">Cargar más productos</button></div>
+  </main>
+
+  <footer class="site-footer"><span>BloomDesk v0.01</span><span>Catálogo local basado en archivo Excel</span><a href="/logout-site">Salir del catálogo</a></footer>
+
+  <!-- Product detail -->
+  <div class="modal" id="detailModal" aria-hidden="true">
+    <div class="modal-card detail-modal">
+      <button class="modal-close" data-close="detailModal" aria-label="Cerrar">×</button>
+      <div class="detail-image-wrap"><img id="detailImage" alt=""><div id="detailImageFallback" class="image-fallback large">✿</div></div>
+      <div class="detail-content">
+        <p class="eyebrow" id="detailCategory"></p>
+        <h2 id="detailName"></h2>
+        <div id="detailColors" class="color-row"></div>
+        <div class="detail-field"><span class="field-label">Fincas</span><div id="detailFarms" class="chip-row"></div></div>
+        <div class="detail-field" id="detailSeasonWrap"><span class="field-label">Temporada</span><div id="detailSeason" class="chip-row"></div></div>
+        <div class="detail-field" id="detailSizeWrap"><span class="field-label">Tamaños</span><div id="detailSizes" class="chip-row"></div></div>
+        <div class="detail-field" id="detailCompositionWrap"><span class="field-label">Composición</span><div id="detailComposition" class="long-text"></div></div>
+        <div class="detail-field" id="detailTableWrap"><span class="field-label">Tabla</span><div id="detailTable" class="markdown-table"></div></div>
+        <section class="price-section hidden" id="detailPrices">
+          <div class="section-heading"><div><span class="field-label">PRECIOS Y PRESENTACIONES</span><h3>Información comercial</h3></div>
+            <div class="market-tabs"><button class="active" data-market="US" type="button">USA</button><button data-market="UK" type="button">UK</button></div>
+          </div>
+          <div id="priceTableWrap"></div>
+        </section>
+        <p class="staff-hint hidden" id="staffHint">Inicia sesión como personal para consultar precios y presentaciones.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mix box -->
+  <div class="modal" id="mixBoxModal" aria-hidden="true">
+    <div class="modal-card medium-modal">
+      <button class="modal-close" data-close="mixBoxModal">×</button>
+      <p class="eyebrow">DISPONIBILIDAD CONJUNTA</p><h2>Mix Box Creator</h2>
+      <p class="muted">Selecciona variedades para encontrar las fincas que pueden reunirlas en una misma caja.</p>
+      <div class="mix-search"><input id="mixSearchInput" type="search" placeholder="Escribe el nombre de una variedad…"><div id="mixSearchResults" class="mix-results hidden"></div></div>
+      <div id="mixSelected" class="mix-selected"></div>
+      <div class="field-divider"></div>
+      <h3>Fincas disponibles en común</h3><div id="mixCommonFarms" class="common-farms"><span class="muted">Añade al menos un producto.</span></div>
+    </div>
+  </div>
+
+  <!-- Farm arrivals -->
+  <div class="modal" id="farmArrivalModal" aria-hidden="true">
+    <div class="modal-card medium-modal">
+      <button class="modal-close" data-close="farmArrivalModal">×</button>
+      <p class="eyebrow">ESTADO LOGÍSTICO</p><h2>Llegadas de fincas</h2>
+      <div class="arrival-legend"><span>☀️ Temprano</span><span>🌙 Tarde / no disponible</span><span>◷ Variable</span></div>
+      <div id="farmArrivalList" class="arrival-grid"></div>
+    </div>
+  </div>
+
+  <!-- Staff login -->
+  <div class="modal" id="staffLoginModal" aria-hidden="true">
+    <div class="modal-card login-modal">
+      <button class="modal-close" data-close="staffLoginModal">×</button>
+      <p class="eyebrow">ACCESO DE PERSONAL</p><h2>Iniciar sesión</h2>
+      <div id="staffLoginError" class="alert error hidden"></div>
+      <form id="staffLoginForm" class="stack">
+        <label>Usuario<input id="staffUsername" required autocomplete="username"></label>
+        <label>Contraseña<input id="staffPassword" type="password" required autocomplete="current-password"></label>
+        <button class="btn primary full" type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body></html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Administración · BloomDesk</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="admin-body">
+  <header class="site-header admin-header">
+    <div class="header-inner">
+      <a class="brand" href="/"><span class="brand-mark small">✿</span><span>BloomDesk <small>ADMIN</small></span></a>
+      <div class="header-tools"><a class="btn subtle" href="/">Ver catálogo</a><span class="user-pill">Administrador: {{ user.username }}</span><a class="btn subtle" href="/logout">Cerrar sesión</a></div>
+    </div>
+  </header>
+  <main class="admin-shell">
+    <div class="admin-heading"><div><p class="eyebrow">CENTRO DE CONTROL</p><h1>Administración</h1><p class="muted">Productos, precios, cajas, usuarios y archivo Excel.</p></div><span class="version-pill">Versión 0.01</span></div>
+    <div id="adminNotice" class="alert hidden"></div>
+    <nav class="admin-tabs">
+      <button class="active" data-admin-tab="dashboard">Resumen</button>
+      <button data-admin-tab="products">Productos</button>
+      <button data-admin-tab="editor">Añadir / editar</button>
+      <button data-admin-tab="boxes">Cajas</button>
+      <button data-admin-tab="users">Usuarios</button>
+      <button data-admin-tab="workbook">Excel y ajustes</button>
+    </nav>
+
+    <section class="admin-panel active" id="panel-dashboard">
+      <div class="stat-grid" id="adminStats">
+        <div class="stat-card"><span>Registros</span><strong>—</strong></div>
+        <div class="stat-card"><span>Productos</span><strong>—</strong></div>
+        <div class="stat-card"><span>Cajas</span><strong>—</strong></div>
+        <div class="stat-card"><span>Fincas</span><strong>—</strong></div>
+      </div>
+      <div class="admin-card">
+        <div class="card-heading"><div><p class="eyebrow">ARCHIVO ACTIVO</p><h2 id="activeWorkbook">Leyendo archivo…</h2></div><span class="status-tag success">Excel local</span></div>
+        <p class="muted">La fuente de datos se encuentra en <code>data/current_week.xlsx</code>. Puedes cargar otra semana desde la pestaña “Excel y ajustes”; la aplicación leerá la tabla Catalogo por los nombres de sus columnas.</p>
+      </div>
+      <div class="admin-card">
+        <h2>Reglas principales de cálculo</h2>
+        <div class="formula-summary">
+          <div><strong>USA</strong><span>Markup = 1 − (Compra + Duties + Transporte) / (Venta × 0.96)</span></div>
+          <div><strong>UK</strong><span>Markup = 1 − Coste total / (Venta UK × 0.97)</span></div>
+        </div>
+        <p class="tiny muted">Los parámetros de transporte, duties, conversión y margen de seguridad se pueden revisar en Excel y ajustes.</p>
+      </div>
+    </section>
+
+    <section class="admin-panel" id="panel-products">
+      <div class="panel-toolbar"><div><h2>Registros de catálogo</h2><p class="muted">Cada registro representa una combinación de finca, tamaño y presentación.</p></div><button class="btn primary" id="newProductButton">＋ Nuevo producto</button></div>
+      <div class="search-wrap admin-search"><span>⌕</span><input id="adminProductSearch" type="search" placeholder="Buscar producto, categoría, finca o caja…"></div>
+      <div class="table-scroll">
+        <table class="data-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Finca</th><th>Tamaño</th><th>USA</th><th>UK</th><th>Origen</th><th></th></tr></thead><tbody id="adminProductRows"><tr><td colspan="8">Cargando…</td></tr></tbody></table>
+      </div>
+      <div class="tiny muted" id="productListCount"></div>
+    </section>
+
+    <section class="admin-panel" id="panel-editor">
+      <div class="panel-toolbar"><div><h2 id="editorTitle">Añadir producto</h2><p class="muted">Completa la ficha general y después configura USA y/o UK.</p></div><button class="btn subtle" id="cancelEditButton">Volver a productos</button></div>
+      <form id="productForm">
+        <input type="hidden" id="editProductId">
+        <div class="admin-card">
+          <div class="card-heading"><div><p class="eyebrow">DATOS GENERALES</p><h3>Identidad del producto</h3></div></div>
+          <div class="form-grid">
+            <label>Finca<select id="pFinca" required></select></label>
+            <label>Categoría<select id="pCategory" required></select></label>
+            <label class="span-2">Producto<input id="pName" required placeholder="Nombre de la variedad"></label>
+            <label>Color 1<select id="pColor1"></select></label>
+            <label>Color 2<select id="pColor2"></select></label>
+            <label>Season<select id="pSeason"></select></label>
+            <label>Tamaño<select id="pSize"></select></label>
+            <label>Total Tallos · compartido USA/UK<input id="pStems" type="number" min="1" step="1" placeholder="Ej. 125"></label>
+            <label class="span-2">IMG · URL de imagen<input id="pImage" type="url" placeholder="https://…"></label>
+            <label class="span-2">Composición<textarea id="pComposition" rows="3" placeholder="Descripción de composición…"></textarea></label>
+            <label class="span-2">Tabla<textarea id="pTable" rows="4" placeholder="Puedes pegar una tabla en formato Markdown…"></textarea></label>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="market-admin-tabs">
+            <button class="active" type="button" data-market-tab="us">USA · USD</button>
+            <button type="button" data-market-tab="uk">UK · GBP</button>
+          </div>
+          <div class="market-admin-panel active" id="market-us">
+            <div class="card-heading"><div><p class="eyebrow">PRECIOS USA</p><h3>Presentación y cálculo USA</h3></div><span id="usOpStatus" class="status-tag neutral">Op: —</span></div>
+            <div class="form-grid">
+              <label>Caja EC<select id="pUsBoxType"></select></label>
+              <label>Caja Finca<select id="pFarmBox"></select></label>
+              <label>Compra · USD<input id="pUsCost" type="number" min="0" step="0.0001" placeholder="Ej. 0.35"></label>
+            </div>
+            <div class="calc-card">
+              <div class="calc-mode"><span>¿Qué quieres introducir?</span><label><input type="radio" name="usMode" value="price" checked> Precio de venta</label><label><input type="radio" name="usMode" value="markup"> Markup objetivo</label></div>
+              <div class="form-grid">
+                <label>Venta · USD<input id="pUsPrice" type="number" min="0" step="0.01" placeholder="Precio de venta"></label>
+                <label>Markup · %<input id="pUsMarkup" type="number" min="0" max="99.99" step="0.01" placeholder="Ej. 30"></label>
+              </div>
+              <div class="calc-result" id="usCalcResult">Introduce caja, tallos y compra para calcular.</div>
+              <div class="box-preview" id="usBoxPreview"></div>
+            </div>
+          </div>
+          <div class="market-admin-panel" id="market-uk">
+            <div class="card-heading"><div><p class="eyebrow">PRECIOS UK</p><h3>Presentación y cálculo UK</h3></div><span id="ukOpStatus" class="status-tag neutral">Op UK: —</span></div>
+            <div class="form-grid">
+              <label>Caja UK<select id="pUkBox"></select></label>
+              <label>Compra UK · USD<input id="pUkCost" type="number" min="0" step="0.0001" placeholder="Vacío = utilizar Compra USA"></label>
+            </div>
+            <div class="calc-card">
+              <div class="calc-mode"><span>¿Qué quieres introducir?</span><label><input type="radio" name="ukMode" value="price" checked> Precio de venta</label><label><input type="radio" name="ukMode" value="markup"> Markup objetivo</label></div>
+              <div class="form-grid">
+                <label>Venta UK · GBP<input id="pUkPrice" type="number" min="0" step="0.01" placeholder="Precio de venta"></label>
+                <label>Markup UK · %<input id="pUkMarkup" type="number" min="0" max="99.99" step="0.01" placeholder="Ej. 30"></label>
+              </div>
+              <div class="calc-result" id="ukCalcResult">Introduce caja UK, tallos y compra para calcular.</div>
+              <div class="box-preview" id="ukBoxPreview"></div>
+            </div>
+          </div>
+          <div class="form-actions"><button class="btn primary" type="submit">Guardar producto</button><button class="btn subtle" type="button" id="resetProductForm">Limpiar formulario</button></div>
+        </div>
+      </form>
+    </section>
+
+    <section class="admin-panel" id="panel-boxes">
+      <div class="panel-toolbar"><div><h2>Dimensiones de cajas</h2><p class="muted">Datos importados de la tabla Cajas de Sheet1. Las medidas se muestran en centímetros y pulgadas.</p></div></div>
+      <div class="search-wrap admin-search"><span>⌕</span><input id="boxSearch" type="search" placeholder="Buscar tipo de caja o finca…"></div>
+      <div class="table-scroll">
+        <table class="data-table"><thead><tr><th>Nombre</th><th>Largo cm</th><th>Ancho cm</th><th>Alto cm</th><th>Peso volumétrico</th><th>Aprobado</th><th>Medidas pulgadas</th><th></th></tr></thead><tbody id="boxRows"><tr><td colspan="8">Cargando…</td></tr></tbody></table>
+      </div>
+      <p class="tiny muted">Peso volumétrico = Largo × Ancho × Alto / 6000. Las dimensiones en pulgadas se calculan con la conversión 1 in = 2.54 cm y redondeo hacia arriba a 2 decimales.</p>
+    </section>
+
+    <section class="admin-panel" id="panel-users">
+      <div class="panel-toolbar"><div><h2>Usuarios y permisos</h2><p class="muted">Contraseñas protegidas con hash; no se guardan en texto plano.</p></div></div>
+      <div class="admin-card">
+        <h3>Crear usuario</h3>
+        <form id="createUserForm" class="form-grid user-create-form">
+          <label>Usuario<input id="newUsername" required minlength="3"></label>
+          <label>Contraseña inicial<input id="newUserPassword" type="password" required minlength="10"></label>
+          <label>Rol<select id="newUserRole"><option value="staff">Personal</option><option value="admin">Administrador</option></select></label>
+          <div class="form-end"><button class="btn primary" type="submit">Crear usuario</button></div>
+        </form>
+      </div>
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Nueva contraseña</th><th></th></tr></thead><tbody id="userRows"><tr><td colspan="5">Cargando…</td></tr></tbody></table></div>
+    </section>
+
+    <section class="admin-panel" id="panel-workbook">
+      <div class="admin-card">
+        <p class="eyebrow">FUENTE DE DATOS</p><h2>Actualizar archivo Excel</h2>
+        <p class="muted">Carga el archivo de otra semana. Se leerán las tablas <strong>Catalogo</strong>, <strong>Cajas</strong> y <strong>Fincas</strong>. Las columnas de Catalogo se identifican por sus encabezados, aunque cambien de orden.</p>
+        <form id="importWorkbookForm" class="upload-row"><input type="file" id="workbookFile" accept=".xlsx" required><button class="btn primary" type="submit">Importar Excel</button></form>
+        <p class="tiny muted">Antes de reemplazar la fuente se guarda una copia de seguridad en data/backups. Los registros creados manualmente en BloomDesk se conservan.</p>
+        <div class="field-divider"></div>
+        <div class="card-heading"><div><p class="eyebrow">EXPORTACIÓN</p><h3>Descargar catálogo actualizado</h3></div><a class="btn subtle" href="/admin/export.xlsx">Descargar Excel</a></div>
+        <p class="tiny muted">La exportación conserva las hojas del libro y actualiza la tabla Catalogo con los registros guardados en BloomDesk. Los resultados calculados se exportan como valores.</p>
+      </div>
+      <div class="admin-card">
+        <p class="eyebrow">SEGURIDAD</p><h2>Contraseña del catálogo</h2>
+        <form id="sitePasswordForm" class="form-grid">
+          <label class="span-2">Nueva contraseña de acceso<input id="newSitePassword" type="password" minlength="8" placeholder="Deja vacío para no cambiarla"></label>
+          <div class="form-end"><button class="btn primary" type="submit">Actualizar contraseña</button></div>
+        </form>
+      </div>
+      <div class="admin-card">
+        <p class="eyebrow">PARÁMETROS DE CÁLCULO</p><h2>Fórmulas y factores</h2>
+        <p class="muted">Valores iniciales leídos de las fórmulas de WEEK_45. Puedes ajustarlos si cambia tu operación.</p>
+        <form id="formulaSettingsForm" class="form-grid">
+          <label>USA · Transporte por volumen<input id="setting_us_transport_volume_rate" type="number" step="0.0001"></label>
+          <label>USA · Multiplicador transporte<input id="setting_us_transport_multiplier" type="number" step="0.0001"></label>
+          <label>USA · Duties<input id="setting_us_duties_rate" type="number" step="0.0001"></label>
+          <label>USA · Factor de venta<input id="setting_us_sale_factor" type="number" step="0.0001"></label>
+          <label>UK · Transporte por volumen<input id="setting_uk_transport_volume_rate" type="number" step="0.0001"></label>
+          <label>UK · Multiplicador transporte<input id="setting_uk_transport_multiplier" type="number" step="0.0001"></label>
+          <label>UK · Tipo de cambio USD/GBP<input id="setting_uk_exchange_rate" type="number" step="0.0001"></label>
+          <label>UK · Factor de venta<input id="setting_uk_sale_factor" type="number" step="0.0001"></label>
+          <label>USA · Margen de seguridad (cm)<input id="setting_safety_margin_cm" type="number" step="0.1"></label>
+          <div class="form-end"><button class="btn primary" type="submit">Guardar parámetros</button></div>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body></html>
