@@ -1,0 +1,24 @@
+# Local administration workspace and personal data
+/private/
+/start.bat
+
+# Online server runtime data (never commit database, Excel, uploads or secret key)
+/server/data/
+/server/uploads/
+**/uploads/
+**/backups/
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+**/*.xlsx
+**/.secret_key
+
+# Secrets and local environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python build/cache files
+__pycache__/
+*.py[cod]
+.venv/

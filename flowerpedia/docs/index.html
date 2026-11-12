@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f8f6">
+  <title>Flowerpedia v0.3.4 · Catálogo</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+  <link rel="stylesheet" href="/assets/css/site.css?v=0.3.4">
+</head>
+<body class="auth-required">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Flowerpedia"><span class="brand-mark">✿</span><span class="brand-wordmark">Flowerpedia</span></a>
+      <div class="header-tools">
+        <label class="search-wrap"><i class="fi fi-rr-search"></i><input id="searchInput" type="search" placeholder="Buscar producto, finca, color…" autocomplete="off"></label>
+        <div class="action-buttons">
+          <div class="filter-menu-wrap header-filter-nav">
+            <div class="filters-popover" id="filtersPopover">
+              <div class="filter-grid">
+                <button id="clearFiltersButton" class="filter-clear-button hidden" type="button" disabled>Limpiar</button>
+                <div class="filter-wrap" data-filter="category">
+                  <button class="filter-button" type="button"><i class="fi fi-rr-flower-tulip"></i> Categorías <i class="fi fi-rr-angle-small-down"></i></button>
+                  <div class="filter-panel">
+                    <div class="filter-searchbox"><div class="filter-selected-chips" id="categoryChips"></div><input class="filter-search" placeholder="Buscar categoría…" autocomplete="off"></div>
+                    <div class="filter-options" id="categoryOptions"></div>
+                  </div>
+                </div>
+                <div class="filter-wrap" data-filter="farm">
+                  <button class="filter-button" type="button"><i class="fi fi-rr-wheat"></i> Fincas <i class="fi fi-rr-angle-small-down"></i></button>
+                  <div class="filter-panel">
+                    <div class="filter-searchbox"><div class="filter-selected-chips" id="farmChips"></div><input class="filter-search" placeholder="Buscar finca…" autocomplete="off"></div>
+                    <div class="filter-options" id="farmOptions"></div>
+                  </div>
+                </div>
+                <div class="filter-wrap" data-filter="color">
+                  <button class="filter-button" type="button"><i class="fi fi-rr-palette"></i> Colores <i class="fi fi-rr-angle-small-down"></i></button>
+                  <div class="filter-panel">
+                    <div class="filter-searchbox"><div class="filter-selected-chips" id="colorChips"></div><input class="filter-search" placeholder="Buscar color…" autocomplete="off"></div>
+                    <div class="filter-options" id="colorOptions"></div>
+                  </div>
+                </div>
+                <div class="filter-wrap" data-filter="season">
+                  <button class="filter-button" type="button"><i class="fi fi-rr-calendar"></i> Temporada <i class="fi fi-rr-angle-small-down"></i></button>
+                  <div class="filter-panel">
+                    <div class="filter-searchbox"><div class="filter-selected-chips" id="seasonChips"></div><input class="filter-search" placeholder="Buscar temporada…" autocomplete="off"></div>
+                    <div class="filter-options" id="seasonOptions"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="icon-action dark-action" id="mixBoxButton" type="button" title="Mix Box" aria-label="Mix Box"><i class="fi fi-rr-box"></i></button>
+          <button class="icon-action" id="farmArrivalButton" type="button" title="Llegadas" aria-label="Llegadas"><i class="fi fi-rr-truck-side"></i></button>
+          <a class="icon-action" href="https://ecflowers.net/artcanvas/" target="_blank" rel="noopener noreferrer" title="Art Canvas" aria-label="Art Canvas"><i class="fi fi-rr-sparkles"></i></a>
+          <div class="profile-area hidden" id="profileArea">
+            <button class="icon-action profile-button" id="profileButton" aria-label="Abrir perfil" title="Acceso personal"><span id="profileAvatar" class="avatar-placeholder"><i class="fi fi-rr-user"></i></span></button>
+            <div class="profile-menu hidden" id="profileMenu"></div>
+          </div>
+          <button class="icon-action" id="staffLoginButton" type="button" title="Iniciar sesión" aria-label="Iniciar sesión"><i class="fi fi-rr-user"></i></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell" id="pageShell">
+
+    <div class="catalog-toolbar">
+      <div class="active-summary" id="activeSummary"></div>
+      <div class="columns-control" role="group" aria-label="Columnas de productos">
+        <i class="fi fi-rr-grid" aria-hidden="true"></i>
+        <button type="button" id="columnsDecrease" aria-label="Una columna menos"><i class="fi fi-rr-minus"></i></button>
+        <output id="columnsValue" aria-live="polite">6</output>
+        <button type="button" id="columnsIncrease" aria-label="Una columna más"><i class="fi fi-rr-plus"></i></button>
+        <select id="gridColumns" class="columns-value-source" aria-hidden="true" tabindex="-1">
+          <option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+        </select>
+      </div>
+    </div>
+    <div class="status-line" id="statusLine">Cargando catálogo…</div>
+    <section id="productGrid" class="product-grid" aria-live="polite"></section>
+    <div class="load-more-wrap"><button id="loadMoreButton" class="btn subtle hidden" type="button">Cargar más productos</button></div>
+  </main>
+
+<!-- Ficha de producto: URL /<código>/<categoría>/<variedad> -->
+  <section class="product-page hidden" id="productPage">
+    <div id="productPageContent">
+      <div class="product-page-toolbar">
+        <a class="product-back-link" id="backToCatalog" href="/"><i class="fi fi-rr-arrow-left"></i> Volver al catálogo</a>
+        <button type="button" class="btn subtle" id="copyProductLinkButton"><i class="fi fi-rr-link"></i> Copiar enlace</button>
+      </div>
+
+      <div class="product-page-layout">
+        <section class="detail-gallery">
+          <div class="main-image-wrap">
+            <div class="image-fallback large" id="detailImageFallback">✿</div>
+            <img id="detailImage" alt="">
+            <button class="gallery-arrow prev hidden" id="galleryPrev" aria-label="Imagen anterior"><i class="fi fi-rr-angle-small-left"></i></button>
+            <button class="gallery-arrow next hidden" id="galleryNext" aria-label="Imagen siguiente"><i class="fi fi-rr-angle-small-right"></i></button>
+          </div>
+          <div class="thumbnail-strip" id="detailThumbnails"></div>
+        </section>
+
+        <section class="detail-content">
+          <button type="button" class="product-category detail-category" id="detailCategory" data-quick-filter="category" data-filter-value=""></button>
+          <h1 id="detailName" class="product-page-title"></h1>
+          <span id="detailAvailability" class="availability-badge hidden">Erradicado</span>
+          <div id="detailColors" class="color-row"></div>
+
+          <div class="detail-field" id="detailFarmsWrap">
+            <span class="field-label">Fincas</span>
+            <div id="detailFarms" class="farm-chip-row color-row"></div>
+          </div>
+
+          <div class="detail-meta-row">
+            <div class="detail-field hidden" id="detailSeasonWrap">
+              <span class="field-label">Temporada</span>
+              <div id="detailSeason"></div>
+            </div>
+            <div class="detail-field hidden" id="detailSizeWrap">
+              <span class="field-label">Empaques disponibles</span>
+              <div id="detailSizes" class="chip-row"></div>
+            </div>
+          </div>
+
+          <section class="product-description hidden" id="detailDescriptionWrap">
+            <div class="detail-section-heading">
+              <span class="detail-section-icon"><i class="fi fi-rr-align-left"></i></span>
+              <h3>Composición</h3>
+            </div>
+            <p id="detailDescription" class="product-description-text"></p>
+          </section>
+
+          <div class="product-page-data-sections">
+            <section class="detail-data-card composition-section hidden" id="detailTableWrap">
+              <div class="detail-section-heading">
+                <span class="detail-section-icon"><i class="fi fi-rr-layers"></i></span>
+                <h3>Composición (tabla)</h3>
+              </div>
+              <div id="detailTable"></div>
+            </section>
+
+            <section class="detail-data-card price-section hidden" id="detailPrices">
+              <div class="detail-section-heading price-section-heading">
+                <div class="detail-section-title">
+                  <span class="detail-section-icon"><i class="fi fi-rr-tags"></i></span>
+                  <h3>Precios y presentaciones</h3>
+                </div>
+                <div class="market-tabs">
+                  <button class="active" data-market="US" type="button">USA · USD</button>
+                  <button data-market="UK" type="button">UK · GBP</button>
+                </div>
+              </div>
+              <div id="priceTableWrap"></div>
+            </section>
+
+          </div>
+        </section>
+      </div>
+
+      <section class="related-section hidden" id="relatedProductsSection">
+        <div class="detail-section-heading related-heading">
+          <span class="detail-section-icon"><i class="fi fi-rr-flower-tulip"></i></span>
+          <h3>Productos similares</h3>
+        </div>
+        <div class="product-grid related-product-grid" id="relatedProductGrid"></div>
+      </section>
+    </div>
+
+    <div id="productNotFound" class="product-not-found hidden">
+      <h1>No se encontró esta variedad</h1>
+      <p class="muted">Es posible que el producto haya cambiado o ya no esté en el catálogo.</p>
+      <a class="btn primary" href="/">Volver al catálogo</a>
+    </div>
+  </section>
+
+  <footer class="site-footer"><span>Flowerpedia v0.3.4 · Catálogo de flores</span><span id="footerStatus">Información de productos</span></footer>
+
+  <!-- Mix box -->
+  <div class="modal" id="mixBoxModal" aria-hidden="true">
+    <div class="modal-card medium-modal">
+      <button class="modal-close" data-close="mixBoxModal"><i class="fi fi-rr-cross-small"></i></button>
+      <p class="eyebrow">DISPONIBILIDAD CONJUNTA</p><h2>Mix Box Creator</h2>
+      <p class="muted">Selecciona variedades para encontrar las fincas que pueden reunirlas en una misma caja.</p>
+      <div class="mix-search"><input id="mixSearchInput" type="search" placeholder="Escribe el nombre de una variedad…"><div id="mixSearchResults" class="mix-results hidden"></div></div>
+      <div id="mixSelected" class="mix-selected"></div>
+      <div class="field-divider"></div><h3>Fincas disponibles en común</h3><div id="mixCommonFarms" class="common-farms">Añade al menos un producto.</div>
+    </div>
+  </div>
+
+  <!-- Farm arrivals -->
+  <div class="modal" id="farmArrivalModal" aria-hidden="true">
+    <div class="modal-card medium-modal">
+      <button class="modal-close" data-close="farmArrivalModal"><i class="fi fi-rr-cross-small"></i></button>
+      <p class="eyebrow">ESTADO LOGÍSTICO</p><h2>Llegadas de fincas</h2>
+      <div class="arrival-legend"><span><i class="traffic y"></i> Temprano</span><span><i class="traffic n"></i> Tarde</span></div>
+      <div id="farmArrivalList" class="arrival-grid"></div>
+    </div>
+  </div>
+
+  <!-- Acceso obligatorio mediante Flowerpedia Auth (Python + SQLite) -->
+  <div class="modal" id="staffLoginModal" aria-hidden="true">
+    <div class="modal-card login-modal auth-modal auth-required-card">
+      <p class="eyebrow">ACCESO FLOWERPEDIA</p>
+      <h2 id="authModalTitle">Inicia sesión para continuar</h2>
+      <p class="muted auth-intro">Introduce el nombre de usuario y la contraseña que te facilitó el administrador.</p>
+      <div id="staffLoginError" class="alert error hidden" role="alert"></div>
+      <form id="staffLoginForm" class="stack">
+        <label>Nombre de usuario<input id="staffUsername" type="text" required minlength="3" maxlength="30" pattern="[A-Za-z0-9._-]{3,30}" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Ej. salmaan" title="Usa entre 3 y 30 letras, números, puntos, guiones o guiones bajos."></label>
+        <label>Contraseña<input id="staffPassword" type="password" required minlength="4" autocomplete="current-password" placeholder="Tu contraseña"></label>
+        <button class="btn primary full" type="submit">Iniciar sesión</button>
+      </form>
+      <p class="tiny muted auth-note">Si no tienes una cuenta, solicita al administrador que la cree para ti.</p>
+    </div>
+  </div>
+<script src="/assets/js/auth-client.js?v=0.3.4"></script>
+<script src="/assets/js/site.js?v=0.3.4"></script>
+</body>
+</html>

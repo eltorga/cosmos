@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Flowerpedia · Administración</title>
+  <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+  <link rel="stylesheet" href="{{ url_for('admin_static', filename='admin.css') }}?v=0.3.4">
+</head>
+<body class="admin-body">
+  <header class="admin-header">
+    <a class="brand" href="/"><span class="brand-mark">✿</span><span>Flowerpedia <small>ADMIN</small></span></a>
+    <div class="admin-header-right">
+      <span class="user-label"><i class="fi fi-rr-user"></i> {{ user.username }}</span>
+      <a class="btn subtle" href="/"><i class="fi fi-rr-eye"></i> Ver catálogo</a>
+      <a class="btn subtle" href="/logout"><i class="fi fi-rr-sign-out-alt"></i> Salir</a>
+    </div>
+  </header>
+  <main class="admin-shell">
+    <div class="admin-heading">
+      <div><p class="eyebrow">CENTRO DE CONTROL</p><h1>Administración</h1><p class="muted">Catálogo, imágenes, cajas, usuarios y gestión Excel.</p></div>
+      <span class="version-pill">v0.3.4</span>
+    </div>
+    <div id="adminNotice" class="alert hidden"></div>
+    <nav class="admin-tabs">
+      <button class="active" data-admin-tab="dashboard"><i class="fi fi-rr-apps"></i> Resumen</button>
+      <button data-admin-tab="products"><i class="fi fi-rr-box"></i> Productos</button>
+      <button data-admin-tab="boxes"><i class="fi fi-rr-box-open"></i> Cajas</button>
+      <button data-admin-tab="users"><i class="fi fi-rr-users"></i> Usuarios</button>
+      <button data-admin-tab="workbook"><i class="fi fi-rr-file-excel"></i> Excel y web</button>
+    </nav>
+
+    <section class="admin-panel active" id="panel-dashboard">
+      <div id="workbookMissingNotice" class="alert warning hidden">Antes de crear o editar productos, abre la pestaña <strong>Excel y web</strong> e importa tu archivo <strong>current_week.xlsx</strong>.</div>
+      <div class="stat-grid" id="adminStats"></div>
+      <div class="admin-card">
+        <div class="card-heading"><div><p class="eyebrow">EXCEL ACTIVO</p><h2 id="activeWorkbook">current_week.xlsx</h2></div><span class="status-tag success"><i class="fi fi-rr-refresh"></i> Almacenamiento persistente activo</span></div>
+        <p class="muted">Flowerpedia guarda el Excel activo en el almacenamiento privado del servidor. Los cambios realizados desde la aplicación se escriben en ese archivo.</p>
+        <div class="sync-line"><span class="traffic y"></span><strong id="syncState">Excel almacenado en el servidor</strong><small id="syncTimestamp"></small></div>
+      </div>
+      <div class="admin-card">
+        <h2>Reglas de presentación</h2>
+        <div class="summary-grid">
+          <div><strong>Catálogo</strong><span>Servido por Python · acceso mediante cuentas</span></div>
+          <div><strong>Administración privada</strong><span>Python online · SQLite · Excel · imágenes · contraseñas</span></div>
+          <div><strong>Imágenes</strong><span>Una carpeta por categoría y variedad; compartidas entre todos sus empaques</span></div>
+          <div><strong>Composición</strong><span>Tabla editable en la web y hoja Composiciones en Excel</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-panel" id="panel-products">
+      <div class="panel-toolbar"><div><h2>Registros del catálogo</h2><p class="muted">Una fila por finca, empaque y presentación. Las imágenes se comparten por variedad.</p></div><button class="btn primary" id="newProductButton" disabled><i class="fi fi-rr-plus"></i> Nuevo registro</button></div>
+      <div class="filters-toolbar">
+        <label class="search-wrap"><i class="fi fi-rr-search"></i><input id="adminProductSearch" type="search" placeholder="Buscar producto o caja…"></label>
+        <select id="adminFarmFilter"><option value="">Todas las fincas</option></select>
+        <select id="adminCategoryFilter"><option value="">Todas las categorías</option></select>
+        <select id="adminColorFilter"><option value="">Todos los colores</option></select>
+      </div>
+      <div id="adminProductTables" class="farm-product-tables"><p class="muted">Cargando registros…</p></div>
+      <p class="tiny muted" id="productListCount"></p>
+    </section>
+
+    <section class="admin-panel" id="panel-editor">
+      <div class="panel-toolbar"><div><h2 id="editorTitle">Añadir producto</h2><p class="muted">Tallos, identidad, imágenes, composición y precios por mercado.</p></div><button class="btn subtle" id="cancelEditButton">Volver a productos</button></div>
+      <form id="productForm">
+        <input type="hidden" id="editProductId">
+        <div class="editor-layout">
+          <aside class="image-manager admin-card">
+            <p class="eyebrow">GALERÍA DEL PRODUCTO</p>
+            <div class="admin-main-preview" id="adminMainPreview"><span>✿</span></div>
+            <label class="upload-button"><i class="fi fi-rr-cloud-upload"></i> Subir varias imágenes<input type="file" id="productImages" accept="image/*" multiple></label>
+            <p class="tiny muted">La primera imagen es la principal. Arrastra las miniaturas para cambiar el orden o usa las flechas. Las imágenes se guardan por categoría y variedad.</p>
+            <div class="admin-thumbnails" id="adminThumbnails"></div>
+          </aside>
+
+          <div class="editor-main">
+            <div class="admin-card">
+              <div class="card-heading"><div><p class="eyebrow">IDENTIDAD DEL PRODUCTO</p><h3>Datos generales</h3></div></div>
+              <div class="identity-grid">
+                <label>Tallos<input id="pStems" type="number" min="0" step="1" placeholder="Ej. 125"></label>
+                <label class="product-name-field">Producto<input id="pName" required placeholder="Nombre de la variedad"></label>
+                <label>Empaque / Tamaño<select id="pSize"></select></label>
+                <label>Color 1<select id="pColor1"></select></label>
+                <label>Color 2<select id="pColor2"></select></label>
+                <label>Finca<select id="pFinca" required></select></label>
+                <label>Categoría<select id="pCategory" required></select></label>
+                <label>Season<select id="pSeason"></select></label>
+                <label>Disponibilidad<select id="pAvailability"><option value="Disponible" selected>Disponible</option><option value="Erradicado">Erradicado</option></select></label>
+                <label class="span-full">Composición<textarea id="pComposition" rows="2" placeholder="Línea de composición…"></textarea></label>
+              </div>
+            </div>
+
+            <div class="admin-card composition-editor-card">
+              <div class="card-heading"><div><p class="eyebrow">TABLA ESTRUCTURADA</p><h3><i class="fi fi-rr-layers"></i> Composición</h3></div><button class="btn subtle small" type="button" id="addCompositionRow"><i class="fi fi-rr-plus"></i> Añadir línea</button></div>
+              <p class="tiny muted">Cada línea calcula Total = Tallos × Precio. La última fila muestra tallos totales, precio promedio ponderado y total general.</p>
+              <div class="table-scroll">
+                <table class="composition-editor-table">
+                  <thead><tr><th>Variedad</th><th>Tallos</th><th>Precio</th><th>Total</th><th></th></tr></thead>
+                  <tbody id="compositionRows"></tbody>
+                  <tfoot id="compositionTotals"></tfoot>
+                </table>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="market-admin-tabs">
+                <button class="active" type="button" data-market-tab="us">USA · USD</button>
+                <button type="button" data-market-tab="uk">UK · GBP</button>
+              </div>
+              <section class="market-admin-panel active" id="market-us">
+                <div class="card-heading"><div><p class="eyebrow">PRECIOS USA</p><h3>Empaque y cálculo USA</h3></div><span id="usOpStatus" class="op-heading-status"><i class="traffic off"></i><span>OP USA</span></span></div>
+                <div class="box-select-grid">
+                  <label>Caja EC<select id="pUsBox"></select><small id="usBoxInfo" class="box-hint"></small></label>
+                  <label>OP<span class="semaphore-preview" id="usSemaphore"><i class="traffic off"></i><span>Sin comparar</span></span></label>
+                  <label>Caja Finca<select id="pFarmBox"></select><small id="farmBoxInfo" class="box-hint"></small></label>
+                </div>
+                <div class="price-input-row">
+                  <label>Compra · USD<input id="pUsCost" type="number" min="0" step="0.0001"></label>
+                  <label>Markup · %<input id="pUsMarkup" type="number" step="0.01"></label>
+                  <label>Venta · USD<input id="pUsPrice" type="number" min="0" step="0.01"></label>
+                </div>
+                <div class="calc-result" id="usCalcResult">Completa caja, tallos, compra y venta.</div>
+              </section>
+              <section class="market-admin-panel" id="market-uk">
+                <div class="card-heading"><div><p class="eyebrow">PRECIOS UK</p><h3>Empaque y cálculo UK</h3></div><span id="ukOpStatus" class="op-heading-status"><i class="traffic off"></i><span>OP UK</span></span></div>
+                <div class="box-select-grid uk-box-select-grid">
+                  <label>Caja UK<select id="pUkBox"></select><small id="ukBoxInfo" class="box-hint"></small></label>
+                  <label>OP UK<span class="semaphore-preview" id="ukSemaphore"><i class="traffic off"></i><span>Sin comparar</span></span></label>
+                  <label>Caja Finca · compartida<select id="pFarmBoxUK"></select><small class="box-hint">Es la misma Caja Finca seleccionada en USA.</small></label>
+                </div>
+                <div class="price-input-row uk-price-input-row">
+                  <label>Compra UK · USD<input id="pUkCost" type="number" min="0" step="0.0001" placeholder="Vacío = Compra USA"></label>
+                  <label>Markup UK · %<input id="pUkMarkup" type="number" step="0.01"></label>
+                  <label>Venta UK · GBP<input id="pUkPrice" type="number" min="0" step="0.01"></label>
+                </div>
+                <div class="calc-result" id="ukCalcResult">Completa caja, tallos, compra y venta.</div>
+              </section>
+              <div class="form-actions"><button class="btn primary" type="submit"><i class="fi fi-rr-disk"></i> Guardar registro</button><button class="btn subtle" type="button" id="resetProductForm">Limpiar</button></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="admin-panel" id="panel-boxes">
+      <div class="panel-toolbar"><div><h2>Dimensiones y validación de cajas</h2><p class="muted">Base USA, base UK y cajas propias de fincas. OP compara los pesos volumétricos.</p></div></div>
+      <div class="admin-card">
+        <div class="box-create-grid">
+          <label>Nombre de la caja<input id="newBoxName" placeholder="Ej. Agroprim EB"></label>
+          <label>Largo · cm<input id="newBoxLength" type="number" min="0.1" step="0.1"></label>
+          <label>Ancho · cm<input id="newBoxWidth" type="number" min="0.1" step="0.1"></label>
+          <label>Alto · cm<input id="newBoxHeight" type="number" min="0.1" step="0.1"></label>
+          <label>U2 individual · cm<input id="newBoxU2" type="number" min="0" step="0.1" placeholder="Opcional"></label>
+          <button class="btn primary" id="createBoxButton" type="button">Crear caja</button>
+        </div>
+        <div class="box-margin-row"><label>U2 general · cm<input id="boxSafetyMargin" type="number" min="0" step="0.1"></label><button class="btn subtle" id="saveBoxMargin" type="button">Guardar valor general</button><span class="tiny muted">Cada caja puede tener un U2 propio. Si queda vacío, se aplica el valor general de U2. Los cambios en la tabla permiten previsualizar el peso y el semáforo antes de guardar.</span></div>
+      </div>
+      <div class="filters-toolbar"><label class="search-wrap"><i class="fi fi-rr-search"></i><input id="boxSearch" type="search" placeholder="Buscar caja…"></label><select id="boxTypeFilter"><option value="">Todos los tipos</option><option>Base USA</option><option>Base UK</option><option>Caja de finca</option></select></div>
+      <div class="table-scroll"><table class="data-table">
+        <thead><tr><th>Nombre</th><th>Tipo</th><th>Largo cm</th><th>Ancho cm</th><th>Alto cm</th><th>U2 individual · cm</th><th>Peso volumétrico</th><th>Aprobado</th><th>Δ vs. base</th><th></th></tr></thead>
+        <tbody id="boxRows"></tbody>
+      </table></div>
+      <p class="tiny muted">Peso volumétrico = (Largo + U2) × (Ancho + U2) × (Alto + U2) / 6000. Las cajas base usan U2 = 0. El U2 individual sobrescribe el valor general de Sheet1!U2; dejarlo vacío significa heredar el valor general.</p>
+    </section>
+
+    <section class="admin-panel" id="panel-users">
+      <div class="panel-toolbar"><div><h2>Usuarios y perfiles</h2><p class="muted">Contraseñas protegidas con hash; los perfiles se guardan en SQLite privada.</p></div></div>
+      <div class="admin-card">
+        <h3>Crear usuario</h3>
+        <form id="createUserForm" class="user-create-grid">
+          <label>Usuario<input id="newUsername" required minlength="3"></label>
+          <label>Contraseña inicial<input id="newUserPassword" type="password" required minlength="4"></label>
+          <label>Rol<select id="newUserRole"><option value="staff">Personal</option><option value="admin">Administrador</option></select></label>
+          <button class="btn primary" type="submit">Crear usuario</button>
+        </form>
+      </div>
+      <div class="table-scroll"><table class="data-table">
+        <thead><tr><th>Perfil</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Nueva contraseña</th><th>Foto de perfil</th><th></th></tr></thead>
+        <tbody id="userRows"></tbody>
+      </table></div>
+    </section>
+
+    <section class="admin-panel" id="panel-workbook">
+      <div class="admin-card">
+        <p class="eyebrow">IMPORTACIÓN Y EXPORTACIÓN EXCEL</p><h2>Excel activo</h2>
+        <p class="muted">El Excel activo se almacena de forma privada en el servidor. Descárgalo para editarlo en tu ordenador y vuelve a subirlo cuando termines. Los cambios realizados desde Flowerpedia se escriben inmediatamente en el archivo del servidor.</p>
+        <div class="card-heading"><div><strong id="workbookFilename">current_week.xlsx</strong><p class="tiny muted">Los cambios hechos desde Flowerpedia se guardan al instante. Para importar cambios externos, vuelve a subir el Excel.</p></div><a class="btn subtle" href="/admin/export.xlsx"><i class="fi fi-rr-download"></i> Descargar Excel</a></div>
+        <div class="field-divider"></div>
+        <h3>Cambiar de semana</h3><form id="importWorkbookForm" class="upload-row"><input type="file" id="workbookFile" accept=".xlsx" required><button class="btn primary" type="submit">Reemplazar Excel</button></form>
+        <p class="tiny muted">Antes de reemplazar el archivo, Flowerpedia conserva una copia de seguridad en el almacenamiento privado del servidor.</p>
+        <div class="field-divider"></div>
+        <h3>Migrar imágenes existentes</h3>
+        <p class="muted">Opcional: comprime la carpeta de imágenes conservando la estructura <code>Categoría/Producto/imagen.jpg</code> y súbela aquí. Flowerpedia asociará las imágenes con las variedades del Excel.</p>
+        <form id="importImagesForm" class="upload-row">
+          <input type="file" id="imagesArchive" accept=".zip,application/zip" required>
+          <button class="btn subtle" type="submit"><i class="fi fi-rr-images"></i> Importar ZIP de imágenes</button>
+        </form>
+        <div class="field-divider"></div>
+        <div class="card-heading"><div><p class="eyebrow">PUBLICACIÓN ONLINE</p><h3>Servidor Flowerpedia</h3></div><span class="status-tag success"><i class="fi fi-rr-shield-check"></i> Servidor activo</span></div>
+        <p class="muted">El catálogo se actualiza directamente en el servidor cuando guardas cambios. GitHub almacena el código de la aplicación, pero no la base de datos, las contraseñas, el Excel ni las imágenes privadas.</p>
+        <div class="alert warning">No subas a GitHub el archivo SQLite, las contraseñas, los archivos de sesión, el Excel comercial ni las imágenes privadas. Estos datos permanecen en el disco persistente del servidor.</div>
+      </div>
+      <div class="admin-card">
+        <p class="eyebrow">FÓRMULAS</p><h2>Parámetros de cálculo</h2>
+        <form id="formulaSettingsForm" class="settings-grid">
+          <label>USA · Transporte por volumen<input id="setting_us_transport_volume_rate" type="number" step="0.0001"></label>
+          <label>USA · Multiplicador transporte<input id="setting_us_transport_multiplier" type="number" step="0.0001"></label>
+          <label>USA · Duties<input id="setting_us_duties_rate" type="number" step="0.0001"></label>
+          <label>USA · Factor venta<input id="setting_us_sale_factor" type="number" step="0.0001"></label>
+          <label>UK · Transporte por volumen<input id="setting_uk_transport_volume_rate" type="number" step="0.0001"></label>
+          <label>UK · Multiplicador transporte<input id="setting_uk_transport_multiplier" type="number" step="0.0001"></label>
+          <label>UK · Tipo cambio USD/GBP<input id="setting_uk_exchange_rate" type="number" step="0.0001"></label>
+          <label>UK · Factor venta<input id="setting_uk_sale_factor" type="number" step="0.0001"></label>
+          <button class="btn primary" type="submit">Guardar parámetros</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="{{ url_for('admin_static', filename='admin.js') }}?v=0.3.4"></script>
+</body></html>
