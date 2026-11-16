@@ -946,11 +946,32 @@ def publish_public_site():
         temp.write_text(json.dumps(public_payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         temp.replace(target)
 
+        # The commercial snapshot is used by the static role-gated catalogue.
+        # WARNING: GitHub Pages serves this file publicly; the browser login is not server-side security.
+        commercial_products = []
+        for group in groups:
+            item = dict(group)
+            for image in item.get("images", []):
+                rel = str(image.get("path", "")).replace("\\\\", "/").lstrip("/")
+                image["src"] = f"assets/uploads/{rel}" if rel else ""
+            commercial_products.append(item)
+        commercial_payload = {
+            "ok": True,
+            "products": commercial_products,
+            "farms": get_farms(),
+            "stats": {"rows": len(get_rows()), "products": len(groups), "farms": len(get_farms())},
+            "generatedAt": now_iso(),
+        }
+        commercial_target = PROJECT_DIR / "catalog-commercial.json"
+        commercial_temp = commercial_target.with_suffix(".json.tmp")
+        commercial_temp.write_text(json.dumps(commercial_payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        commercial_temp.replace(commercial_target)
+
         public_uploads = PROJECT_DIR / "assets" / "uploads"
         public_uploads.mkdir(parents=True, exist_ok=True)
         if UPLOAD_DIR.exists():
             shutil.copytree(UPLOAD_DIR, public_uploads, dirs_exist_ok=True)
-        return {"ok": True, "message": "Catálogo público actualizado. Precios y datos comerciales privados no se exportaron."}
+        return {"ok": True, "message": "Catálogo público y catálogo comercial actualizado. Los precios se publican en catalog-commercial.json y no están protegidos de forma segura en GitHub Pages."}
     except Exception as exc:
         print(f"[Flowerpedia] No se pudo exportar el catálogo público: {exc}")
         return {"ok": False, "message": f"No se pudo actualizar el catálogo público: {exc}"}
@@ -1614,7 +1635,7 @@ def public_catalog_json():
     groups = get_catalog_groups(local_images=True)
     return jsonify({
         "app": "Flowerpedia",
-        "version": "0.3.6",
+        "version": "0.3.7",
         "products": [public_group(group) for group in groups],
         "farms": [{"Nombre": farm.get("Nombre"), "Llegada": farm.get("Llegada") or "-"} for farm in get_farms()],
         "stats": {"products": len(groups), "rows": len(get_rows()), "farms": len(get_farms())},
@@ -2230,7 +2251,7 @@ def admin_export_excel():
 
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "app": "Flowerpedia", "version": "0.3.6"})
+    return jsonify({"ok": True, "app": "Flowerpedia", "version": "0.3.7"})
 
 
 def open_admin_when_ready():
@@ -2244,7 +2265,7 @@ def open_admin_when_ready():
                 if (
                     response.status == 200
                     and payload.get("app") == "Flowerpedia"
-                    and payload.get("version") == "0.3.6"
+                    and payload.get("version") == "0.3.7"
                 ):
                     webbrowser.open_new_tab(admin_url)
                     return
@@ -2256,7 +2277,7 @@ def open_admin_when_ready():
 
 def start_server():
     initialize_app()
-    print("\nFlowerpedia v0.3.6")
+    print("\nFlowerpedia v0.3.7")
     print(f"Excel activo: {WORKBOOK_PATH}")
     print("Sincronización Excel ↔ Flowerpedia: activa (revisión cada 2,5 segundos)")
     print("Catálogo local: http://127.0.0.1:5000")

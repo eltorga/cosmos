@@ -973,14 +973,14 @@
                 if (e.key === 'Enter') attemptStaffLogin();
             });
 
-            if (localStorage.getItem('flowerpedia_site_access') === '2012') {
+            if (localStorage.getItem('flowerpedia_site_access') === '2015') {
                 unlockSite();
             }
         });
 
         function checkSitePassword() {
-            if (document.getElementById('sitePassword').value === '2012') {
-                localStorage.setItem('flowerpedia_site_access', '2012');
+            if (document.getElementById('sitePassword').value === '2015') {
+                localStorage.setItem('flowerpedia_site_access', '2015');
                 unlockSite();
             } else {
                 document.getElementById('siteAuthError').style.display = 'block';

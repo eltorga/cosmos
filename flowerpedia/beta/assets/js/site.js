@@ -230,8 +230,8 @@ function renderUserArea(){
   if(currentProfile?.avatar)avatar.innerHTML=`<img src="${esc(currentProfile.avatar)}" alt="">`;
   else avatar.innerHTML=`<span class="avatar-initials">${esc(label.slice(0,1).toUpperCase())}</span>`;
   const menu=$('profileMenu');
-  menu.innerHTML=`<div class="profile-name">${esc(displayName)}</div><div class="profile-role">${currentRole==='admin'?'Administrador':'Usuario'}</div>
-    ${currentRole==='admin'?'<a href="/admin"><i class="fi fi-rr-settings"></i> Administrar Flowerpedia</a>':''}
+  menu.innerHTML=`<div class="profile-name">${esc(displayName)}</div><div class="profile-role">${currentRole==='admin'?'Administrador':'Personal'}</div>
+    ${currentRole==='admin'&&LOCAL_WEB?'<a href="/admin"><i class="fi fi-rr-settings"></i> Administrar Flowerpedia</a>':''}
     <button type="button" id="profileLogout"><i class="fi fi-rr-sign-out-alt"></i> Cerrar sesión</button>`;
   $('profileLogout').addEventListener('click',async()=>{
     try{
@@ -546,27 +546,28 @@ async function refreshCatalogForRole(){
   renderAllFilters();
   applyFilters();
 }
+async function loadStaticCatalogForRole(role){
+  const filename=role==='admin'?'catalog-commercial.json':'catalog-public.json';
+  const response=await fetch(`${APP_BASE}${filename}`,{cache:'no-store'});
+  if(!response.ok)throw new Error(`No se pudo cargar ${filename}.`);
+  const data=await response.json();
+  catalog=prepareCatalogProducts(data.products||[]);
+  farms=data.farms||farms;
+  localMode=true;
+  $('footerStatus').textContent='Catálogo Flowerpedia';
+  renderAllFilters();
+  applyFilters();
+}
 async function loadCatalog(){
   $('statusLine').textContent='Cargando catálogo…';
   if(!LOCAL_WEB){
-    // GitHub Pages is static hosting: it can publish the catalogue but cannot securely authenticate users.
     document.body.classList.add('public-static');
     currentUser=null;currentProfile=null;currentRole='guest';
-    setAuthGate(false);
-    try{
-      const response=await fetch(`${APP_BASE}catalog-public.json`,{cache:'no-cache'});
-      if(!response.ok)throw new Error('No se pudo cargar el catálogo público.');
-      const data=await response.json();
-      catalog=prepareCatalogProducts(data.products||[]);farms=data.farms||[];localMode=true;
-      $('footerStatus').textContent='Catálogo Flowerpedia';
-      renderUserArea();renderAllFilters();applyFilters();
-      const product=productFromLocation();
-      if(product)openDetails(product,{pushHistory:false});else if(isProductRoute())showProductNotFound();
-    }catch(error){
-      console.error('[Flowerpedia] Error cargando catálogo estático:',error);
-      $('statusLine').textContent=`No se pudo cargar el catálogo: ${error.message}`;
-      $('footerStatus').textContent='Error al cargar el catálogo';
-    }
+    authReady=true;
+    $('footerStatus').textContent='Acceso requerido';
+    $('statusLine').textContent='Inicia sesión para consultar el catálogo.';
+    renderUserArea();
+    setAuthGate(true);
     return;
   }
 
@@ -697,7 +698,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const state=await window.FlowerpediaAuth.signIn($('staffUsername').value.trim(),$('staffPassword').value);
       currentUser=state.user;currentProfile=state.profile;currentRole=state.profile?.role||'user';
       $('staffPassword').value='';
-      await refreshCatalogForRole();
+      if(LOCAL_WEB) await refreshCatalogForRole();
+      else await loadStaticCatalogForRole(currentRole);
       renderUserArea();
       setAuthGate(false);
       if(isProductRoute()){const product=productFromLocation();if(product)openDetails(product,{pushHistory:false});else showProductNotFound();}

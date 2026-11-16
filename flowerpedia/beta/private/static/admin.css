@@ -251,7 +251,7 @@ input:focus,select:focus,textarea:focus{border-color:#9eb6a1;box-shadow:0 0 0 3p
 }
 
 
-/* Flowerpedia v0.3.6 — compact OP indicator */
+/* Flowerpedia v0.3.7 — compact OP indicator */
 .semaphore-preview{display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:54px;padding:8px 11px}
 .semaphore-preview .traffic{width:11px;height:11px}
 .op-preview-delta{display:inline-block;padding:0;font-size:.88rem;line-height:1.15;font-weight:750;font-variant-numeric:tabular-nums;color:#475448}
