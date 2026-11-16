@@ -562,12 +562,36 @@ async function loadCatalog(){
   $('statusLine').textContent='Cargando catálogo…';
   if(!LOCAL_WEB){
     document.body.classList.add('public-static');
-    currentUser=null;currentProfile=null;currentRole='guest';
-    authReady=true;
     $('footerStatus').textContent='Acceso requerido';
-    $('statusLine').textContent='Inicia sesión para consultar el catálogo.';
+
+    try{
+      const state=await window.FlowerpediaAuth.init();
+      currentUser=state.user;
+      currentProfile=state.profile;
+      currentRole=state.profile?.role||'guest';
+
+      if(currentUser){
+        try{
+          await loadStaticCatalogForRole(currentRole);
+          $('footerStatus').textContent='Catálogo Flowerpedia';
+        }catch(error){
+          $('statusLine').textContent=`No se pudo cargar el catálogo: ${error.message}`;
+        }
+        setAuthGate(false);
+      }else{
+        $('statusLine').textContent='Inicia sesión para consultar el catálogo.';
+        setAuthGate(true);
+      }
+    }catch(error){
+      currentUser=null;currentProfile=null;currentRole='guest';
+      $('statusLine').textContent='No se pudo restaurar la sesión. Inicia sesión para continuar.';
+      $('staffLoginError').textContent='No se pudo recuperar tu sesión guardada. Vuelve a iniciar sesión.';
+      $('staffLoginError').classList.remove('hidden');
+      setAuthGate(true);
+    }
+
+    authReady=true;
     renderUserArea();
-    setAuthGate(true);
     return;
   }
 
