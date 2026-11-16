@@ -923,11 +923,37 @@ def public_group(group, include_admin_composition=False):
 
 
 def publish_public_site():
-    """The live catalog is served from Flask APIs; no public static data copy is generated."""
-    return {
-        "ok": True,
-        "message": "Catálogo actualizado en el servidor. Usuarios, imágenes y datos comerciales permanecen en almacenamiento privado.",
-    }
+    """Export a public-safe static snapshot for GitHub Pages after local admin edits."""
+    try:
+        groups = group_catalog(local_images=True)
+        public_products = []
+        for group in groups:
+            item = public_group(group, include_admin_composition=False)
+            for image in item.get("images", []):
+                rel = str(image.get("path", "")).replace("\\\\", "/").lstrip("/")
+                image["src"] = f"assets/uploads/{rel}" if rel else ""
+            public_products.append(item)
+
+        public_payload = {
+            "ok": True,
+            "products": public_products,
+            "farms": get_farms(),
+            "stats": {"rows": len(get_rows()), "products": len(groups), "farms": len(get_farms())},
+            "generatedAt": now_iso(),
+        }
+        target = PROJECT_DIR / "catalog-public.json"
+        temp = target.with_suffix(".json.tmp")
+        temp.write_text(json.dumps(public_payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        temp.replace(target)
+
+        public_uploads = PROJECT_DIR / "assets" / "uploads"
+        public_uploads.mkdir(parents=True, exist_ok=True)
+        if UPLOAD_DIR.exists():
+            shutil.copytree(UPLOAD_DIR, public_uploads, dirs_exist_ok=True)
+        return {"ok": True, "message": "Catálogo público actualizado. Precios y datos comerciales privados no se exportaron."}
+    except Exception as exc:
+        print(f"[Flowerpedia] No se pudo exportar el catálogo público: {exc}")
+        return {"ok": False, "message": f"No se pudo actualizar el catálogo público: {exc}"}
 
 
 def ensure_table(ws, name, ref, style="TableStyleMedium2"):
@@ -1349,9 +1375,29 @@ def current_user():
     return dict(row)
 
 
+def is_loopback_client():
+    """True only for requests made from this computer, never from the LAN."""
+    return (request.remote_addr or "") in {"127.0.0.1", "::1"}
+
+
+def is_local_admin_request():
+    """The local owner uses the admin workspace without signing in.
+
+    Only the local admin page, its admin API, and local Excel export bypass
+    account authentication. The public catalogue and commercial endpoints
+    continue to require a real website account.
+    """
+    if not is_loopback_client():
+        return False
+    path = request.path
+    return path == "/admin" or path.startswith("/api/admin/") or path.startswith("/admin/")
+
+
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
+        if is_local_admin_request():
+            return fn(*args, **kwargs)
         user = current_user()
         if not user:
             if request.path.startswith("/api/"):
@@ -1523,29 +1569,43 @@ def api_logout():
 
 @app.get("/")
 def index_page():
-    return send_from_directory(DOCS_DIR, "index.html")
+    # The project-root index.html is the canonical public website.
+    return send_from_directory(PROJECT_DIR, "index.html")
+
+
+@app.get("/catalog-public.json")
+def catalog_public_file():
+    # Static snapshot used by GitHub Pages; this endpoint also supports local checks.
+    return send_from_directory(PROJECT_DIR, "catalog-public.json")
 
 
 @app.get("/<five:code>/<category_slug>/<product_slug>", endpoint="product_page_short")
 def product_page_short(code, category_slug, product_slug):
-    return send_from_directory(DOCS_DIR, "index.html")
+    return send_from_directory(PROJECT_DIR, "index.html")
 
 
 @app.get("/producto/<category_slug>/<product_slug>", strict_slashes=False)
 def product_page_legacy(category_slug, product_slug):
     # Old shared links remain usable; the frontend resolves the old ID and replaces the URL.
-    return send_from_directory(DOCS_DIR, "index.html")
+    return send_from_directory(PROJECT_DIR, "index.html")
 
 
 @app.get("/admin")
 @admin_required
 def admin_page():
-    return render_template("admin.html", user=current_user())
+    if is_local_admin_request():
+        # Do not reuse a staff/admin website session for the private owner panel.
+        # The next visit to the web therefore asks for the website account again.
+        session.clear()
+        user = {"username": "Administrador local"}
+    else:
+        user = current_user() or {"username": "Administrador"}
+    return render_template("admin.html", user=user)
 
 
 @app.get("/assets/<path:filename>")
 def public_asset(filename):
-    return send_from_directory(DOCS_DIR / "assets", filename)
+    return send_from_directory(PROJECT_DIR / "assets", filename)
 
 
 @app.get("/catalog.json")
@@ -1554,7 +1614,7 @@ def public_catalog_json():
     groups = get_catalog_groups(local_images=True)
     return jsonify({
         "app": "Flowerpedia",
-        "version": "0.3.4",
+        "version": "0.3.6",
         "products": [public_group(group) for group in groups],
         "farms": [{"Nombre": farm.get("Nombre"), "Llegada": farm.get("Llegada") or "-"} for farm in get_farms()],
         "stats": {"products": len(groups), "rows": len(get_rows()), "farms": len(get_farms())},
@@ -2170,7 +2230,7 @@ def admin_export_excel():
 
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "app": "Flowerpedia", "version": "0.3.4"})
+    return jsonify({"ok": True, "app": "Flowerpedia", "version": "0.3.6"})
 
 
 def open_admin_when_ready():
@@ -2184,7 +2244,7 @@ def open_admin_when_ready():
                 if (
                     response.status == 200
                     and payload.get("app") == "Flowerpedia"
-                    and payload.get("version") == "0.3.4"
+                    and payload.get("version") == "0.3.6"
                 ):
                     webbrowser.open_new_tab(admin_url)
                     return
@@ -2196,7 +2256,7 @@ def open_admin_when_ready():
 
 def start_server():
     initialize_app()
-    print("\nFlowerpedia v0.3.4")
+    print("\nFlowerpedia v0.3.6")
     print(f"Excel activo: {WORKBOOK_PATH}")
     print("Sincronización Excel ↔ Flowerpedia: activa (revisión cada 2,5 segundos)")
     print("Catálogo local: http://127.0.0.1:5000")

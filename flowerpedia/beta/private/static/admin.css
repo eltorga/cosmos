@@ -1,4 +1,4 @@
-:root{--bg:#f5f7f4;--paper:#fff;--ink:#202720;--muted:#788078;--line:#e3e8e1;--green:#335c45;--green2:#47765b;--red:#c64747;--shadow:0 12px 36px rgba(29,45,31,.08)}
+:root{--bg:#f5f7f4;--paper:#fff;--ink:#202720;--muted:#788078;--line:#e3e8e1;--green:#287742;--green2:#94CE97;--red:#c64747;--shadow:0 12px 36px rgba(29,45,31,.08)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
 button,input,select,textarea{font:inherit}
@@ -163,7 +163,7 @@ input:focus,select:focus,textarea:focus{border-color:#9eb6a1;box-shadow:0 0 0 3p
 .data-table td .tiny{display:block;margin-top:3px}
 .data-table tr.preview-changed{background:#fbfdf8}
 .current-admin-row{background:#f5f9f3}
-.current-user-tag{display:inline-flex;margin-left:7px;padding:2px 6px;border-radius:999px;background:#e6f0e4;color:#335c45;font-size:.58rem;font-weight:850;vertical-align:middle}
+.current-user-tag{display:inline-flex;margin-left:7px;padding:2px 6px;border-radius:999px;background:#e6f0e4;color:#287742;font-size:.58rem;font-weight:850;vertical-align:middle}
 .user-role:disabled,.user-active input:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:1100px){
   .box-select-grid.uk-box-select-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -251,7 +251,7 @@ input:focus,select:focus,textarea:focus{border-color:#9eb6a1;box-shadow:0 0 0 3p
 }
 
 
-/* Flowerpedia v0.3.4 — compact OP indicator */
+/* Flowerpedia v0.3.6 — compact OP indicator */
 .semaphore-preview{display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:54px;padding:8px 11px}
 .semaphore-preview .traffic{width:11px;height:11px}
 .op-preview-delta{display:inline-block;padding:0;font-size:.88rem;line-height:1.15;font-weight:750;font-variant-numeric:tabular-nums;color:#475448}

@@ -6,21 +6,20 @@
   <title>Flowerpedia · Administración</title>
   <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
-  <link rel="stylesheet" href="{{ url_for('admin_static', filename='admin.css') }}?v=0.3.4">
+  <link rel="stylesheet" href="{{ url_for('admin_static', filename='admin.css') }}?v=0.3.6">
 </head>
 <body class="admin-body">
   <header class="admin-header">
     <a class="brand" href="/"><span class="brand-mark">✿</span><span>Flowerpedia <small>ADMIN</small></span></a>
     <div class="admin-header-right">
-      <span class="user-label"><i class="fi fi-rr-user"></i> {{ user.username }}</span>
-      <a class="btn subtle" href="/"><i class="fi fi-rr-eye"></i> Ver catálogo</a>
-      <a class="btn subtle" href="/logout"><i class="fi fi-rr-sign-out-alt"></i> Salir</a>
+      <span class="user-label"><i class="fi fi-rr-laptop"></i> Solo administración local</span>
+      <a class="btn primary" href="/" target="_blank" rel="noopener"><i class="fi fi-rr-eye"></i> Ver web</a>
     </div>
   </header>
   <main class="admin-shell">
     <div class="admin-heading">
       <div><p class="eyebrow">CENTRO DE CONTROL</p><h1>Administración</h1><p class="muted">Catálogo, imágenes, cajas, usuarios y gestión Excel.</p></div>
-      <span class="version-pill">v0.3.4</span>
+      <span class="version-pill">v0.3.6</span>
     </div>
     <div id="adminNotice" class="alert hidden"></div>
     <nav class="admin-tabs">
@@ -36,14 +35,14 @@
       <div class="stat-grid" id="adminStats"></div>
       <div class="admin-card">
         <div class="card-heading"><div><p class="eyebrow">EXCEL ACTIVO</p><h2 id="activeWorkbook">current_week.xlsx</h2></div><span class="status-tag success"><i class="fi fi-rr-refresh"></i> Almacenamiento persistente activo</span></div>
-        <p class="muted">Flowerpedia guarda el Excel activo en el almacenamiento privado del servidor. Los cambios realizados desde la aplicación se escriben en ese archivo.</p>
-        <div class="sync-line"><span class="traffic y"></span><strong id="syncState">Excel almacenado en el servidor</strong><small id="syncTimestamp"></small></div>
+        <p class="muted">Flowerpedia guarda el Excel activo en private/data/current_week.xlsx dentro de tu carpeta local. Los cambios realizados desde la aplicación se escriben en ese archivo.</p>
+        <div class="sync-line"><span class="traffic y"></span><strong id="syncState">Excel almacenado localmente</strong><small id="syncTimestamp"></small></div>
       </div>
       <div class="admin-card">
         <h2>Reglas de presentación</h2>
         <div class="summary-grid">
-          <div><strong>Catálogo</strong><span>Servido por Python · acceso mediante cuentas</span></div>
-          <div><strong>Administración privada</strong><span>Python online · SQLite · Excel · imágenes · contraseñas</span></div>
+          <div><strong>Catálogo</strong><span>Web local con inicio de sesión para usuarios</span></div>
+          <div><strong>Administración privada</strong><span>Panel local · SQLite · Excel · imágenes · cuentas privadas</span></div>
           <div><strong>Imágenes</strong><span>Una carpeta por categoría y variedad; compartidas entre todos sus empaques</span></div>
           <div><strong>Composición</strong><span>Tabla editable en la web y hoja Composiciones en Excel</span></div>
         </div>
@@ -185,11 +184,11 @@
     <section class="admin-panel" id="panel-workbook">
       <div class="admin-card">
         <p class="eyebrow">IMPORTACIÓN Y EXPORTACIÓN EXCEL</p><h2>Excel activo</h2>
-        <p class="muted">El Excel activo se almacena de forma privada en el servidor. Descárgalo para editarlo en tu ordenador y vuelve a subirlo cuando termines. Los cambios realizados desde Flowerpedia se escriben inmediatamente en el archivo del servidor.</p>
+        <p class="muted">El Excel activo se guarda en esta carpeta del proyecto, dentro de <code>private/data/</code>. Puedes editarlo desde Flowerpedia o reemplazarlo aquí cuando tengas una nueva semana.</p>
         <div class="card-heading"><div><strong id="workbookFilename">current_week.xlsx</strong><p class="tiny muted">Los cambios hechos desde Flowerpedia se guardan al instante. Para importar cambios externos, vuelve a subir el Excel.</p></div><a class="btn subtle" href="/admin/export.xlsx"><i class="fi fi-rr-download"></i> Descargar Excel</a></div>
         <div class="field-divider"></div>
         <h3>Cambiar de semana</h3><form id="importWorkbookForm" class="upload-row"><input type="file" id="workbookFile" accept=".xlsx" required><button class="btn primary" type="submit">Reemplazar Excel</button></form>
-        <p class="tiny muted">Antes de reemplazar el archivo, Flowerpedia conserva una copia de seguridad en el almacenamiento privado del servidor.</p>
+        <p class="tiny muted">Antes de reemplazar el archivo, Flowerpedia conserva una copia de seguridad en el carpeta privada local del proyecto.</p>
         <div class="field-divider"></div>
         <h3>Migrar imágenes existentes</h3>
         <p class="muted">Opcional: comprime la carpeta de imágenes conservando la estructura <code>Categoría/Producto/imagen.jpg</code> y súbela aquí. Flowerpedia asociará las imágenes con las variedades del Excel.</p>
@@ -198,9 +197,9 @@
           <button class="btn subtle" type="submit"><i class="fi fi-rr-images"></i> Importar ZIP de imágenes</button>
         </form>
         <div class="field-divider"></div>
-        <div class="card-heading"><div><p class="eyebrow">PUBLICACIÓN ONLINE</p><h3>Servidor Flowerpedia</h3></div><span class="status-tag success"><i class="fi fi-rr-shield-check"></i> Servidor activo</span></div>
-        <p class="muted">El catálogo se actualiza directamente en el servidor cuando guardas cambios. GitHub almacena el código de la aplicación, pero no la base de datos, las contraseñas, el Excel ni las imágenes privadas.</p>
-        <div class="alert warning">No subas a GitHub el archivo SQLite, las contraseñas, los archivos de sesión, el Excel comercial ni las imágenes privadas. Estos datos permanecen en el disco persistente del servidor.</div>
+        <div class="card-heading"><div><p class="eyebrow">WEB PÚBLICA</p><h3>index.html · Catálogo Flowerpedia</h3></div><span class="status-tag success"><i class="fi fi-rr-refresh"></i> Actualización automática</span></div>
+        <p class="muted">Cada vez que guardas un producto, una imagen, una caja o importas un Excel, Flowerpedia actualiza el catálogo de la raíz: <code>index.html</code>, <code>catalog-public.json</code> y las imágenes públicas. No tienes que preparar ni exportar el catálogo manualmente.</p>
+        <div class="alert warning">El panel y los datos de trabajo permanecen en tu ordenador. GitHub Desktop solo publica el catálogo y los archivos públicos cuando tú haces Commit + Push. No subas <code>private/data/</code> ni los archivos BAT.</div>
       </div>
       <div class="admin-card">
         <p class="eyebrow">FÓRMULAS</p><h2>Parámetros de cálculo</h2>
@@ -218,5 +217,5 @@
       </div>
     </section>
   </main>
-  <script src="{{ url_for('admin_static', filename='admin.js') }}?v=0.3.4"></script>
+  <script src="{{ url_for('admin_static', filename='admin.js') }}?v=0.3.6"></script>
 </body></html>

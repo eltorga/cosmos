@@ -4,16 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f7f8f6">
-  <title>Flowerpedia v0.3.4 · Catálogo</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <script>
+    (function(){
+      var localHost = ["127.0.0.1", "localhost", "::1"].includes(location.hostname);
+      var basePath = localHost ? "/" : "/flowerpedia/beta/";
+      document.write('<base href="' + basePath + '">');
+      document.write('<meta name="flowerpedia-base" content="' + basePath + '">');
+    })();
+  </script>
+  <title>Flowerpedia · Catálogo</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
-  <link rel="stylesheet" href="/assets/css/site.css?v=0.3.4">
+  <link rel="stylesheet" href="assets/css/site.css?v=0.3.6">
 </head>
 <body class="auth-required">
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/" aria-label="Flowerpedia"><span class="brand-mark">✿</span><span class="brand-wordmark">Flowerpedia</span></a>
+      <a class="brand" href="./" aria-label="Flowerpedia"><span class="brand-mark">✿</span><span class="brand-wordmark">Flowerpedia</span></a>
       <div class="header-tools">
         <label class="search-wrap"><i class="fi fi-rr-search"></i><input id="searchInput" type="search" placeholder="Buscar producto, finca, color…" autocomplete="off"></label>
         <div class="action-buttons">
@@ -88,7 +96,7 @@
   <section class="product-page hidden" id="productPage">
     <div id="productPageContent">
       <div class="product-page-toolbar">
-        <a class="product-back-link" id="backToCatalog" href="/"><i class="fi fi-rr-arrow-left"></i> Volver al catálogo</a>
+        <a class="product-back-link" id="backToCatalog" href="./"><i class="fi fi-rr-arrow-left"></i> Volver al catálogo</a>
         <button type="button" class="btn subtle" id="copyProductLinkButton"><i class="fi fi-rr-link"></i> Copiar enlace</button>
       </div>
 
@@ -172,11 +180,11 @@
     <div id="productNotFound" class="product-not-found hidden">
       <h1>No se encontró esta variedad</h1>
       <p class="muted">Es posible que el producto haya cambiado o ya no esté en el catálogo.</p>
-      <a class="btn primary" href="/">Volver al catálogo</a>
+      <a class="btn primary" href="./">Volver al catálogo</a>
     </div>
   </section>
 
-  <footer class="site-footer"><span>Flowerpedia v0.3.4 · Catálogo de flores</span><span id="footerStatus">Información de productos</span></footer>
+  <footer class="site-footer"><span>Flowerpedia · Catálogo de flores</span><span id="footerStatus">Información de productos</span></footer>
 
   <!-- Mix box -->
   <div class="modal" id="mixBoxModal" aria-hidden="true">
@@ -215,7 +223,7 @@
       <p class="tiny muted auth-note">Si no tienes una cuenta, solicita al administrador que la cree para ti.</p>
     </div>
   </div>
-<script src="/assets/js/auth-client.js?v=0.3.4"></script>
-<script src="/assets/js/site.js?v=0.3.4"></script>
+<script src="assets/js/auth-client.js?v=0.3.6"></script>
+<script src="assets/js/site.js?v=0.3.6"></script>
 </body>
 </html>

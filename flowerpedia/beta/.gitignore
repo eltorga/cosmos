@@ -1,0 +1,9 @@
+# Private local administration and user database
+/start.bat
+/private/start.bat
+/private/data/
+/private/.venv/
+/private/__pycache__/
+*.pyc
+.env
+.secret_key

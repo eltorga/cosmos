@@ -12,6 +12,8 @@ const COLOR_MAP = {
 let catalog=[], farms=[], currentUser=null, currentProfile=null, currentRole='guest', localMode=false, csrfToken='';
 let authReady=false, productPageOpen=false, catalogScrollY=0, searchDebounceTimer=null;
 const VIEW_STORAGE_KEY='flowerpedia_view_v033';
+const APP_BASE=(document.querySelector('meta[name="flowerpedia-base"]')?.content||'/').replace(/\/?$/,'/');
+const LOCAL_WEB=['127.0.0.1','localhost','::1'].includes(location.hostname);
 let selectedFilters={category:[],farm:[],color:[],season:[]};
 const COLOR_FILTER_ORDER=['White','Cream','Sand','Yellow','Light Pink','Peach','Light Blue','Mustard','Coral','Orange','Medium Pink','Lavender','Spring','Green','Hot Pink','Bronze','Red','Burgundy','Purple','Blue','Earth','Bicolor'];
 let filteredCatalog=[], visibleCount=72, currentProduct=null, galleryIndex=0, activeMarket='US', mixSelected=[];
@@ -245,7 +247,7 @@ function renderUserArea(){
       if(currentProduct)delete currentProduct.variants;
       $('detailPrices').classList.add('hidden');
       $('priceTableWrap').innerHTML='';
-      if(productPageOpen){history.replaceState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}
+      if(productPageOpen){history.replaceState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}
       renderUserArea();applyFilters();setAuthGate(true);
       $('staffLoginError').classList.add('hidden');
       $('staffPassword').value='';
@@ -261,29 +263,32 @@ function slugifyPart(value){
     .replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase().slice(0,70);
   return slug||'sin-nombre';
 }
+function routePath(){
+  const path=window.location.pathname;
+  return path.startsWith(APP_BASE)?`/${path.slice(APP_BASE.length)}`:path;
+}
 function productUrl(product){
-  return `/${String(product.publicCode||'').padStart(5,'0')}/${slugifyPart(product['Categoría'])}/${slugifyPart(product.Producto)}`;
+  return `${APP_BASE}${String(product.publicCode||'').padStart(5,'0')}/${slugifyPart(product['Categoría'])}/${slugifyPart(product.Producto)}`;
 }
 function isProductRoute(){
-  return /^\/\d{5}\/[^/]+\/[^/]+\/?$/.test(window.location.pathname)
-    || /^\/producto\/[^/]+\/[^/]+\/?$/.test(window.location.pathname);
+  const path=routePath();
+  return /^\/\d{5}\/[^/]+\/[^/]+\/?$/.test(path)
+    || /^\/producto\/[^/]+\/[^/]+\/?$/.test(path);
 }
 function productFromLocation(){
-  const shortMatch=window.location.pathname.match(/^\/(\d{5})\/([^/]+)\/([^/]+)\/?$/);
+  const path=routePath();
+  const shortMatch=path.match(/^\/(\d{5})\/([^/]+)\/([^/]+)\/?$/);
   if(shortMatch){
     return catalog.find(p=>String(p.publicCode)===shortMatch[1]
       &&slugifyPart(p['Categoría'])===shortMatch[2]
       &&slugifyPart(p.Producto)===shortMatch[3])||null;
   }
-  const legacy=window.location.pathname.match(/^\/producto\/([^/]+)\/([^/]+)\/?$/);
+  const legacy=path.match(/^\/producto\/([^/]+)\/([^/]+)\/?$/);
   if(legacy){
     const idMatch=legacy[2].match(/--([a-f0-9]{16})$/i);
     const product=idMatch?catalog.find(p=>String(p.id).toLowerCase()===idMatch[1].toLowerCase()
       &&slugifyPart(p['Categoría'])===legacy[1]):null;
-    if(product){
-      history.replaceState({flowerpediaProductCode:String(product.publicCode)},'',productUrl(product));
-      return product;
-    }
+    if(product){history.replaceState({flowerpediaProductCode:String(product.publicCode)},'',productUrl(product));return product;}
   }
   return null;
 }
@@ -293,7 +298,7 @@ function showCatalogPage(restoreScroll=true){
   $('productPageContent').classList.remove('hidden');
   $('productNotFound').classList.add('hidden');
   $('pageShell').classList.remove('hidden');
-  document.title='Flowerpedia v0.3.4 · Catálogo';
+  document.title='Flowerpedia · Catálogo';
   if(restoreScroll)window.scrollTo(0,catalogScrollY);
 }
 function showProductNotFound(){
@@ -306,7 +311,7 @@ function showProductNotFound(){
   window.scrollTo(0,0);
 }
 function closeProductPage(){
-  if(window.location.pathname!=='/')history.pushState({flowerpediaCatalog:true},'','/');
+  if(window.location.pathname!==APP_BASE)history.pushState({flowerpediaCatalog:true},'',APP_BASE);
   showCatalogPage(false);
 }
 function copyProductLink(){
@@ -327,7 +332,7 @@ function handleLocationChange(){
 }
 function quickFilter(type,value){
   if(!type||!value)return;
-  if(productPageOpen){history.pushState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}
+  if(productPageOpen){history.pushState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}
   selectedFilters={category:[],farm:[],color:[],season:[]};
   selectedFilters[type]=[String(value)];
   $('searchInput').value='';
@@ -543,16 +548,37 @@ async function refreshCatalogForRole(){
 }
 async function loadCatalog(){
   $('statusLine').textContent='Cargando catálogo…';
+  if(!LOCAL_WEB){
+    // GitHub Pages is static hosting: it can publish the catalogue but cannot securely authenticate users.
+    document.body.classList.add('public-static');
+    currentUser=null;currentProfile=null;currentRole='guest';
+    setAuthGate(false);
+    try{
+      const response=await fetch(`${APP_BASE}catalog-public.json`,{cache:'no-cache'});
+      if(!response.ok)throw new Error('No se pudo cargar el catálogo público.');
+      const data=await response.json();
+      catalog=prepareCatalogProducts(data.products||[]);farms=data.farms||[];localMode=true;
+      $('footerStatus').textContent='Catálogo Flowerpedia';
+      renderUserArea();renderAllFilters();applyFilters();
+      const product=productFromLocation();
+      if(product)openDetails(product,{pushHistory:false});else if(isProductRoute())showProductNotFound();
+    }catch(error){
+      console.error('[Flowerpedia] Error cargando catálogo estático:',error);
+      $('statusLine').textContent=`No se pudo cargar el catálogo: ${error.message}`;
+      $('footerStatus').textContent='Error al cargar el catálogo';
+    }
+    return;
+  }
+
+  document.body.classList.remove('public-static');
   const auth=window.FlowerpediaAuth;
   const sessionPromise=auth?.configured
     ? auth.init().then(state=>{
         currentUser=state.user;currentProfile=state.profile;currentRole=state.profile?.role||'guest';
-        setAuthGate(!currentUser);renderUserArea();
-        return {state};
+        setAuthGate(!currentUser);renderUserArea();return {state};
       }).catch(error=>{
         $('staffLoginError').textContent='No se pudo verificar tu sesión. Comprueba la conexión y vuelve a intentarlo.';
-        $('staffLoginError').classList.remove('hidden');setAuthGate(true);
-        return {error};
+        $('staffLoginError').classList.remove('hidden');setAuthGate(true);return {error};
       })
     : Promise.resolve({error:new Error('No se pudo inicializar el acceso de Flowerpedia.')});
 
@@ -560,49 +586,23 @@ async function loadCatalog(){
   try{
     const response=await fetch('/api/catalog',{cache:'no-store',credentials:'same-origin'});
     if(!response.ok)throw new Error('No se pudo consultar el catálogo del servidor');
-    const data=await response.json();
-    catalog=prepareCatalogProducts(data.products||[]);farms=data.farms||[];localMode=false;
+    const data=await response.json();catalog=prepareCatalogProducts(data.products||[]);farms=data.farms||[];localMode=false;
     $('footerStatus').textContent='Catálogo Flowerpedia';
   }catch(error){catalogError=error;}
-
-  if(!catalogError){
-    for(const type of ['category','farm','color','season']){
-      const available=filterValues(type);
-      selectedFilters[type]=selectedFilters[type].filter(value=>available.some(item=>norm(item)===norm(value)));
-    }
-  }
   const sessionResult=await sessionPromise;
   if(catalogError)$('statusLine').textContent=`No se pudo cargar el catálogo: ${catalogError.message}`;
   if(sessionResult.error){
     console.error('[Flowerpedia] No se pudo restaurar la sesión:',sessionResult.error);
     $('staffLoginError').textContent='No se pudo verificar tu sesión. Comprueba la conexión y vuelve a intentarlo.';
-    $('staffLoginError').classList.remove('hidden');
-    setAuthGate(true);
+    $('staffLoginError').classList.remove('hidden');setAuthGate(true);
   }else{
-    const state=sessionResult.state;
-    currentUser=state.user;currentProfile=state.profile;currentRole=state.profile?.role||'guest';
+    const state=sessionResult.state;currentUser=state.user;currentProfile=state.profile;currentRole=state.profile?.role||'guest';
     setAuthGate(!currentUser);
   }
-
-  if(!auth?.configured){
-    $('staffLoginError').textContent='No se pudo inicializar el acceso de Flowerpedia. Recarga la página o contacta con el administrador.';
-    $('staffLoginError').classList.remove('hidden');
-    $('staffLoginForm').querySelectorAll('input,button').forEach(el=>el.disabled=true);
-    setAuthGate(true);
-  }else{
-    $('staffLoginForm').querySelectorAll('input,button').forEach(el=>el.disabled=false);
-  }
-
   authReady=true;renderUserArea();renderAllFilters();applyFilters();
   if(currentUser){
     const product=productFromLocation();
-    if(product)openDetails(product,{pushHistory:false});
-    else if(isProductRoute())showProductNotFound();
-    else{
-      const legacy=new URLSearchParams(window.location.search).get('product');
-      const oldProduct=legacy?catalog.find(p=>String(p.id)===legacy):null;
-      if(oldProduct)openDetails(oldProduct,{pushHistory:true});
-    }
+    if(product)openDetails(product,{pushHistory:false});else if(isProductRoute())showProductNotFound();
   }
 }
 document.addEventListener('DOMContentLoaded',()=>{
@@ -629,9 +629,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click',e=>{
     if(!e.target.closest('.filter-menu-wrap'))document.querySelectorAll('.filter-wrap').forEach(w=>w.classList.remove('open'));
     const check=e.target.closest('input[data-filter-type]');
-    if(check){if(productPageOpen){history.pushState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}const type=check.dataset.filterType;if(check.checked)selectedFilters[type].push(check.value);else selectedFilters[type]=selectedFilters[type].filter(x=>norm(x)!==norm(check.value));renderFilter(type);applyFilters();saveCatalogView();}
+    if(check){if(productPageOpen){history.pushState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}const type=check.dataset.filterType;if(check.checked)selectedFilters[type].push(check.value);else selectedFilters[type]=selectedFilters[type].filter(x=>norm(x)!==norm(check.value));renderFilter(type);applyFilters();saveCatalogView();}
     const remove=e.target.closest('[data-remove-filter]');
-    if(remove){if(productPageOpen){history.pushState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}const type=remove.dataset.removeFilter,value=remove.dataset.value;selectedFilters[type]=selectedFilters[type].filter(x=>norm(x)!==norm(value));renderFilter(type);applyFilters();saveCatalogView();}
+    if(remove){if(productPageOpen){history.pushState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}const type=remove.dataset.removeFilter,value=remove.dataset.value;selectedFilters[type]=selectedFilters[type].filter(x=>norm(x)!==norm(value));renderFilter(type);applyFilters();saveCatalogView();}
     const quick=e.target.closest('[data-quick-filter]');
     if(quick){const type=quick.dataset.quickFilter,value=quick.dataset.filterValue;quickFilter(type,value);}
     const add=e.target.closest('[data-add-mix]');
@@ -642,13 +642,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(thumb){galleryIndex=Number(thumb.dataset.galleryIndex)||0;renderGallery();}
   });
   $('searchInput').addEventListener('input',()=>{
-    if(productPageOpen){history.pushState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}
+    if(productPageOpen){history.pushState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}
     clearTimeout(searchDebounceTimer);
     searchDebounceTimer=setTimeout(()=>{applyFilters();saveCatalogView();},90);
   });
   $('clearFiltersButton').addEventListener('click',()=>{
     if($('clearFiltersButton').disabled)return;
-    if(productPageOpen){history.pushState({flowerpediaCatalog:true},'','/');showCatalogPage(false);}
+    if(productPageOpen){history.pushState({flowerpediaCatalog:true},'',APP_BASE);showCatalogPage(false);}
     selectedFilters={category:[],farm:[],color:[],season:[]};$('searchInput').value='';
     renderAllFilters();applyFilters();saveCatalogView();document.querySelectorAll('.filter-wrap').forEach(w=>w.classList.remove('open'));
   });
